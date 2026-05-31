@@ -19,7 +19,7 @@ export async function SettingsView({ scope, user }: Props) {
 
       <form
         action={updateSettingsAction.bind(null, scope)}
-        className="grid gap-4 rounded border border-slate-200 bg-white p-4 md:max-w-xl"
+        className="grid gap-4 rounded border border-slate-200 bg-white p-4"
       >
         <label className="space-y-1 text-sm">
           <span className="text-slate-700">主题</span>

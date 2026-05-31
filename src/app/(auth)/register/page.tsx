@@ -12,7 +12,7 @@ export default async function RegisterPage() {
   }
 
   return (
-    <section className="mx-auto max-w-md rounded border border-slate-200 bg-white p-6">
+    <section className="w-full rounded border border-slate-200 bg-white p-6">
       <h1 className="mb-4 text-xl font-semibold text-slate-900">注册</h1>
       <RegisterForm />
       <p className="mt-4 text-sm text-slate-600">

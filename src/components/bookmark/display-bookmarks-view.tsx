@@ -156,20 +156,20 @@ export async function DisplayBookmarksView({ scope, user, searchParams }: Props)
   ];
 
   return (
-    <section className="grid gap-4 md:grid-cols-[240px_1fr]">
-      <aside className="h-fit rounded border border-slate-200 bg-white p-3">
-        <div className="border-b border-slate-100 pb-2">
+    <section className="grid h-full min-h-0 md:grid-cols-[240px_1fr]">
+      <aside className="flex h-full self-stretch flex-col overflow-hidden rounded-b border-x border-b border-slate-200 bg-white">
+        <div className="px-4 py-3">
           <h2 className="text-sm font-semibold text-slate-900">聚合视图</h2>
         </div>
 
-        <ul className="mt-2 space-y-1 text-sm">
+        <ul className="space-y-1.5 border-t border-slate-100 px-3 py-3 text-sm">
           {aggregateItems.map((item) => {
             const active = !tagId && view === item.key;
             return (
               <li key={item.key}>
                 <Link
                   href={`?view=${item.key}${queryBase}`}
-                  className={`block rounded px-2 py-1.5 ${
+                  className={`block rounded px-3 py-2 ${
                     active
                       ? "bg-slate-100 font-medium text-slate-900"
                       : "text-slate-600 hover:bg-slate-50"
@@ -182,16 +182,16 @@ export async function DisplayBookmarksView({ scope, user, searchParams }: Props)
           })}
         </ul>
 
-        <div className="mt-4 border-b border-slate-100 pb-2">
+        <div className="px-4 py-3">
           <h2 className="text-sm font-semibold text-slate-900">标签</h2>
         </div>
 
-        <ul className="mt-2 space-y-1 text-sm">
+        <ul className="flex-1 space-y-1.5 border-t border-slate-100 px-3 py-3 text-sm">
           {tags.map((tag) => (
             <li key={tag.id}>
               <Link
                 href={`?tagId=${tag.id}${queryBase}`}
-                className={`flex items-center justify-between rounded px-2 py-1.5 ${
+                className={`flex items-center justify-between rounded px-3 py-2 ${
                   tagId === tag.id
                     ? "bg-slate-100 font-medium text-slate-900"
                     : "text-slate-600 hover:bg-slate-50"
@@ -207,7 +207,7 @@ export async function DisplayBookmarksView({ scope, user, searchParams }: Props)
         {scope === "USER" ? (
           <Link
             href="/manage/bookmarks"
-            className="mt-4 block rounded border border-slate-300 px-2 py-1.5 text-center text-xs text-slate-700 hover:bg-slate-50"
+            className="mx-3 mb-3 block rounded border border-slate-300 px-3 py-2 text-center text-xs text-slate-700 hover:bg-slate-50"
           >
             进入个人管理
           </Link>
@@ -216,35 +216,26 @@ export async function DisplayBookmarksView({ scope, user, searchParams }: Props)
         {scope === "APP" && isAdmin ? (
           <Link
             href="/admin/manage/bookmarks"
-            className="mt-4 block rounded border border-slate-300 px-2 py-1.5 text-center text-xs text-slate-700 hover:bg-slate-50"
+            className="mx-3 mb-3 block rounded border border-slate-300 px-3 py-2 text-center text-xs text-slate-700 hover:bg-slate-50"
           >
             进入应用管理
           </Link>
         ) : null}
       </aside>
 
-      <div className="min-w-0 space-y-4">
-        <header className="flex items-center justify-between">
-          <h1 className="text-xl font-semibold text-slate-900">
-            {scope === "APP" ? "应用书签" : "我的书签"}
-          </h1>
-          <div className="text-xs text-slate-500">
-            共 {listResult.pagination.total} 条
-          </div>
-        </header>
-
+      <div className="min-w-0 space-y-4 p-6">
         <form className="flex items-center gap-2 rounded border border-slate-200 bg-white p-3">
           <input
             name="q"
             defaultValue={q}
             placeholder="搜索标题 / URL / 描述 / 标签"
-            className="w-full rounded border border-slate-300 px-3 py-2 text-sm"
+            className="min-w-0 flex-1 rounded border border-slate-300 px-3 py-2 text-sm"
           />
           {tagId ? <input type="hidden" name="tagId" value={tagId} /> : null}
           {!tagId ? <input type="hidden" name="view" value={view} /> : null}
           <button
             type="submit"
-            className="rounded bg-slate-900 px-3 py-2 text-sm text-white hover:bg-slate-800"
+            className="shrink-0 whitespace-nowrap rounded bg-slate-900 px-4 py-2.5 text-sm text-white hover:bg-slate-800"
           >
             搜索
           </button>
@@ -285,7 +276,7 @@ export async function DisplayBookmarksView({ scope, user, searchParams }: Props)
                   </div>
 
                   {scope === "APP" && user ? (
-                    <form action={saveAppBookmarkToUserAction} className="w-full max-w-xs space-y-2">
+                    <form action={saveAppBookmarkToUserAction} className="w-full space-y-2">
                       <input type="hidden" name="bookmarkId" value={bookmark.id} />
                       <input
                         name="tags"

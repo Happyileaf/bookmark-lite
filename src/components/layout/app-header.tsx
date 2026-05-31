@@ -12,7 +12,7 @@ export async function AppHeader() {
 
   return (
     <header className="border-b border-slate-200 bg-white">
-      <div className="mx-auto grid w-full max-w-7xl grid-cols-[1fr_auto] items-center gap-4 px-4 py-3">
+      <div className="grid w-full grid-cols-[1fr_auto] items-center gap-4 px-4 py-3">
         <div className="min-w-0">
           <Link href="/bookmarks" className="truncate text-base font-semibold text-slate-900">
             Bookmark Lite
@@ -26,7 +26,7 @@ export async function AppHeader() {
                 <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-slate-900 text-xs font-semibold text-white">
                   {userLabel}
                 </span>
-                <span className="hidden max-w-56 truncate text-xs text-slate-500 sm:block">
+                <span className="hidden truncate text-xs text-slate-500 sm:block">
                   {session?.user?.email}
                 </span>
               </summary>

@@ -30,9 +30,9 @@ export function ManageSceneShell({ scope, current, children }: Props) {
   const menu = isAppScope ? appMenu : userMenu;
 
   return (
-    <section className="grid gap-4 md:grid-cols-[240px_1fr]">
-      <aside className="h-fit rounded border border-slate-200 bg-white p-3">
-        <div className="border-b border-slate-100 pb-2">
+    <section className="grid h-full min-h-0 md:grid-cols-[240px_1fr]">
+      <aside className="flex h-full self-stretch flex-col overflow-hidden rounded-b border-x border-b border-slate-200 bg-white">
+        <div className="px-4 py-3">
           <h2 className="text-sm font-semibold text-slate-900">
             {isAppScope ? "应用管理菜单" : "个人管理菜单"}
           </h2>
@@ -41,14 +41,14 @@ export function ManageSceneShell({ scope, current, children }: Props) {
           </p>
         </div>
 
-        <nav className="mt-3 grid gap-1 text-sm">
+        <nav className="grid flex-1 min-h-0 gap-1.5 border-t border-slate-100 px-3 py-3 text-sm">
           {menu.map((item) => {
             const active = item.key === current;
             return (
               <Link
                 key={item.key}
                 href={item.href}
-                className={`rounded px-2 py-1.5 ${
+                className={`rounded px-3 py-2 ${
                   active
                     ? "bg-slate-100 font-medium text-slate-900"
                     : "text-slate-600 hover:bg-slate-50"
@@ -61,7 +61,7 @@ export function ManageSceneShell({ scope, current, children }: Props) {
         </nav>
       </aside>
 
-      <div className="min-w-0">{children}</div>
+      <div className="min-w-0 p-6">{children}</div>
     </section>
   );
 }
