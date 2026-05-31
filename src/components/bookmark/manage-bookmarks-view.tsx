@@ -1,5 +1,6 @@
 import type { DataScope } from "@prisma/client";
 import { createBookmarkAction, deleteBookmarkAction } from "@/actions/bookmark.actions";
+import { CreateBookmarkModal } from "@/components/bookmark/create-bookmark-modal";
 import type { SessionUser } from "@/server/auth/session";
 import { bookmarkService } from "@/server/services/bookmark.service";
 
@@ -38,11 +39,12 @@ export async function ManageBookmarksView({ scope, user, searchParams }: Props) 
 
   return (
     <section className="space-y-4">
-      <header className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold text-slate-900">
-          {scope === "APP" ? "应用书签管理" : "个人书签管理"}
-        </h1>
-        <span className="text-xs text-slate-500">共 {listResult.pagination.total} 条</span>
+      <header className="flex h-[50px] items-center justify-between">
+        <h1 className="text-xl leading-none font-semibold text-slate-900">书签管理</h1>
+        <div className="flex items-center gap-2">
+          <span className="text-xs text-slate-500">共 {listResult.pagination.total} 条</span>
+          <CreateBookmarkModal action={createBookmarkAction.bind(null, scope)} />
+        </div>
       </header>
 
       <form className="flex flex-wrap items-center gap-2 rounded border border-slate-200 bg-white p-3">
@@ -69,42 +71,6 @@ export async function ManageBookmarksView({ scope, user, searchParams }: Props) 
         >
           查询
         </button>
-      </form>
-
-      <form
-        action={createBookmarkAction.bind(null, scope)}
-        className="grid gap-2 rounded border border-slate-200 bg-white p-3 md:grid-cols-2"
-      >
-        <input
-          name="title"
-          required
-          placeholder="书签标题"
-          className="rounded border border-slate-300 px-3 py-2 text-sm"
-        />
-        <input
-          name="url"
-          required
-          placeholder="https://example.com"
-          className="rounded border border-slate-300 px-3 py-2 text-sm"
-        />
-        <input
-          name="tags"
-          placeholder="标签（逗号分隔）"
-          className="rounded border border-slate-300 px-3 py-2 text-sm"
-        />
-        <input
-          name="description"
-          placeholder="描述（可选）"
-          className="rounded border border-slate-300 px-3 py-2 text-sm"
-        />
-        <div className="md:col-span-2">
-          <button
-            type="submit"
-            className="rounded bg-slate-900 px-3 py-2 text-sm text-white hover:bg-slate-800"
-          >
-            新建书签
-          </button>
-        </div>
       </form>
 
       <div className="overflow-x-auto rounded border border-slate-200 bg-white">

@@ -1,5 +1,6 @@
 import type { DataScope } from "@prisma/client";
 import { deleteTagAction, upsertTagAction } from "@/actions/tag.actions";
+import { CreateTagModal } from "@/components/tag/create-tag-modal";
 import type { SessionUser } from "@/server/auth/session";
 import { tagService } from "@/server/services/tag.service";
 
@@ -13,42 +14,13 @@ export async function ManageTagsView({ scope, user }: Props) {
 
   return (
     <section className="space-y-4">
-      <header className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold text-slate-900">
-          {scope === "APP" ? "应用标签管理" : "个人标签管理"}
-        </h1>
-        <span className="text-xs text-slate-500">共 {tags.length} 个标签</span>
-      </header>
-
-      <form
-        action={upsertTagAction.bind(null, scope)}
-        className="grid gap-2 rounded border border-slate-200 bg-white p-3 md:grid-cols-3"
-      >
-        <input
-          name="name"
-          required
-          placeholder="标签名称"
-          className="rounded border border-slate-300 px-3 py-2 text-sm"
-        />
-        <input
-          name="color"
-          placeholder="#94a3b8"
-          className="rounded border border-slate-300 px-3 py-2 text-sm"
-        />
-        <input
-          name="description"
-          placeholder="标签描述（可选）"
-          className="rounded border border-slate-300 px-3 py-2 text-sm"
-        />
-        <div className="md:col-span-3">
-          <button
-            type="submit"
-            className="rounded bg-slate-900 px-3 py-2 text-sm text-white hover:bg-slate-800"
-          >
-            新建标签
-          </button>
+      <header className="flex h-[50px] items-center justify-between">
+        <h1 className="text-xl leading-none font-semibold text-slate-900">标签管理</h1>
+        <div className="flex items-center gap-2">
+          <span className="text-xs text-slate-500">共 {tags.length} 个标签</span>
+          <CreateTagModal action={upsertTagAction.bind(null, scope)} />
         </div>
-      </form>
+      </header>
 
       <div className="overflow-x-auto rounded border border-slate-200 bg-white">
         <table className="w-full border-collapse text-sm">

@@ -13,9 +13,9 @@ export async function SettingsView({ scope, user }: Props) {
 
   return (
     <section className="space-y-4">
-      <h1 className="text-xl font-semibold text-slate-900">
-        {scope === "APP" ? "应用设置" : "个人设置"}
-      </h1>
+      <header className="flex h-[50px] items-center">
+        <h1 className="text-xl leading-none font-semibold text-slate-900">设置</h1>
+      </header>
 
       <form
         action={updateSettingsAction.bind(null, scope)}

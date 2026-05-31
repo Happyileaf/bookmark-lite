@@ -209,7 +209,7 @@ export async function DisplayBookmarksView({ scope, user, searchParams }: Props)
             href="/manage/bookmarks"
             className="mx-3 mb-3 block rounded border border-slate-300 px-3 py-2 text-center text-xs text-slate-700 hover:bg-slate-50"
           >
-            进入个人管理
+            进入书签管理
           </Link>
         ) : null}
 
@@ -218,7 +218,7 @@ export async function DisplayBookmarksView({ scope, user, searchParams }: Props)
             href="/admin/manage/bookmarks"
             className="mx-3 mb-3 block rounded border border-slate-300 px-3 py-2 text-center text-xs text-slate-700 hover:bg-slate-50"
           >
-            进入应用管理
+            进入全局管理
           </Link>
         ) : null}
       </aside>

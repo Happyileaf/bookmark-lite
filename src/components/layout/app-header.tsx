@@ -48,14 +48,14 @@ export async function AppHeader() {
                     href="/manage/bookmarks"
                     className="rounded px-2 py-1.5 text-slate-700 hover:bg-slate-50"
                   >
-                    书签管理
+                    我的书签管理
                   </Link>
                   {isAdmin ? (
                     <Link
                       href="/admin/manage/bookmarks"
                       className="rounded px-2 py-1.5 text-slate-700 hover:bg-slate-50"
                     >
-                      应用书签管理
+                      全局书签管理
                     </Link>
                   ) : null}
                   <Link

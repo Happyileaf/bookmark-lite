@@ -9,7 +9,9 @@ export default async function AdminImportExportPage() {
   return (
     <ManageSceneShell scope="APP" current="import-export">
       <section className="space-y-4">
-        <h1 className="text-xl font-semibold text-slate-900">应用导入导出</h1>
+        <header className="flex h-[50px] items-center">
+          <h1 className="text-xl leading-none font-semibold text-slate-900">导入导出</h1>
+        </header>
 
         <div className="grid gap-4 md:grid-cols-2">
           <form

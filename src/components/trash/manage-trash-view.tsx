@@ -22,14 +22,12 @@ export async function ManageTrashView({ scope, user }: Props) {
 
   return (
     <section className="space-y-4">
-      <header className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-xl font-semibold text-slate-900">
-          {scope === "APP" ? "应用回收站" : "个人回收站"}
-        </h1>
+      <header className="flex h-[50px] items-center justify-between">
+        <h1 className="text-xl leading-none font-semibold text-slate-900">回收站</h1>
         <form action={clearTrashAction.bind(null, scope)}>
           <button
             type="submit"
-            className="rounded border border-rose-300 px-3 py-1.5 text-sm text-rose-600 hover:bg-rose-50"
+            className="h-9 shrink-0 whitespace-nowrap rounded border border-rose-300 px-3 text-sm text-rose-600 hover:bg-rose-50"
           >
             清空回收站
           </button>
