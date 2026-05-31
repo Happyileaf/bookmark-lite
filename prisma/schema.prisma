@@ -1,0 +1,190 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  user
+  super_admin
+}
+
+enum DataScope {
+  APP
+  USER
+}
+
+enum TrashObjectType {
+  BOOKMARK
+}
+
+enum Theme {
+  light
+  dark
+  system
+}
+
+model User {
+  id           String      @id @default(uuid()) @db.Uuid
+  email        String      @unique @db.VarChar(320)
+  passwordHash String      @map("password_hash")
+  role         Role        @default(user)
+  createdAt    DateTime    @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt    DateTime    @updatedAt @map("updated_at") @db.Timestamptz(6)
+  bookmarks    Bookmark[]
+  tags         Tag[]
+  userSetting  UserSetting?
+  trashOwned   TrashItem[] @relation("trashOwner")
+  trashDeleted TrashItem[] @relation("trashDeletedBy")
+  auditLogs    AuditLog[]
+  metrics      EventMetric[]
+
+  @@map("users")
+}
+
+model Bookmark {
+  id            String        @id @default(uuid()) @db.Uuid
+  scope         DataScope
+  ownerUserId   String?       @map("owner_user_id") @db.Uuid
+  ownerUser     User?         @relation(fields: [ownerUserId], references: [id], onDelete: SetNull)
+  title         String        @db.VarChar(300)
+  url           String
+  normalizedUrl String        @map("normalized_url")
+  description   String?
+  isFavorite    Boolean       @default(false) @map("is_favorite")
+  isPinned      Boolean       @default(false) @map("is_pinned")
+  isVisible     Boolean       @default(true) @map("is_visible")
+  scopeOwnerKey String        @map("scope_owner_key") @db.VarChar(64)
+  lastVisitedAt DateTime?     @map("last_visited_at") @db.Timestamptz(6)
+  createdAt     DateTime      @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt     DateTime      @updatedAt @map("updated_at") @db.Timestamptz(6)
+  bookmarkTags  BookmarkTag[]
+
+  @@index([scope, ownerUserId, createdAt(sort: Desc)], map: "idx_bookmarks_scope_owner_created")
+  @@index([scope, ownerUserId, updatedAt(sort: Desc)], map: "idx_bookmarks_scope_owner_updated")
+  @@index([scope, ownerUserId, lastVisitedAt(sort: Desc)], map: "idx_bookmarks_scope_owner_visited")
+  @@index([scope, ownerUserId, isFavorite, createdAt(sort: Desc)], map: "idx_bookmarks_scope_owner_favorite")
+  @@index([scope, ownerUserId, isPinned, createdAt(sort: Desc)], map: "idx_bookmarks_scope_owner_pinned")
+  @@index([isVisible, createdAt(sort: Desc)], map: "idx_bookmarks_visible_app")
+  @@unique([scopeOwnerKey, normalizedUrl], map: "uq_bookmarks_scope_owner_normurl")
+  @@map("bookmarks")
+}
+
+model Tag {
+  id            String        @id @default(uuid()) @db.Uuid
+  scope         DataScope
+  ownerUserId   String?       @map("owner_user_id") @db.Uuid
+  ownerUser     User?         @relation(fields: [ownerUserId], references: [id], onDelete: SetNull)
+  name          String        @db.VarChar(80)
+  color         String?       @db.VarChar(20)
+  description   String?
+  sortOrder     Int           @default(0) @map("sort_order")
+  bookmarkCount Int           @default(0) @map("bookmark_count")
+  scopeOwnerKey String        @map("scope_owner_key") @db.VarChar(64)
+  createdAt     DateTime      @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt     DateTime      @updatedAt @map("updated_at") @db.Timestamptz(6)
+  bookmarkTags  BookmarkTag[]
+
+  @@index([scope, ownerUserId, sortOrder(sort: Asc), createdAt(sort: Asc)], map: "idx_tags_scope_owner_sort")
+  @@index([scope, ownerUserId, name], map: "idx_tags_scope_owner_name")
+  @@unique([scopeOwnerKey, name], map: "uq_tags_scope_owner_name")
+  @@map("tags")
+}
+
+model BookmarkTag {
+  bookmarkId String   @map("bookmark_id") @db.Uuid
+  tagId      String   @map("tag_id") @db.Uuid
+  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  bookmark   Bookmark @relation(fields: [bookmarkId], references: [id], onDelete: Cascade)
+  tag        Tag      @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([bookmarkId, tagId])
+  @@index([tagId, bookmarkId], map: "idx_bookmark_tags_tag")
+  @@index([bookmarkId, tagId], map: "idx_bookmark_tags_bookmark")
+  @@map("bookmark_tags")
+}
+
+model TrashItem {
+  id              String          @id @default(uuid()) @db.Uuid
+  scope           DataScope
+  ownerUserId     String?         @map("owner_user_id") @db.Uuid
+  ownerUser       User?           @relation("trashOwner", fields: [ownerUserId], references: [id], onDelete: SetNull)
+  objectType      TrashObjectType @map("object_type")
+  objectId        String          @map("object_id") @db.Uuid
+  payload         Json
+  deletedByUserId String?         @map("deleted_by_user_id") @db.Uuid
+  deletedBy       User?           @relation("trashDeletedBy", fields: [deletedByUserId], references: [id], onDelete: SetNull)
+  deletedAt       DateTime        @default(now()) @map("deleted_at") @db.Timestamptz(6)
+  expiresAt       DateTime        @map("expires_at") @db.Timestamptz(6)
+
+  @@index([scope, ownerUserId, deletedAt(sort: Desc)], map: "idx_trash_scope_owner_deleted")
+  @@index([expiresAt], map: "idx_trash_expires_at")
+  @@map("trash_items")
+}
+
+model AppSetting {
+  id                 Int      @id @default(1)
+  theme              Theme?
+  trashRetentionDays Int?     @map("trash_retention_days")
+  auditRetentionDays Int?     @map("audit_retention_days")
+  updatedAt          DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@map("app_settings")
+}
+
+model UserSetting {
+  userId             String   @id @map("user_id") @db.Uuid
+  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  theme              Theme?
+  trashRetentionDays Int?     @map("trash_retention_days")
+  auditRetentionDays Int?     @map("audit_retention_days")
+  updatedAt          DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@map("user_settings")
+}
+
+model SystemDefaultSetting {
+  id                 Int      @id @default(1)
+  theme              Theme    @default(system)
+  trashRetentionDays Int      @default(30) @map("trash_retention_days")
+  auditRetentionDays Int      @default(180) @map("audit_retention_days")
+  updatedAt          DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@map("system_default_settings")
+}
+
+model AuditLog {
+  id         BigInt    @id @default(autoincrement())
+  userId     String?   @map("user_id") @db.Uuid
+  user       User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+  role       Role?
+  action     String    @db.VarChar(100)
+  targetType String    @map("target_type") @db.VarChar(50)
+  targetId   String    @map("target_id")
+  scope      DataScope?
+  status     String    @db.VarChar(20)
+  reason     String?
+  ip         String?   @db.Inet
+  userAgent  String?   @map("user_agent")
+  createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@index([createdAt(sort: Desc)], map: "idx_audit_logs_created")
+  @@index([userId, createdAt(sort: Desc)], map: "idx_audit_logs_user_created")
+  @@map("audit_logs")
+}
+
+model EventMetric {
+  id         BigInt    @id @default(autoincrement())
+  eventName  String    @map("event_name") @db.VarChar(100)
+  userId     String?   @map("user_id") @db.Uuid
+  user       User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+  scope      DataScope?
+  payload    Json
+  occurredAt DateTime  @default(now()) @map("occurred_at") @db.Timestamptz(6)
+
+  @@index([eventName, occurredAt(sort: Desc)], map: "idx_event_metrics_event_time")
+  @@map("event_metrics")
+}
