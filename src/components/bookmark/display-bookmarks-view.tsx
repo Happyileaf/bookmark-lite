@@ -2,6 +2,8 @@ import net from "node:net";
 import Link from "next/link";
 import { Prisma, type DataScope } from "@prisma/client";
 import { saveAppBookmarkToUserAction } from "@/actions/bookmark.actions";
+import { CopyBookmarkUrlButton } from "@/components/bookmark/copy-bookmark-url-button";
+import { SaveAppBookmarkModal } from "@/components/bookmark/save-app-bookmark-modal";
 import type { SessionUser } from "@/server/auth/session";
 import { bookmarkService } from "@/server/services/bookmark.service";
 import { tagService } from "@/server/services/tag.service";
@@ -246,25 +248,53 @@ export async function DisplayBookmarksView({ scope, user, searchParams }: Props)
             当前视图下暂无书签
           </div>
         ) : (
-          <ul className="space-y-3">
+          <ul className="grid auto-rows-fr grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 [@media(min-width:1920px)]:grid-cols-5">
             {listResult.items.map((bookmark) => (
-              <li key={bookmark.id} className="rounded border border-slate-200 bg-white p-4">
-                <div className="flex flex-wrap items-start justify-between gap-3">
-                  <div className="space-y-2">
-                    <a
-                      href={bookmark.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-base font-medium text-slate-900 hover:text-slate-700"
-                    >
-                      {bookmark.title}
-                    </a>
-                    <p className="text-sm text-slate-500">{bookmark.url}</p>
-                    {bookmark.description ? (
-                      <p className="text-sm text-slate-700">{bookmark.description}</p>
-                    ) : null}
+              <li
+                key={bookmark.id}
+                className="group relative h-full rounded border border-slate-200 bg-white p-4 hover:border-slate-300"
+              >
+                <a
+                  href={bookmark.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="absolute inset-0 z-10 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400"
+                >
+                  <span className="sr-only">打开书签：{bookmark.title}</span>
+                </a>
+
+                <div className="pointer-events-auto absolute right-3 top-3 z-30 flex items-center gap-1">
+                  <CopyBookmarkUrlButton url={bookmark.url} />
+                  {scope === "APP" && user ? (
+                    <SaveAppBookmarkModal
+                      action={saveAppBookmarkToUserAction}
+                      bookmarkId={bookmark.id}
+                    />
+                  ) : null}
+                </div>
+
+                <div className="pointer-events-none relative z-20 grid h-full content-start gap-2">
+                  <h3
+                    className="h-6 truncate pr-16 text-base font-medium leading-6 text-slate-900 group-hover:text-slate-700"
+                    title={bookmark.title}
+                  >
+                    {bookmark.title}
+                  </h3>
+
+                  <p className="h-5 truncate text-sm leading-5 text-slate-500" title={bookmark.url}>
+                    {bookmark.url}
+                  </p>
+
+                  <p
+                    className="h-10 overflow-hidden text-sm leading-5 text-slate-700 [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:2]"
+                    title={bookmark.description ?? ""}
+                  >
+                    {bookmark.description || "\u00A0"}
+                  </p>
+
+                  <div className="h-12 overflow-hidden" title={bookmark.tags.map((tag) => tag.name).join(" / ")}>
                     <div className="flex flex-wrap gap-1">
-                      {bookmark.tags.map((tag) => (
+                      {bookmark.tags.slice(0, 6).map((tag) => (
                         <span
                           key={tag.id}
                           className="rounded bg-slate-100 px-2 py-1 text-xs text-slate-600"
@@ -272,25 +302,11 @@ export async function DisplayBookmarksView({ scope, user, searchParams }: Props)
                           {tag.name}
                         </span>
                       ))}
+                      {bookmark.tags.length > 6 ? (
+                        <span className="rounded bg-slate-100 px-2 py-1 text-xs text-slate-600">...</span>
+                      ) : null}
                     </div>
                   </div>
-
-                  {scope === "APP" && user ? (
-                    <form action={saveAppBookmarkToUserAction} className="w-full space-y-2">
-                      <input type="hidden" name="bookmarkId" value={bookmark.id} />
-                      <input
-                        name="tags"
-                        placeholder="个人标签（逗号分隔）"
-                        className="w-full rounded border border-slate-300 px-2 py-1.5 text-xs"
-                      />
-                      <button
-                        type="submit"
-                        className="w-full rounded border border-slate-300 px-2 py-1.5 text-xs text-slate-700 hover:bg-slate-50"
-                      >
-                        保存到个人库
-                      </button>
-                    </form>
-                  ) : null}
                 </div>
               </li>
             ))}

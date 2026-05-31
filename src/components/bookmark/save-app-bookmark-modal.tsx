@@ -1,0 +1,96 @@
+"use client";
+
+import { BookmarkPlus } from "lucide-react";
+import { useState, useTransition } from "react";
+import { createPortal } from "react-dom";
+
+type Props = {
+  action: (formData: FormData) => Promise<void>;
+  bookmarkId: string;
+  triggerClassName?: string;
+};
+
+export function SaveAppBookmarkModal({ action, bookmarkId, triggerClassName }: Props) {
+  const [open, setOpen] = useState(false);
+  const [isPending, startTransition] = useTransition();
+
+  const submit = (formData: FormData) => {
+    startTransition(async () => {
+      await action(formData);
+      setOpen(false);
+    });
+  };
+
+  const modal =
+    open && typeof document !== "undefined"
+      ? createPortal(
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            <button
+              type="button"
+              aria-label="关闭弹窗"
+              className="absolute inset-0 bg-black/35"
+              onClick={() => setOpen(false)}
+            />
+
+            <div className="relative z-10 w-full max-w-md rounded border border-slate-200 bg-white shadow-xl">
+              <div className="flex items-center justify-between border-b border-slate-200 px-4 py-3">
+                <h2 className="text-base font-semibold text-slate-900">保存到个人库</h2>
+                <button
+                  type="button"
+                  onClick={() => setOpen(false)}
+                  className="rounded border border-slate-300 px-2 py-1 text-xs text-slate-700 hover:bg-slate-50"
+                >
+                  关闭
+                </button>
+              </div>
+
+              <form action={submit} className="space-y-3 p-4">
+                <input type="hidden" name="bookmarkId" value={bookmarkId} />
+                <input
+                  name="tags"
+                  placeholder="个人标签（逗号分隔）"
+                  className="w-full rounded border border-slate-300 px-3 py-2 text-sm"
+                />
+                <div className="flex items-center justify-end gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setOpen(false)}
+                    className="rounded border border-slate-300 px-3 py-2 text-sm text-slate-700 hover:bg-slate-50"
+                  >
+                    取消
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={isPending}
+                    className="rounded bg-slate-900 px-3 py-2 text-sm text-white hover:bg-slate-800 disabled:opacity-60"
+                  >
+                    {isPending ? "保存中..." : "保存"}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>,
+          document.body,
+        )
+      : null;
+
+  return (
+    <>
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        aria-label="保存到个人库"
+        title="保存到个人库"
+        className={
+          triggerClassName ??
+          "inline-flex h-7 w-7 items-center justify-center rounded border border-slate-300 bg-white text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+        }
+      >
+        <BookmarkPlus className="h-4 w-4" />
+        <span className="sr-only">保存到个人库</span>
+      </button>
+
+      {modal}
+    </>
+  );
+}
