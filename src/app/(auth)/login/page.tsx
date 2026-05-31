@@ -23,7 +23,8 @@ export default async function LoginPage({ searchParams }: PageProps) {
   const nextUrl = readParam(params.next);
 
   return (
-    <section className="w-full rounded border border-slate-200 bg-white p-6">
+    <section className="flex h-full w-full items-center justify-center p-6">
+      <div className="-translate-y-12 w-full max-w-md rounded border border-slate-200 bg-white p-6">
       <h1 className="mb-4 text-xl font-semibold text-slate-900">登录</h1>
       <LoginForm nextUrl={nextUrl} />
       <p className="mt-4 text-sm text-slate-600">
@@ -32,6 +33,7 @@ export default async function LoginPage({ searchParams }: PageProps) {
           去注册
         </Link>
       </p>
+      </div>
     </section>
   );
 }
