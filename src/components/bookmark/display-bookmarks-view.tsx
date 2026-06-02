@@ -158,8 +158,8 @@ export async function DisplayBookmarksView({ scope, user, searchParams }: Props)
   ];
 
   return (
-    <section className="grid h-full min-h-0 md:grid-cols-[240px_1fr]">
-      <aside className="flex h-full self-stretch flex-col overflow-hidden rounded-b border-x border-b border-slate-200 bg-white">
+    <section className="grid h-full min-h-0 overflow-hidden md:grid-cols-[240px_minmax(0,1fr)]">
+      <aside className="flex h-full min-h-0 self-stretch flex-col overflow-y-auto overflow-x-hidden rounded-b border-x border-b border-slate-200 bg-white">
         <div className="px-4 py-3">
           <h2 className="text-sm font-semibold text-slate-900">聚合视图</h2>
         </div>
@@ -188,7 +188,7 @@ export async function DisplayBookmarksView({ scope, user, searchParams }: Props)
           <h2 className="text-sm font-semibold text-slate-900">标签</h2>
         </div>
 
-        <ul className="flex-1 space-y-1.5 border-t border-slate-100 px-3 py-3 text-sm">
+        <ul className="space-y-1.5 border-t border-slate-100 px-3 py-3 text-sm">
           {tags.map((tag) => (
             <li key={tag.id}>
               <Link
@@ -225,7 +225,7 @@ export async function DisplayBookmarksView({ scope, user, searchParams }: Props)
         ) : null}
       </aside>
 
-      <div className="min-w-0 space-y-4 p-6">
+      <div className="min-h-0 min-w-0 space-y-4 overflow-y-auto p-6">
         <form className="flex items-center gap-2 rounded border border-slate-200 bg-white p-3">
           <input
             name="q"

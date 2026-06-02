@@ -14,9 +14,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="zh-CN">
-      <body className="flex h-dvh min-h-dvh flex-col bg-slate-50 text-slate-900">
+      <body className="flex h-dvh min-h-dvh flex-col overflow-hidden bg-slate-50 text-slate-900">
         <AppHeader />
-        <main className="flex min-h-0 flex-1 flex-col">{children}</main>
+        <main className="flex min-h-0 flex-1 flex-col overflow-hidden">{children}</main>
       </body>
     </html>
   );
