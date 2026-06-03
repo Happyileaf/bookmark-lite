@@ -104,7 +104,6 @@ export async function DisplayBookmarksView({ scope, user, searchParams }: Props)
   const q = readParam(searchParams.q);
   const tagId = readParam(searchParams.tagId);
   const view = (readParam(searchParams.view) as DisplayView | undefined) ?? "all";
-  const isAdmin = user?.role === "super_admin";
 
   const localDbUnavailableReason = await readLocalDbUnavailableReason();
   if (localDbUnavailableReason) {
@@ -205,24 +204,6 @@ export async function DisplayBookmarksView({ scope, user, searchParams }: Props)
             </li>
           ))}
         </ul>
-
-        {scope === "USER" ? (
-          <Link
-            href="/manage/bookmarks"
-            className="mx-3 mb-3 block rounded border border-slate-300 px-3 py-2 text-center text-xs text-slate-700 hover:bg-slate-50"
-          >
-            进入书签管理
-          </Link>
-        ) : null}
-
-        {scope === "APP" && isAdmin ? (
-          <Link
-            href="/admin/manage/bookmarks"
-            className="mx-3 mb-3 block rounded border border-slate-300 px-3 py-2 text-center text-xs text-slate-700 hover:bg-slate-50"
-          >
-            进入全局管理
-          </Link>
-        ) : null}
       </aside>
 
       <div className="min-h-0 min-w-0 space-y-4 overflow-y-auto p-6">
