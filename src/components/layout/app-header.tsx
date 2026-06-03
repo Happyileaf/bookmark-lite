@@ -11,7 +11,7 @@ export async function AppHeader() {
     "U";
 
   return (
-    <header className="border-b border-slate-200 bg-white">
+    <header className="relative z-50 border-b border-slate-200 bg-white">
       <div className="grid w-full grid-cols-[1fr_auto] items-center gap-4 px-4 py-3">
         <div className="min-w-0">
           <Link href="/bookmarks" className="truncate text-base font-semibold text-slate-900">
@@ -21,7 +21,7 @@ export async function AppHeader() {
 
         <div className="flex items-center justify-end gap-2 text-sm">
           {isAuthed ? (
-            <details className="relative">
+            <details className="relative z-50">
               <summary className="flex cursor-pointer list-none items-center gap-2 rounded border border-slate-300 bg-white px-2 py-1.5 text-slate-700 hover:bg-slate-50">
                 <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-slate-900 text-xs font-semibold text-white">
                   {userLabel}
@@ -31,7 +31,7 @@ export async function AppHeader() {
                 </span>
               </summary>
 
-              <div className="absolute right-0 z-20 mt-2 w-56 rounded border border-slate-200 bg-white p-2 shadow-lg">
+              <div className="absolute right-0 z-50 mt-2 w-56 rounded border border-slate-200 bg-white p-2 shadow-lg">
                 <div className="border-b border-slate-100 px-2 pb-2 text-xs text-slate-500">
                   <div className="truncate">{session?.user?.email}</div>
                   <div>{isAdmin ? "超级管理员" : "普通用户"}</div>
