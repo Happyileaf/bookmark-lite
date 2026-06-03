@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { auth } from "@/server/auth/auth";
+import { UserMenu } from "@/components/layout/user-menu";
 
 export async function AppHeader() {
   const session = await auth();
@@ -21,52 +22,7 @@ export async function AppHeader() {
 
         <div className="flex items-center justify-end gap-2 text-sm">
           {isAuthed ? (
-            <details className="relative z-50">
-              <summary className="flex cursor-pointer list-none items-center gap-2 rounded border border-slate-300 bg-white px-2 py-1.5 text-slate-700 hover:bg-slate-50">
-                <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-slate-900 text-xs font-semibold text-white">
-                  {userLabel}
-                </span>
-                <span className="hidden truncate text-xs text-slate-500 sm:block">
-                  {session?.user?.email}
-                </span>
-              </summary>
-
-              <div className="absolute right-0 z-50 mt-2 w-56 rounded border border-slate-200 bg-white p-2 shadow-lg">
-                <div className="border-b border-slate-100 px-2 pb-2 text-xs text-slate-500">
-                  <div className="truncate">{session?.user?.email}</div>
-                  <div>{isAdmin ? "超级管理员" : "普通用户"}</div>
-                </div>
-
-                <div className="mt-2 grid gap-1 text-sm">
-                  <Link
-                    href="/settings"
-                    className="rounded px-2 py-1.5 text-slate-700 hover:bg-slate-50"
-                  >
-                    设置
-                  </Link>
-                  <Link
-                    href="/manage/bookmarks"
-                    className="rounded px-2 py-1.5 text-slate-700 hover:bg-slate-50"
-                  >
-                    我的书签管理
-                  </Link>
-                  {isAdmin ? (
-                    <Link
-                      href="/admin/manage/bookmarks"
-                      className="rounded px-2 py-1.5 text-slate-700 hover:bg-slate-50"
-                    >
-                      全局书签管理
-                    </Link>
-                  ) : null}
-                  <Link
-                    href="/api/auth/signout"
-                    className="rounded px-2 py-1.5 text-rose-600 hover:bg-rose-50"
-                  >
-                    退出登录
-                  </Link>
-                </div>
-              </div>
-            </details>
+            <UserMenu email={session?.user?.email ?? "已登录用户"} isAdmin={isAdmin} userLabel={userLabel} />
           ) : (
             <>
               <Link
