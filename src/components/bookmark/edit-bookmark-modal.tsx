@@ -2,11 +2,20 @@
 
 import { useState, useTransition } from "react";
 
-type Props = {
-  action: (formData: FormData) => Promise<void>;
+type BookmarkRow = {
+  id: string;
+  title: string;
+  url: string;
+  description: string | null;
+  tags: Array<{ name: string }>;
 };
 
-export function CreateBookmarkModal({ action }: Props) {
+type Props = {
+  action: (formData: FormData) => Promise<void>;
+  bookmark: BookmarkRow;
+};
+
+export function EditBookmarkModal({ action, bookmark }: Props) {
   const [open, setOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
 
@@ -22,9 +31,9 @@ export function CreateBookmarkModal({ action }: Props) {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="rounded bg-slate-900 px-3 py-2 text-sm text-white hover:bg-slate-800"
+        className="rounded border border-slate-300 px-2 py-1 text-xs text-slate-700 hover:bg-slate-50"
       >
-        新增书签
+        编辑
       </button>
 
       {open ? (
@@ -38,7 +47,7 @@ export function CreateBookmarkModal({ action }: Props) {
 
           <div className="relative z-10 w-full max-w-2xl rounded border border-slate-200 bg-white shadow-xl">
             <div className="flex items-center justify-between border-b border-slate-200 px-4 py-3">
-              <h2 className="text-base font-semibold text-slate-900">新增书签</h2>
+              <h2 className="text-base font-semibold text-slate-900">编辑书签</h2>
               <button
                 type="button"
                 onClick={() => setOpen(false)}
@@ -49,28 +58,35 @@ export function CreateBookmarkModal({ action }: Props) {
             </div>
 
             <form action={submit} className="flex flex-col gap-2 p-4">
+              <input type="hidden" name="id" value={bookmark.id} />
+
               <input
                 name="title"
                 required
+                defaultValue={bookmark.title}
                 placeholder="书签标题"
                 className="rounded border border-slate-300 px-3 py-2 text-sm"
               />
               <input
                 name="url"
                 required
+                defaultValue={bookmark.url}
                 placeholder="https://example.com"
                 className="rounded border border-slate-300 px-3 py-2 text-sm"
               />
               <input
                 name="tags"
+                defaultValue={bookmark.tags.map((tag) => tag.name).join(", ")}
                 placeholder="标签（逗号分隔）"
                 className="rounded border border-slate-300 px-3 py-2 text-sm"
               />
               <input
                 name="description"
+                defaultValue={bookmark.description ?? ""}
                 placeholder="描述（可选）"
                 className="rounded border border-slate-300 px-3 py-2 text-sm"
               />
+
               <div className="mt-1 flex items-center justify-end gap-2">
                 <button
                   type="button"
@@ -84,7 +100,7 @@ export function CreateBookmarkModal({ action }: Props) {
                   disabled={isPending}
                   className="rounded bg-slate-900 px-3 py-2 text-sm text-white hover:bg-slate-800 disabled:opacity-60"
                 >
-                  {isPending ? "保存中..." : "保存"}
+                  {isPending ? "保存中..." : "保存修改"}
                 </button>
               </div>
             </form>

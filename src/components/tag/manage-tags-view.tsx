@@ -1,6 +1,7 @@
 import type { DataScope } from "@prisma/client";
 import { deleteTagAction, upsertTagAction } from "@/actions/tag.actions";
 import { CreateTagModal } from "@/components/tag/create-tag-modal";
+import { EditTagModal } from "@/components/tag/edit-tag-modal";
 import type { SessionUser } from "@/server/auth/session";
 import { tagService } from "@/server/services/tag.service";
 
@@ -39,15 +40,18 @@ export async function ManageTagsView({ scope, user }: Props) {
                 <td className="px-3 py-2 text-slate-600">{tag.description ?? "-"}</td>
                 <td className="px-3 py-2 text-slate-600">{tag.bookmarkCount}</td>
                 <td className="px-3 py-2">
-                  <form action={deleteTagAction.bind(null, scope)}>
-                    <input type="hidden" name="id" value={tag.id} />
-                    <button
-                      type="submit"
-                      className="rounded border border-rose-300 px-2 py-1 text-xs text-rose-600 hover:bg-rose-50"
-                    >
-                      删除
-                    </button>
-                  </form>
+                  <div className="flex items-center gap-2">
+                    <EditTagModal action={upsertTagAction.bind(null, scope)} tag={tag} />
+                    <form action={deleteTagAction.bind(null, scope)}>
+                      <input type="hidden" name="id" value={tag.id} />
+                      <button
+                        type="submit"
+                        className="rounded border border-rose-300 px-2 py-1 text-xs text-rose-600 hover:bg-rose-50"
+                      >
+                        删除
+                      </button>
+                    </form>
+                  </div>
                 </td>
               </tr>
             ))}

@@ -21,24 +21,25 @@ type ListInput = {
 };
 
 function buildOrderBy(
-  sort: NonNullable<ListInput["sort"]>,
+  input: Pick<ListInput, "sort" | "includeHidden">,
 ): Prisma.BookmarkOrderByWithRelationInput[] {
-  switch (sort) {
+  switch (input.sort ?? "default") {
     case "created_asc":
-      return [{ createdAt: "asc" }];
+      return [{ createdAt: "asc" }, { id: "asc" }];
     case "created_desc":
-      return [{ createdAt: "desc" }];
+      return [{ createdAt: "desc" }, { id: "desc" }];
     case "updated_desc":
-      return [{ updatedAt: "desc" }];
+      return [{ updatedAt: "desc" }, { id: "desc" }];
     case "visited_desc":
-      return [{ lastVisitedAt: "desc" }, { createdAt: "desc" }];
+      return [{ lastVisitedAt: "desc" }, { createdAt: "desc" }, { id: "desc" }];
     case "title_asc":
-      return [{ title: "asc" }];
+      return [{ title: "asc" }, { id: "asc" }];
     case "title_desc":
-      return [{ title: "desc" }];
+      return [{ title: "desc" }, { id: "desc" }];
     case "default":
     default:
-      return [{ isPinned: "desc" }, { createdAt: "desc" }];
+      // 默认统一按创建时间倒序，附加 id 作为稳定排序键。
+      return [{ createdAt: "desc" }, { id: "desc" }];
   }
 }
 
@@ -106,7 +107,7 @@ export const bookmarkRepo = {
       prisma.bookmark.count({ where }),
       prisma.bookmark.findMany({
         where,
-        orderBy: buildOrderBy(input.sort ?? "default"),
+        orderBy: buildOrderBy(input),
         skip: (input.page - 1) * input.pageSize,
         take: input.pageSize,
         include: {

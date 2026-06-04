@@ -13,6 +13,17 @@ function splitTagNames(raw: string): string[] {
     .filter(Boolean);
 }
 
+function readOptionalString(formData: FormData, key: string): string | undefined {
+  if (!formData.has(key)) return undefined;
+  return String(formData.get(key) ?? "");
+}
+
+function readOptionalBoolean(formData: FormData, key: string): boolean | undefined {
+  if (!formData.has(key)) return undefined;
+  const raw = String(formData.get(key) ?? "").trim().toLowerCase();
+  return raw === "on" || raw === "true" || raw === "1";
+}
+
 function revalidateBookmarkViews(scope: DataScope) {
   if (scope === "APP") {
     revalidatePath("/bookmarks");
@@ -41,20 +52,25 @@ export async function createBookmarkAction(scope: DataScope, formData: FormData)
 export async function updateBookmarkAction(scope: DataScope, formData: FormData) {
   const user = await getSessionUser();
   const id = String(formData.get("id") ?? "");
-  await bookmarkService.update(
-    {
-      id,
-      scope,
-      title: String(formData.get("title") ?? ""),
-      url: String(formData.get("url") ?? ""),
-      description: String(formData.get("description") ?? ""),
-      isFavorite: formData.get("isFavorite") === "on",
-      isPinned: formData.get("isPinned") === "on",
-      isVisible: formData.get("isVisible") === "on",
-      tagNames: splitTagNames(String(formData.get("tags") ?? "")),
-    },
-    user,
-  );
+  const title = readOptionalString(formData, "title");
+  const url = readOptionalString(formData, "url");
+  const description = readOptionalString(formData, "description");
+  const tags = readOptionalString(formData, "tags");
+  const isFavorite = readOptionalBoolean(formData, "isFavorite");
+  const isPinned = readOptionalBoolean(formData, "isPinned");
+  const isVisible = readOptionalBoolean(formData, "isVisible");
+
+  await bookmarkService.update({
+    id,
+    scope,
+    ...(title !== undefined ? { title } : {}),
+    ...(url !== undefined ? { url } : {}),
+    ...(description !== undefined ? { description } : {}),
+    ...(tags !== undefined ? { tagNames: splitTagNames(tags) } : {}),
+    ...(isFavorite !== undefined ? { isFavorite } : {}),
+    ...(isPinned !== undefined ? { isPinned } : {}),
+    ...(isVisible !== undefined ? { isVisible } : {}),
+  }, user);
   revalidateBookmarkViews(scope);
 }
 

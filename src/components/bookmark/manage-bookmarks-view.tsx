@@ -1,6 +1,11 @@
 import type { DataScope } from "@prisma/client";
-import { createBookmarkAction, deleteBookmarkAction } from "@/actions/bookmark.actions";
+import {
+  createBookmarkAction,
+  deleteBookmarkAction,
+  updateBookmarkAction,
+} from "@/actions/bookmark.actions";
 import { CreateBookmarkModal } from "@/components/bookmark/create-bookmark-modal";
+import { EditBookmarkModal } from "@/components/bookmark/edit-bookmark-modal";
 import type { SessionUser } from "@/server/auth/session";
 import { bookmarkService } from "@/server/services/bookmark.service";
 
@@ -113,18 +118,66 @@ export async function ManageBookmarksView({ scope, user, searchParams }: Props) 
                 <td className="px-3 py-2 text-xs text-slate-600">
                   <div>收藏：{bookmark.isFavorite ? "是" : "否"}</div>
                   <div>置顶：{bookmark.isPinned ? "是" : "否"}</div>
-                  {scope === "APP" ? <div>展示：{bookmark.isVisible ? "是" : "否"}</div> : null}
+                  <div>可见：{bookmark.isVisible ? "是" : "否"}</div>
                 </td>
                 <td className="px-3 py-2">
-                  <form action={deleteBookmarkAction.bind(null, scope)}>
-                    <input type="hidden" name="id" value={bookmark.id} />
-                    <button
-                      type="submit"
-                      className="rounded border border-rose-300 px-2 py-1 text-xs text-rose-600 hover:bg-rose-50"
-                    >
-                      删除
-                    </button>
-                  </form>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <form action={updateBookmarkAction.bind(null, scope)}>
+                      <input type="hidden" name="id" value={bookmark.id} />
+                      <input
+                        type="hidden"
+                        name="isFavorite"
+                        value={bookmark.isFavorite ? "false" : "true"}
+                      />
+                      <button
+                        type="submit"
+                        className="rounded border border-slate-300 px-2 py-1 text-xs text-slate-700 hover:bg-slate-50"
+                      >
+                        {bookmark.isFavorite ? "取消收藏" : "收藏"}
+                      </button>
+                    </form>
+                    <form action={updateBookmarkAction.bind(null, scope)}>
+                      <input type="hidden" name="id" value={bookmark.id} />
+                      <input
+                        type="hidden"
+                        name="isPinned"
+                        value={bookmark.isPinned ? "false" : "true"}
+                      />
+                      <button
+                        type="submit"
+                        className="rounded border border-slate-300 px-2 py-1 text-xs text-slate-700 hover:bg-slate-50"
+                      >
+                        {bookmark.isPinned ? "取消置顶" : "置顶"}
+                      </button>
+                    </form>
+                    <form action={updateBookmarkAction.bind(null, scope)}>
+                      <input type="hidden" name="id" value={bookmark.id} />
+                      <input
+                        type="hidden"
+                        name="isVisible"
+                        value={bookmark.isVisible ? "false" : "true"}
+                      />
+                      <button
+                        type="submit"
+                        className="rounded border border-slate-300 px-2 py-1 text-xs text-slate-700 hover:bg-slate-50"
+                      >
+                        {bookmark.isVisible ? "隐藏" : "设为可见"}
+                      </button>
+                    </form>
+                    <EditBookmarkModal
+                      action={updateBookmarkAction.bind(null, scope)}
+                      bookmark={bookmark}
+                    />
+                    <form action={deleteBookmarkAction.bind(null, scope)}>
+                      <input type="hidden" name="id" value={bookmark.id} />
+                      <button
+                        type="submit"
+                        className="rounded border border-rose-300 px-2 py-1 text-xs text-rose-600 hover:bg-rose-50"
+                      >
+                        删除
+                      </button>
+                    </form>
+                  </div>
                 </td>
               </tr>
             ))}

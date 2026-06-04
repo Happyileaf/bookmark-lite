@@ -2,11 +2,19 @@
 
 import { useState, useTransition } from "react";
 
-type Props = {
-  action: (formData: FormData) => Promise<void>;
+type TagRow = {
+  id: string;
+  name: string;
+  color: string | null;
+  description: string | null;
 };
 
-export function CreateBookmarkModal({ action }: Props) {
+type Props = {
+  action: (formData: FormData) => Promise<void>;
+  tag: TagRow;
+};
+
+export function EditTagModal({ action, tag }: Props) {
   const [open, setOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
 
@@ -22,9 +30,9 @@ export function CreateBookmarkModal({ action }: Props) {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="rounded bg-slate-900 px-3 py-2 text-sm text-white hover:bg-slate-800"
+        className="rounded border border-slate-300 px-2 py-1 text-xs text-slate-700 hover:bg-slate-50"
       >
-        新增书签
+        编辑
       </button>
 
       {open ? (
@@ -36,9 +44,9 @@ export function CreateBookmarkModal({ action }: Props) {
             onClick={() => setOpen(false)}
           />
 
-          <div className="relative z-10 w-full max-w-2xl rounded border border-slate-200 bg-white shadow-xl">
+          <div className="relative z-10 w-full max-w-xl rounded border border-slate-200 bg-white shadow-xl">
             <div className="flex items-center justify-between border-b border-slate-200 px-4 py-3">
-              <h2 className="text-base font-semibold text-slate-900">新增书签</h2>
+              <h2 className="text-base font-semibold text-slate-900">编辑标签</h2>
               <button
                 type="button"
                 onClick={() => setOpen(false)}
@@ -48,27 +56,25 @@ export function CreateBookmarkModal({ action }: Props) {
               </button>
             </div>
 
-            <form action={submit} className="flex flex-col gap-2 p-4">
+            <form action={submit} className="grid gap-2 p-4">
+              <input type="hidden" name="id" value={tag.id} />
               <input
-                name="title"
+                name="name"
                 required
-                placeholder="书签标题"
+                defaultValue={tag.name}
+                placeholder="标签名称"
                 className="rounded border border-slate-300 px-3 py-2 text-sm"
               />
               <input
-                name="url"
-                required
-                placeholder="https://example.com"
-                className="rounded border border-slate-300 px-3 py-2 text-sm"
-              />
-              <input
-                name="tags"
-                placeholder="标签（逗号分隔）"
+                name="color"
+                defaultValue={tag.color ?? ""}
+                placeholder="#94a3b8"
                 className="rounded border border-slate-300 px-3 py-2 text-sm"
               />
               <input
                 name="description"
-                placeholder="描述（可选）"
+                defaultValue={tag.description ?? ""}
+                placeholder="标签描述（可选）"
                 className="rounded border border-slate-300 px-3 py-2 text-sm"
               />
               <div className="mt-1 flex items-center justify-end gap-2">
@@ -84,7 +90,7 @@ export function CreateBookmarkModal({ action }: Props) {
                   disabled={isPending}
                   className="rounded bg-slate-900 px-3 py-2 text-sm text-white hover:bg-slate-800 disabled:opacity-60"
                 >
-                  {isPending ? "保存中..." : "保存"}
+                  {isPending ? "保存中..." : "保存修改"}
                 </button>
               </div>
             </form>
