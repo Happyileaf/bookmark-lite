@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { auth } from "@/server/auth/auth";
 import { UserMenu } from "@/components/layout/user-menu";
@@ -15,8 +16,16 @@ export async function AppHeader() {
     <header className="relative z-50 border-b border-slate-200 bg-white">
       <div className="grid w-full grid-cols-[1fr_auto] items-center gap-4 px-4 py-3">
         <div className="min-w-0">
-          <Link href="/bookmarks" className="truncate text-base font-semibold text-slate-900">
-            Bookmark Lite
+          <Link href="/bookmarks" className="inline-flex max-w-full items-center gap-2 text-base font-semibold text-slate-900">
+            <Image
+              src="/logo_assets/logo_export.png"
+              alt="Bookmark Lite Logo"
+              width={24}
+              height={24}
+              className="h-6 w-6 shrink-0 rounded-sm"
+              priority
+            />
+            <span className="truncate">Bookmark Lite</span>
           </Link>
         </div>
 
