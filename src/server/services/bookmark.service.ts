@@ -18,6 +18,7 @@ type ListArgs = {
   scope: DataScope;
   user: SessionUser | null;
   query?: Partial<{
+    includeHidden: boolean;
     q: string;
     tagId: string;
     view: "all" | "favorites" | "untagged" | "recent_added" | "recent_visited" | "pinned";
@@ -84,6 +85,11 @@ export const bookmarkService = {
   async list(args: ListArgs) {
     assertCanReadScope(args.scope, args.user);
     const ownerUserId = args.scope === "USER" ? args.user?.id ?? null : null;
+    const canIncludeHidden =
+      args.query?.includeHidden === true &&
+      (args.scope === "USER"
+        ? !!args.user
+        : args.user?.role === "super_admin");
 
     const parsed = bookmarkQuerySchema.parse({
       ...args.query,
@@ -91,6 +97,7 @@ export const bookmarkService = {
     const result = await bookmarkRepo.list({
       scope: args.scope,
       ownerUserId,
+      includeHidden: canIncludeHidden,
       q: parsed.q,
       tagId: parsed.tagId,
       view: parsed.view,

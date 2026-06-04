@@ -24,6 +24,7 @@ export async function ManageBookmarksView({ scope, user, searchParams }: Props) 
     scope,
     user,
     query: {
+      includeHidden: true,
       q,
       sort: (sort as
         | "default"

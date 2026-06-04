@@ -10,7 +10,8 @@
     "lint": "eslint .",
     "postinstall": "prisma generate",
     "prisma:generate": "prisma generate",
-    "prisma:migrate": "prisma migrate dev"
+    "prisma:migrate": "prisma migrate dev",
+    "seed:admin-user-data": "prisma db execute --file scripts/seed-admin-user-data.sql --schema prisma/schema.prisma"
   },
   "dependencies": {
     "@prisma/client": "^6.19.0",

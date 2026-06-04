@@ -4,6 +4,7 @@ import type { DataScope, Prisma } from "@prisma/client";
 type ListInput = {
   scope: DataScope;
   ownerUserId: string | null;
+  includeHidden?: boolean;
   q?: string;
   tagId?: string;
   view?: "all" | "favorites" | "untagged" | "recent_added" | "recent_visited" | "pinned";
@@ -44,7 +45,7 @@ function buildOrderBy(
 function buildWhere(input: ListInput): Prisma.BookmarkWhereInput {
   const scopeWhere: Prisma.BookmarkWhereInput =
     input.scope === "APP"
-      ? { scope: "APP", ownerUserId: null, isVisible: true }
+      ? { scope: "APP", ownerUserId: null }
       : { scope: "USER", ownerUserId: input.ownerUserId };
 
   const q = input.q?.trim();
@@ -88,6 +89,9 @@ function buildWhere(input: ListInput): Prisma.BookmarkWhereInput {
           : undefined;
 
   const clauses: Prisma.BookmarkWhereInput[] = [scopeWhere];
+  if (!input.includeHidden) {
+    clauses.push({ isVisible: true });
+  }
   if (keywordWhere) clauses.push(keywordWhere);
   if (tagWhere) clauses.push(tagWhere);
   if (viewWhere) clauses.push(viewWhere);
