@@ -22,8 +22,7 @@ export async function ManageTrashView({ scope, user }: Props) {
 
   return (
     <section className="space-y-4">
-      <header className="flex h-[50px] items-center justify-between">
-        <h1 className="text-xl leading-none font-semibold text-slate-900">回收站</h1>
+      <div className="flex h-[50px] items-center justify-end">
         <form action={clearTrashAction.bind(null, scope)}>
           <button
             type="submit"
@@ -32,7 +31,7 @@ export async function ManageTrashView({ scope, user }: Props) {
             清空回收站
           </button>
         </form>
-      </header>
+      </div>
 
       <div className="overflow-x-auto rounded border border-slate-200 bg-white">
         <table className="w-full border-collapse text-sm">

@@ -15,13 +15,10 @@ export async function ManageTagsView({ scope, user }: Props) {
 
   return (
     <section className="space-y-4">
-      <header className="flex h-[50px] items-center justify-between">
-        <h1 className="text-xl leading-none font-semibold text-slate-900">标签管理</h1>
-        <div className="flex items-center gap-2">
-          <span className="text-xs text-slate-500">共 {tags.length} 个标签</span>
-          <CreateTagModal action={upsertTagAction.bind(null, scope)} />
-        </div>
-      </header>
+      <div className="flex h-[50px] items-center justify-end gap-2">
+        <span className="text-xs text-slate-500">共 {tags.length} 个标签</span>
+        <CreateTagModal action={upsertTagAction.bind(null, scope)} />
+      </div>
 
       <div className="overflow-x-auto rounded border border-slate-200 bg-white">
         <table className="w-full border-collapse text-sm">

@@ -13,10 +13,6 @@ export async function SettingsView({ scope, user }: Props) {
 
   return (
     <section className="space-y-4">
-      <header className="flex h-[50px] items-center">
-        <h1 className="text-xl leading-none font-semibold text-slate-900">设置</h1>
-      </header>
-
       <form
         action={updateSettingsAction.bind(null, scope)}
         className="grid gap-4 rounded border border-slate-200 bg-white p-4"

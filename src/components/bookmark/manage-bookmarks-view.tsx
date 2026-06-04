@@ -45,13 +45,10 @@ export async function ManageBookmarksView({ scope, user, searchParams }: Props) 
 
   return (
     <section className="space-y-4">
-      <header className="flex h-[50px] items-center justify-between">
-        <h1 className="text-xl leading-none font-semibold text-slate-900">书签管理</h1>
-        <div className="flex items-center gap-2">
-          <span className="text-xs text-slate-500">共 {listResult.pagination.total} 条</span>
-          <CreateBookmarkModal action={createBookmarkAction.bind(null, scope)} />
-        </div>
-      </header>
+      <div className="flex h-[50px] items-center justify-end gap-2">
+        <span className="text-xs text-slate-500">共 {listResult.pagination.total} 条</span>
+        <CreateBookmarkModal action={createBookmarkAction.bind(null, scope)} />
+      </div>
 
       <form className="flex flex-wrap items-center gap-2 rounded border border-slate-200 bg-white p-3">
         <input
