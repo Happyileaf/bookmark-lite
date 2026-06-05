@@ -52,7 +52,7 @@ export const exportService = {
           },
         },
       },
-      orderBy: [{ isPinned: "desc" }, { createdAt: "desc" }],
+      orderBy: [{ createdAt: "desc" }],
     });
   },
 

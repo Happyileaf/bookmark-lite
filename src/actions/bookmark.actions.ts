@@ -57,7 +57,6 @@ export async function updateBookmarkAction(scope: DataScope, formData: FormData)
   const description = readOptionalString(formData, "description");
   const tags = readOptionalString(formData, "tags");
   const isFavorite = readOptionalBoolean(formData, "isFavorite");
-  const isPinned = readOptionalBoolean(formData, "isPinned");
   const isVisible = readOptionalBoolean(formData, "isVisible");
 
   await bookmarkService.update({
@@ -68,7 +67,6 @@ export async function updateBookmarkAction(scope: DataScope, formData: FormData)
     ...(description !== undefined ? { description } : {}),
     ...(tags !== undefined ? { tagNames: splitTagNames(tags) } : {}),
     ...(isFavorite !== undefined ? { isFavorite } : {}),
-    ...(isPinned !== undefined ? { isPinned } : {}),
     ...(isVisible !== undefined ? { isVisible } : {}),
   }, user);
   revalidateBookmarkViews(scope);

@@ -27,7 +27,6 @@ export const bookmarkUpdateSchema = z.object({
     .optional()
     .or(z.literal("")),
   isFavorite: z.boolean().optional(),
-  isPinned: z.boolean().optional(),
   isVisible: z.boolean().optional(),
   tagNames: z.array(z.string().trim().min(1).max(80)).optional(),
 });
@@ -42,7 +41,6 @@ export const bookmarkQuerySchema = z.object({
       "untagged",
       "recent_added",
       "recent_visited",
-      "pinned",
     ])
     .default("all"),
   sort: z

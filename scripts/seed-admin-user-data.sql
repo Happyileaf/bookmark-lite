@@ -71,7 +71,6 @@ bookmark_seed AS (
         'https://sre.google/workbook/',
         'Operational incident and reliability runbook.',
         true,
-        true,
         true
       ),
       (
@@ -80,7 +79,6 @@ bookmark_seed AS (
         'https://cheatsheetseries.owasp.org/',
         'Quick security implementation checklist.',
         true,
-        false,
         true
       ),
       (
@@ -88,7 +86,6 @@ bookmark_seed AS (
         'https://www.postgresql.org/docs/current/performance-tips.html',
         'https://www.postgresql.org/docs/current/performance-tips.html',
         'Database tuning reference.',
-        false,
         false,
         true
       ),
@@ -98,7 +95,6 @@ bookmark_seed AS (
         'https://example.com/internal/release-plan',
         'Internal checklist for next release window.',
         false,
-        true,
         false
       ),
       (
@@ -106,7 +102,6 @@ bookmark_seed AS (
         'https://example.com/private/notes',
         'https://example.com/private/notes',
         'Personal notes, hidden from display view.',
-        false,
         false,
         false
       ),
@@ -116,7 +111,6 @@ bookmark_seed AS (
         'https://nextjs.org/docs',
         'Framework documentation for daily lookup.',
         false,
-        false,
         true
       ),
       (
@@ -124,7 +118,6 @@ bookmark_seed AS (
         'https://www.prisma.io/docs',
         'https://www.prisma.io/docs',
         'ORM and migration reference.',
-        false,
         false,
         true
       ),
@@ -134,10 +127,9 @@ bookmark_seed AS (
         'https://authjs.dev/getting-started',
         'Authentication guide.',
         false,
-        false,
         true
       )
-  ) AS b(title, url, normalized_url, description, is_favorite, is_pinned, is_visible)
+  ) AS b(title, url, normalized_url, description, is_favorite, is_visible)
 )
 INSERT INTO "bookmarks" (
   "id",
@@ -148,7 +140,6 @@ INSERT INTO "bookmarks" (
   "normalized_url",
   "description",
   "is_favorite",
-  "is_pinned",
   "is_visible",
   "scope_owner_key",
   "created_at",
@@ -169,7 +160,6 @@ SELECT
   bs.normalized_url,
   bs.description,
   bs.is_favorite,
-  bs.is_pinned,
   bs.is_visible,
   au.user_id,
   NOW(),
@@ -181,7 +171,6 @@ DO UPDATE SET
   "title" = EXCLUDED."title",
   "description" = EXCLUDED."description",
   "is_favorite" = EXCLUDED."is_favorite",
-  "is_pinned" = EXCLUDED."is_pinned",
   "is_visible" = EXCLUDED."is_visible",
   "updated_at" = NOW();
 

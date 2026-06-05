@@ -7,7 +7,7 @@ type ListInput = {
   includeHidden?: boolean;
   q?: string;
   tagId?: string;
-  view?: "all" | "favorites" | "untagged" | "recent_added" | "recent_visited" | "pinned";
+  view?: "all" | "favorites" | "untagged" | "recent_added" | "recent_visited";
   sort?:
     | "default"
     | "created_desc"
@@ -85,9 +85,7 @@ function buildWhere(input: ListInput): Prisma.BookmarkWhereInput {
       ? { isFavorite: true }
       : view === "untagged"
         ? { bookmarkTags: { none: {} } }
-        : view === "pinned"
-          ? { isPinned: true }
-          : undefined;
+        : undefined;
 
   const clauses: Prisma.BookmarkWhereInput[] = [scopeWhere];
   if (!input.includeHidden) {

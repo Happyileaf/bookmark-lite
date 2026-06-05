@@ -114,7 +114,6 @@ export async function ManageBookmarksView({ scope, user, searchParams }: Props) 
                 </td>
                 <td className="px-3 py-2 text-xs text-slate-600">
                   <div>收藏：{bookmark.isFavorite ? "是" : "否"}</div>
-                  <div>置顶：{bookmark.isPinned ? "是" : "否"}</div>
                   <div>可见：{bookmark.isVisible ? "是" : "否"}</div>
                 </td>
                 <td className="px-3 py-2">
@@ -131,20 +130,6 @@ export async function ManageBookmarksView({ scope, user, searchParams }: Props) 
                         className="rounded border border-slate-300 px-2 py-1 text-xs text-slate-700 hover:bg-slate-50"
                       >
                         {bookmark.isFavorite ? "取消收藏" : "收藏"}
-                      </button>
-                    </form>
-                    <form action={updateBookmarkAction.bind(null, scope)}>
-                      <input type="hidden" name="id" value={bookmark.id} />
-                      <input
-                        type="hidden"
-                        name="isPinned"
-                        value={bookmark.isPinned ? "false" : "true"}
-                      />
-                      <button
-                        type="submit"
-                        className="rounded border border-slate-300 px-2 py-1 text-xs text-slate-700 hover:bg-slate-50"
-                      >
-                        {bookmark.isPinned ? "取消置顶" : "置顶"}
                       </button>
                     </form>
                     <form action={updateBookmarkAction.bind(null, scope)}>

@@ -16,7 +16,6 @@ type TrashBookmarkPayload = {
     normalizedUrl: string;
     description?: string | null;
     isFavorite?: boolean;
-    isPinned?: boolean;
     isVisible?: boolean;
     lastVisitedAt?: string | Date | null;
   };
@@ -77,7 +76,6 @@ export const trashService = {
             normalizedUrl: payload.bookmark.normalizedUrl,
             description: payload.bookmark.description ?? null,
             isFavorite: payload.bookmark.isFavorite ?? false,
-            isPinned: payload.bookmark.isPinned ?? false,
             isVisible: payload.bookmark.isVisible ?? true,
             lastVisitedAt: payload.bookmark.lastVisitedAt
               ? new Date(payload.bookmark.lastVisitedAt)

@@ -21,7 +21,7 @@ type ListArgs = {
     includeHidden: boolean;
     q: string;
     tagId: string;
-    view: "all" | "favorites" | "untagged" | "recent_added" | "recent_visited" | "pinned";
+    view: "all" | "favorites" | "untagged" | "recent_added" | "recent_visited";
     sort:
       | "default"
       | "created_desc"
@@ -237,9 +237,6 @@ export const bookmarkService = {
     if (typeof parsed.data.isFavorite === "boolean") {
       data.isFavorite = parsed.data.isFavorite;
     }
-    if (typeof parsed.data.isPinned === "boolean") {
-      data.isPinned = parsed.data.isPinned;
-    }
     if (typeof parsed.data.isVisible === "boolean") {
       data.isVisible = parsed.data.isVisible;
     }
@@ -338,7 +335,6 @@ export const bookmarkService = {
                 normalizedUrl: bookmark.normalizedUrl,
                 description: bookmark.description,
                 isFavorite: bookmark.isFavorite,
-                isPinned: bookmark.isPinned,
                 isVisible: bookmark.isVisible,
                 lastVisitedAt: bookmark.lastVisitedAt,
               },
@@ -417,7 +413,6 @@ export const bookmarkService = {
           normalizedUrl: appBookmark.normalizedUrl,
           description: appBookmark.description,
           isFavorite: false,
-          isPinned: false,
           isVisible: true,
         },
       });

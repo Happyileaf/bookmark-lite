@@ -55,7 +55,6 @@ model Bookmark {
   normalizedUrl String        @map("normalized_url")
   description   String?
   isFavorite    Boolean       @default(false) @map("is_favorite")
-  isPinned      Boolean       @default(false) @map("is_pinned")
   isVisible     Boolean       @default(true) @map("is_visible")
   scopeOwnerKey String        @map("scope_owner_key") @db.VarChar(64)
   lastVisitedAt DateTime?     @map("last_visited_at") @db.Timestamptz(6)
@@ -67,7 +66,6 @@ model Bookmark {
   @@index([scope, ownerUserId, updatedAt(sort: Desc)], map: "idx_bookmarks_scope_owner_updated")
   @@index([scope, ownerUserId, lastVisitedAt(sort: Desc)], map: "idx_bookmarks_scope_owner_visited")
   @@index([scope, ownerUserId, isFavorite, createdAt(sort: Desc)], map: "idx_bookmarks_scope_owner_favorite")
-  @@index([scope, ownerUserId, isPinned, createdAt(sort: Desc)], map: "idx_bookmarks_scope_owner_pinned")
   @@index([isVisible, createdAt(sort: Desc)], map: "idx_bookmarks_visible_app")
   @@unique([scopeOwnerKey, normalizedUrl], map: "uq_bookmarks_scope_owner_normurl")
   @@map("bookmarks")
