@@ -111,11 +111,12 @@ export async function DisplayBookmarksView({ scope, user, searchParams }: Props)
   }
 
   let tags: Awaited<ReturnType<typeof tagService.list>> = [];
+  let userTagsForSaving: Awaited<ReturnType<typeof tagService.list>> = [];
   let listResult: Awaited<ReturnType<typeof bookmarkService.list>>;
   let dbUnavailableReason: string | null = null;
 
   try {
-    [tags, listResult] = await Promise.all([
+    [tags, listResult, userTagsForSaving] = await Promise.all([
       tagService.list(scope, user),
       bookmarkService.list({
         scope,
@@ -126,6 +127,7 @@ export async function DisplayBookmarksView({ scope, user, searchParams }: Props)
           view,
         },
       }),
+      scope === "APP" && user ? tagService.list("USER", user) : Promise.resolve([]),
     ]);
   } catch (error) {
     dbUnavailableReason = readDbUnavailableReason(error);
@@ -250,6 +252,7 @@ export async function DisplayBookmarksView({ scope, user, searchParams }: Props)
                     <SaveAppBookmarkModal
                       action={saveAppBookmarkToUserAction}
                       bookmarkId={bookmark.id}
+                      tags={userTagsForSaving}
                     />
                   ) : null}
                 </div>

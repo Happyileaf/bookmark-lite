@@ -3,14 +3,20 @@
 import { BookmarkPlus } from "lucide-react";
 import { useState, useTransition } from "react";
 import { createPortal } from "react-dom";
+import { TagSelectDropdown } from "@/components/tag/tag-select-dropdown";
 
 type Props = {
   action: (formData: FormData) => Promise<void>;
   bookmarkId: string;
   triggerClassName?: string;
+  tags: Array<{
+    id: string;
+    name: string;
+    color: string | null;
+  }>;
 };
 
-export function SaveAppBookmarkModal({ action, bookmarkId, triggerClassName }: Props) {
+export function SaveAppBookmarkModal({ action, bookmarkId, triggerClassName, tags }: Props) {
   const [open, setOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
 
@@ -46,10 +52,10 @@ export function SaveAppBookmarkModal({ action, bookmarkId, triggerClassName }: P
 
               <form action={submit} className="space-y-3 p-4">
                 <input type="hidden" name="bookmarkId" value={bookmarkId} />
-                <input
-                  name="tags"
-                  placeholder="个人标签（逗号分隔）"
-                  className="w-full rounded border border-slate-300 px-3 py-2 text-sm"
+                <TagSelectDropdown
+                  options={tags}
+                  placeholder="选择个人标签（可选）"
+                  emptyText="你还没有个人标签，可先到标签管理里创建"
                 />
                 <div className="flex items-center justify-end gap-2">
                   <button

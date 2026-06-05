@@ -1,12 +1,18 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { TagSelectDropdown } from "@/components/tag/tag-select-dropdown";
 
 type Props = {
   action: (formData: FormData) => Promise<void>;
+  tags: Array<{
+    id: string;
+    name: string;
+    color: string | null;
+  }>;
 };
 
-export function CreateBookmarkModal({ action }: Props) {
+export function CreateBookmarkModal({ action, tags }: Props) {
   const [open, setOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
 
@@ -61,11 +67,7 @@ export function CreateBookmarkModal({ action }: Props) {
                 placeholder="https://example.com"
                 className="rounded border border-slate-300 px-3 py-2 text-sm"
               />
-              <input
-                name="tags"
-                placeholder="标签（逗号分隔）"
-                className="rounded border border-slate-300 px-3 py-2 text-sm"
-              />
+              <TagSelectDropdown options={tags} placeholder="选择一个或多个标签" />
               <input
                 name="description"
                 placeholder="描述（可选）"

@@ -8,6 +8,7 @@ import { CreateBookmarkModal } from "@/components/bookmark/create-bookmark-modal
 import { EditBookmarkModal } from "@/components/bookmark/edit-bookmark-modal";
 import type { SessionUser } from "@/server/auth/session";
 import { bookmarkService } from "@/server/services/bookmark.service";
+import { tagService } from "@/server/services/tag.service";
 
 type SearchParams = Record<string, string | string[] | undefined>;
 
@@ -25,29 +26,32 @@ function readParam(value: string | string[] | undefined): string | undefined {
 export async function ManageBookmarksView({ scope, user, searchParams }: Props) {
   const q = readParam(searchParams.q);
   const sort = readParam(searchParams.sort);
-  const listResult = await bookmarkService.list({
-    scope,
-    user,
-    query: {
-      includeHidden: true,
-      q,
-      sort: (sort as
-        | "default"
-        | "created_desc"
-        | "created_asc"
-        | "updated_desc"
-        | "visited_desc"
-        | "title_asc"
-        | "title_desc"
-        | undefined) ?? "default",
-    },
-  });
+  const [listResult, tags] = await Promise.all([
+    bookmarkService.list({
+      scope,
+      user,
+      query: {
+        includeHidden: true,
+        q,
+        sort: (sort as
+          | "default"
+          | "created_desc"
+          | "created_asc"
+          | "updated_desc"
+          | "visited_desc"
+          | "title_asc"
+          | "title_desc"
+          | undefined) ?? "default",
+      },
+    }),
+    tagService.list(scope, user),
+  ]);
 
   return (
     <section className="space-y-4">
       <div className="flex h-[50px] items-center justify-end gap-2">
         <span className="text-xs text-slate-500">共 {listResult.pagination.total} 条</span>
-        <CreateBookmarkModal action={createBookmarkAction.bind(null, scope)} />
+        <CreateBookmarkModal action={createBookmarkAction.bind(null, scope)} tags={tags} />
       </div>
 
       <form className="flex flex-wrap items-center gap-2 rounded border border-slate-200 bg-white p-3">
@@ -149,6 +153,7 @@ export async function ManageBookmarksView({ scope, user, searchParams }: Props) 
                     <EditBookmarkModal
                       action={updateBookmarkAction.bind(null, scope)}
                       bookmark={bookmark}
+                      tags={tags}
                     />
                     <form action={deleteBookmarkAction.bind(null, scope)}>
                       <input type="hidden" name="id" value={bookmark.id} />
