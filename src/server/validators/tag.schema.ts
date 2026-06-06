@@ -8,3 +8,8 @@ export const tagUpsertSchema = z.object({
   color: z.string().trim().max(20).optional().or(z.literal("")),
   description: z.string().trim().max(500).optional().or(z.literal("")),
 });
+
+export const tagQuerySchema = z.object({
+  page: z.coerce.number().int().min(1).default(1),
+  pageSize: z.coerce.number().int().min(1).max(100).default(30),
+});

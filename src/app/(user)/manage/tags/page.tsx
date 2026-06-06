@@ -4,11 +4,15 @@ import { requireSessionUser } from "@/server/auth/session";
 
 export const dynamic = "force-dynamic";
 
-export default async function UserManageTagsPage() {
-  const user = await requireSessionUser();
+type PageProps = {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+};
+
+export default async function UserManageTagsPage({ searchParams }: PageProps) {
+  const [query, user] = await Promise.all([searchParams, requireSessionUser()]);
   return (
     <ManageSceneShell scope="USER" current="tags">
-      <ManageTagsView scope="USER" user={user} />
+      <ManageTagsView scope="USER" user={user} searchParams={query} />
     </ManageSceneShell>
   );
 }

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { DataScope } from "@prisma/client";
 import { Filter, Search } from "lucide-react";
+import { DEFAULT_PAGE_SIZE } from "@/lib/constants";
 import {
   createBookmarkAction,
   deleteBookmarkAction,
@@ -25,9 +26,19 @@ function readParam(value: string | string[] | undefined): string | undefined {
   return value;
 }
 
+function readPage(value: string | string[] | undefined): number {
+  const raw = readParam(value);
+  const parsed = Number.parseInt(raw ?? "", 10);
+  if (!Number.isFinite(parsed) || parsed < 1) {
+    return 1;
+  }
+  return parsed;
+}
+
 export async function ManageBookmarksView({ scope, user, searchParams }: Props) {
   const q = readParam(searchParams.q);
   const sort = readParam(searchParams.sort);
+  const page = readPage(searchParams.page);
   const currentSort = sort ?? "default";
   const listPath = scope === "APP" ? "/admin/manage/bookmarks" : "/manage/bookmarks";
   const hasFilters = Boolean(q) || currentSort !== "default";
@@ -47,10 +58,22 @@ export async function ManageBookmarksView({ scope, user, searchParams }: Props) 
           | "title_asc"
           | "title_desc"
           | undefined) ?? "default",
+        page,
+        pageSize: DEFAULT_PAGE_SIZE,
       },
     }),
     tagService.list(scope, user),
   ]);
+  const safePage = Math.min(listResult.pagination.page, listResult.pagination.totalPages);
+
+  const buildPageHref = (targetPage: number) => {
+    const params = new URLSearchParams();
+    if (q) params.set("q", q);
+    if (currentSort !== "default") params.set("sort", currentSort);
+    if (targetPage > 1) params.set("page", String(targetPage));
+    const query = params.toString();
+    return query ? `${listPath}?${query}` : listPath;
+  };
 
   return (
     <section className="space-y-5">
@@ -230,6 +253,36 @@ export async function ManageBookmarksView({ scope, user, searchParams }: Props) 
           </tbody>
         </table>
       </div>
+
+      <footer className="flex flex-wrap items-center justify-between gap-2 rounded border border-slate-200 bg-white px-3 py-2 text-sm">
+        <span className="text-slate-600">
+          第 {safePage} / {listResult.pagination.totalPages} 页
+        </span>
+        <div className="flex items-center gap-2">
+          <Link
+            href={buildPageHref(Math.max(1, safePage - 1))}
+            aria-disabled={safePage <= 1}
+            className={`rounded border px-3 py-1.5 ${
+              safePage <= 1
+                ? "pointer-events-none border-slate-200 text-slate-300"
+                : "border-slate-300 text-slate-700 hover:bg-slate-50"
+            }`}
+          >
+            上一页
+          </Link>
+          <Link
+            href={buildPageHref(Math.min(listResult.pagination.totalPages, safePage + 1))}
+            aria-disabled={safePage >= listResult.pagination.totalPages}
+            className={`rounded border px-3 py-1.5 ${
+              safePage >= listResult.pagination.totalPages
+                ? "pointer-events-none border-slate-200 text-slate-300"
+                : "border-slate-300 text-slate-700 hover:bg-slate-50"
+            }`}
+          >
+            下一页
+          </Link>
+        </div>
+      </footer>
     </section>
   );
 }

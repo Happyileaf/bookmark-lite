@@ -1,15 +1,42 @@
 import { prisma } from "@/server/db/prisma";
 import type { DataScope } from "@prisma/client";
 
+type ListInput = {
+  scope: DataScope;
+  ownerUserId: string | null;
+};
+
+type ListPagedInput = ListInput & {
+  page: number;
+  pageSize: number;
+};
+
+function buildWhere(input: ListInput) {
+  return input.scope === "APP"
+    ? { scope: "APP" as const, ownerUserId: null }
+    : { scope: "USER" as const, ownerUserId: input.ownerUserId };
+}
+
 export const tagRepo = {
   list(scope: DataScope, ownerUserId: string | null) {
     return prisma.tag.findMany({
-      where:
-        scope === "APP"
-          ? { scope: "APP", ownerUserId: null }
-          : { scope: "USER", ownerUserId },
+      where: buildWhere({ scope, ownerUserId }),
       orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
     });
+  },
+
+  async listPaged(input: ListPagedInput) {
+    const where = buildWhere(input);
+    const [total, items] = await prisma.$transaction([
+      prisma.tag.count({ where }),
+      prisma.tag.findMany({
+        where,
+        orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
+        skip: (input.page - 1) * input.pageSize,
+        take: input.pageSize,
+      }),
+    ]);
+    return { items, total };
   },
 
   findByName(scopeOwnerKey: string, name: string) {

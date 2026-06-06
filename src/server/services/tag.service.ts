@@ -3,7 +3,7 @@ import { assertCanManageScope } from "@/server/guard/authorize";
 import { resolveScopeContext } from "@/server/guard/scope";
 import { tagRepo } from "@/server/repositories/tag.repo";
 import type { SessionUser } from "@/server/auth/session";
-import { tagUpsertSchema } from "@/server/validators/tag.schema";
+import { tagQuerySchema, tagUpsertSchema } from "@/server/validators/tag.schema";
 import type { DataScope } from "@prisma/client";
 import { AppError } from "@/server/types/errors";
 
@@ -24,6 +24,34 @@ export const tagService = {
     }
     const ownerUserId = scope === "USER" ? user?.id ?? null : null;
     return tagRepo.list(scope, ownerUserId);
+  },
+
+  async listPaged(
+    scope: DataScope,
+    user: SessionUser | null,
+    query?: Partial<{ page: number; pageSize: number }>,
+  ) {
+    if (scope === "USER" && !user) {
+      throw new AppError("AUTH_REQUIRED", "请先登录", 401);
+    }
+    const ownerUserId = scope === "USER" ? user?.id ?? null : null;
+    const parsed = tagQuerySchema.parse(query ?? {});
+    const result = await tagRepo.listPaged({
+      scope,
+      ownerUserId,
+      page: parsed.page,
+      pageSize: parsed.pageSize,
+    });
+
+    return {
+      items: result.items,
+      pagination: {
+        page: parsed.page,
+        pageSize: parsed.pageSize,
+        total: result.total,
+        totalPages: Math.max(1, Math.ceil(result.total / parsed.pageSize)),
+      },
+    };
   },
 
   async upsert(input: unknown, user: SessionUser | null) {

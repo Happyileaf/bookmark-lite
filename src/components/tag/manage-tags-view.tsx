@@ -1,18 +1,51 @@
+import Link from "next/link";
 import type { DataScope } from "@prisma/client";
 import { Tag as TagIcon } from "lucide-react";
+import { DEFAULT_PAGE_SIZE } from "@/lib/constants";
 import { deleteTagAction, upsertTagAction } from "@/actions/tag.actions";
 import { CreateTagModal } from "@/components/tag/create-tag-modal";
 import { EditTagModal } from "@/components/tag/edit-tag-modal";
 import type { SessionUser } from "@/server/auth/session";
 import { tagService } from "@/server/services/tag.service";
 
+type SearchParams = Record<string, string | string[] | undefined>;
+
 type Props = {
   scope: DataScope;
   user: SessionUser | null;
+  searchParams: SearchParams;
 };
 
-export async function ManageTagsView({ scope, user }: Props) {
-  const tags = await tagService.list(scope, user);
+function readParam(value: string | string[] | undefined): string | undefined {
+  if (Array.isArray(value)) return value[0];
+  return value;
+}
+
+function readPage(value: string | string[] | undefined): number {
+  const raw = readParam(value);
+  const parsed = Number.parseInt(raw ?? "", 10);
+  if (!Number.isFinite(parsed) || parsed < 1) {
+    return 1;
+  }
+  return parsed;
+}
+
+export async function ManageTagsView({ scope, user, searchParams }: Props) {
+  const page = readPage(searchParams.page);
+  const listPath = scope === "APP" ? "/admin/manage/tags" : "/manage/tags";
+  const result = await tagService.listPaged(scope, user, {
+    page,
+    pageSize: DEFAULT_PAGE_SIZE,
+  });
+  const tags = result.items;
+  const safePage = Math.min(result.pagination.page, result.pagination.totalPages);
+
+  const buildPageHref = (targetPage: number) => {
+    if (targetPage <= 1) {
+      return listPath;
+    }
+    return `${listPath}?page=${targetPage}`;
+  };
 
   return (
     <section className="space-y-5">
@@ -23,7 +56,7 @@ export async function ManageTagsView({ scope, user }: Props) {
         </div>
         <div className="flex items-center gap-2">
           <span className="rounded border border-slate-200 bg-white px-2.5 py-1 text-xs text-slate-600">
-            共 {tags.length} 个标签
+            共 {result.pagination.total} 个标签
           </span>
           <CreateTagModal action={upsertTagAction.bind(null, scope)} />
         </div>
@@ -84,6 +117,36 @@ export async function ManageTagsView({ scope, user }: Props) {
           </tbody>
         </table>
       </div>
+
+      <footer className="flex flex-wrap items-center justify-between gap-2 rounded border border-slate-200 bg-white px-3 py-2 text-sm">
+        <span className="text-slate-600">
+          第 {safePage} / {result.pagination.totalPages} 页
+        </span>
+        <div className="flex items-center gap-2">
+          <Link
+            href={buildPageHref(Math.max(1, safePage - 1))}
+            aria-disabled={safePage <= 1}
+            className={`rounded border px-3 py-1.5 ${
+              safePage <= 1
+                ? "pointer-events-none border-slate-200 text-slate-300"
+                : "border-slate-300 text-slate-700 hover:bg-slate-50"
+            }`}
+          >
+            上一页
+          </Link>
+          <Link
+            href={buildPageHref(Math.min(result.pagination.totalPages, safePage + 1))}
+            aria-disabled={safePage >= result.pagination.totalPages}
+            className={`rounded border px-3 py-1.5 ${
+              safePage >= result.pagination.totalPages
+                ? "pointer-events-none border-slate-200 text-slate-300"
+                : "border-slate-300 text-slate-700 hover:bg-slate-50"
+            }`}
+          >
+            下一页
+          </Link>
+        </div>
+      </footer>
     </section>
   );
 }
