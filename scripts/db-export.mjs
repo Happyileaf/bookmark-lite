@@ -49,6 +49,13 @@ function resolveBinary(binaryName, envVarName) {
   return binaryName;
 }
 
+function toPgDumpUrl(databaseUrl) {
+  const url = new URL(databaseUrl);
+  // Prisma connection URLs often include `schema`, but pg_dump/libpq doesn't support it.
+  url.searchParams.delete("schema");
+  return url.toString();
+}
+
 async function main() {
   if (!process.env.DATABASE_URL) {
     const envPath = resolve(".env");
@@ -83,9 +90,11 @@ async function main() {
 
   const pgDump = resolveBinary("pg_dump", "PG_DUMP_PATH");
 
+  const pgDumpUrl = toPgDumpUrl(databaseUrl);
+
   await run(pgDump, [
     "--dbname",
-    databaseUrl,
+    pgDumpUrl,
     "--clean",
     "--if-exists",
     "--no-owner",
