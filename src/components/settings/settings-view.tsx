@@ -1,6 +1,7 @@
 import type { DataScope } from "@prisma/client";
 import { Palette, Save, ShieldCheck, Trash2 } from "lucide-react";
 import { updateSettingsAction } from "@/actions/settings.actions";
+import { SettingsSelectRow } from "@/components/settings/settings-select-row";
 import type { SessionUser } from "@/server/auth/session";
 import { settingsService } from "@/server/services/settings.service";
 
@@ -27,69 +28,49 @@ export async function SettingsView({ scope, user }: Props) {
         className="overflow-hidden rounded border border-slate-200 bg-white"
       >
         <div className="space-y-0 divide-y divide-slate-100">
-          <div className="grid gap-3 p-4 md:grid-cols-[minmax(0,1fr)_260px] md:items-center">
-            <div className="space-y-1">
-              <div className="inline-flex items-center gap-2 text-sm font-medium text-slate-900">
-                <Palette className="h-4 w-4 text-slate-500" />
-                <label htmlFor="theme">主题</label>
-              </div>
-              <p className="text-xs text-slate-500">可选择浅色、深色或自动跟随系统。</p>
-            </div>
-            <select
-              id="theme"
-              name="theme"
-              defaultValue={settings.theme}
-              className="w-full rounded border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-slate-500 focus:ring-2 focus:ring-slate-200"
-            >
-              <option value="system">跟随系统</option>
-              <option value="light">浅色</option>
-              <option value="dark">深色</option>
-            </select>
-          </div>
+          <SettingsSelectRow
+            id="theme"
+            name="theme"
+            label="主题"
+            description="可选择浅色、深色或自动跟随系统。"
+            icon={<Palette className="h-4 w-4 text-slate-500" />}
+            defaultValue={settings.theme}
+            options={[
+              { value: "system", label: "跟随系统" },
+              { value: "light", label: "浅色" },
+              { value: "dark", label: "深色" },
+            ]}
+          />
 
-          <div className="grid gap-3 p-4 md:grid-cols-[minmax(0,1fr)_260px] md:items-center">
-            <div className="space-y-1">
-              <div className="inline-flex items-center gap-2 text-sm font-medium text-slate-900">
-                <Trash2 className="h-4 w-4 text-slate-500" />
-                <label htmlFor="trashRetentionDays">回收站保留天数</label>
-              </div>
-              <p className="text-xs text-slate-500">超过保留期的回收站数据将自动清理。</p>
-            </div>
-            <select
-              id="trashRetentionDays"
-              name="trashRetentionDays"
-              defaultValue={settings.trashRetentionDays}
-              className="w-full rounded border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-slate-500 focus:ring-2 focus:ring-slate-200"
-            >
-              <option value={7}>7 天</option>
-              <option value={30}>30 天</option>
-              <option value={90}>90 天</option>
-              <option value={3650}>永久保留</option>
-            </select>
-          </div>
+          <SettingsSelectRow
+            id="trashRetentionDays"
+            name="trashRetentionDays"
+            label="回收站保留天数"
+            description="超过保留期的回收站数据将自动清理。"
+            icon={<Trash2 className="h-4 w-4 text-slate-500" />}
+            defaultValue={settings.trashRetentionDays}
+            options={[
+              { value: 7, label: "7 天" },
+              { value: 30, label: "30 天" },
+              { value: 90, label: "90 天" },
+              { value: 3650, label: "永久保留" },
+            ]}
+          />
 
-          <div className="grid gap-3 p-4 md:grid-cols-[minmax(0,1fr)_260px] md:items-center">
-            <div className="space-y-1">
-              <div className="inline-flex items-center gap-2 text-sm font-medium text-slate-900">
-                <ShieldCheck className="h-4 w-4 text-slate-500" />
-                <label htmlFor="auditRetentionDays">审计日志保留天数</label>
-              </div>
-              <p className="text-xs text-slate-500">
-                保留关键操作记录，便于排查和审计。
-              </p>
-            </div>
-            <select
-              id="auditRetentionDays"
-              name="auditRetentionDays"
-              defaultValue={settings.auditRetentionDays}
-              className="w-full rounded border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-slate-500 focus:ring-2 focus:ring-slate-200"
-            >
-              <option value={30}>30 天</option>
-              <option value={90}>90 天</option>
-              <option value={180}>180 天</option>
-              <option value={365}>365 天</option>
-            </select>
-          </div>
+          <SettingsSelectRow
+            id="auditRetentionDays"
+            name="auditRetentionDays"
+            label="审计日志保留天数"
+            description="保留关键操作记录，便于排查和审计。"
+            icon={<ShieldCheck className="h-4 w-4 text-slate-500" />}
+            defaultValue={settings.auditRetentionDays}
+            options={[
+              { value: 30, label: "30 天" },
+              { value: 90, label: "90 天" },
+              { value: 180, label: "180 天" },
+              { value: 365, label: "365 天" },
+            ]}
+          />
         </div>
 
         <div className="flex items-center justify-end border-t border-slate-200 bg-slate-50 px-4 py-3">
