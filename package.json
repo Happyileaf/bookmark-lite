@@ -11,7 +11,10 @@
     "postinstall": "prisma generate",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
-    "seed:admin-user-data": "prisma db execute --file scripts/seed-admin-user-data.sql --schema prisma/schema.prisma"
+    "seed:admin-user-data": "prisma db execute --file scripts/seed-admin-user-data.sql --schema prisma/schema.prisma",
+    "db:export": "node scripts/db-export.mjs",
+    "db:import": "node scripts/db-import.mjs",
+    "db:init": "node scripts/db-init.mjs"
   },
   "dependencies": {
     "@prisma/client": "^6.19.0",
