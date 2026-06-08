@@ -74,7 +74,7 @@ export async function ManageTagsView({ scope, user, searchParams }: Props) {
           </thead>
           <tbody>
             {tags.map((tag) => (
-              <tr key={tag.id} className="border-b border-slate-100 align-top">
+              <tr key={tag.id} className="border-b border-slate-100 align-middle">
                 <td className="px-3 py-2 font-medium text-slate-900">
                   <span className="inline-flex items-center gap-2">
                     <span

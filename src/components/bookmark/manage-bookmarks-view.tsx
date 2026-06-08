@@ -145,7 +145,7 @@ export async function ManageBookmarksView({ scope, user, searchParams }: Props) 
           </thead>
           <tbody>
             {listResult.items.map((bookmark) => (
-              <tr key={bookmark.id} className="border-b border-slate-100 align-top">
+              <tr key={bookmark.id} className="border-b border-slate-100 align-middle">
                 <td className="space-y-1 px-3 py-2">
                   <a
                     href={bookmark.url}
