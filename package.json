@@ -13,6 +13,7 @@
     "prisma:migrate": "prisma migrate dev",
     "seed:admin-user-data": "prisma db execute --file scripts/seed-admin-user-data.sql --schema prisma/schema.prisma",
     "seed:app-content": "node scripts/seed-data/seed-app-content.mjs",
+    "seed:app-content:sql": "node scripts/seed-data/generate-seed-app-content-sql.mjs",
     "db:export": "node scripts/db-export.mjs",
     "db:import": "node scripts/db-import.mjs",
     "db:init": "node scripts/db-init.mjs",
