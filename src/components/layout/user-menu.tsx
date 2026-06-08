@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { signOut } from "next-auth/react";
 import { useEffect, useRef } from "react";
 
 type UserMenuProps = {
@@ -44,6 +45,11 @@ export function UserMenu({ email, isAdmin, userLabel }: UserMenuProps) {
     if (detailsRef.current?.open) {
       detailsRef.current.open = false;
     }
+  };
+
+  const handleSignOut = async () => {
+    closeMenu();
+    await signOut({ callbackUrl: "/" });
   };
 
   return (
@@ -97,13 +103,13 @@ export function UserMenu({ email, isAdmin, userLabel }: UserMenuProps) {
           </div>
 
           <div className="mt-2 grid gap-1 px-1">
-            <Link
-              href="/api/auth/signout"
-              onClick={closeMenu}
+            <button
+              type="button"
+              onClick={handleSignOut}
               className="rounded px-2 py-1.5 text-rose-600 hover:bg-rose-50"
             >
               退出登录
-            </Link>
+            </button>
           </div>
         </div>
       </div>
