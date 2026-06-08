@@ -1,19 +1,19 @@
 export const APP_SEED_TAGS = [
   {
     key: "ai-llm",
-    name: "AI 与 LLM",
+    name: "AI",
     color: "#7C3AED",
     description: "大模型、智能体、提示工程与推理相关资源。"
   },
   {
     key: "frontend",
-    name: "前端工程",
+    name: "前端",
     color: "#2563EB",
     description: "Web 前端框架、构建工具与组件体系。"
   },
   {
     key: "backend-api",
-    name: "后端与 API",
+    name: "服务端",
     color: "#0891B2",
     description: "服务端开发、接口设计与框架实践。"
   },
