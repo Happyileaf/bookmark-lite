@@ -43,6 +43,13 @@ function resolveBinary(binaryName, envVarName) {
   return binaryName;
 }
 
+function toPsqlUrl(databaseUrl) {
+  const url = new URL(databaseUrl);
+  // Prisma connection URLs often include `schema`, but psql/libpq doesn't support it.
+  url.searchParams.delete("schema");
+  return url.toString();
+}
+
 async function main() {
   if (!process.env.DATABASE_URL) {
     const envPath = resolve(".env");
@@ -81,9 +88,10 @@ async function main() {
   }
 
   const psql = resolveBinary("psql", "PSQL_PATH");
+  const psqlUrl = toPsqlUrl(databaseUrl);
 
   await run(psql, [
-    databaseUrl,
+    psqlUrl,
     "-v",
     "ON_ERROR_STOP=1",
     "-f",

@@ -74,6 +74,13 @@ function resolveBinary(binaryName, envVarName) {
   return binaryName;
 }
 
+function toPsqlUrl(databaseUrl) {
+  const url = new URL(databaseUrl);
+  // Prisma connection URLs often include `schema`, but psql/libpq doesn't support it.
+  url.searchParams.delete("schema");
+  return url.toString();
+}
+
 function quoteSqlString(value) {
   return value.replace(/'/g, "''");
 }
@@ -89,6 +96,7 @@ async function main() {
   if (!databaseUrl) {
     throw new Error("DATABASE_URL is missing. Please set it in your environment or .env.");
   }
+  const psqlUrl = toPsqlUrl(databaseUrl);
 
   const backupArg = process.argv[2];
   if (!backupArg) {
@@ -100,7 +108,7 @@ async function main() {
     throw new Error(`Backup file does not exist: ${backupPath}`);
   }
 
-  const url = new URL(databaseUrl);
+  const url = new URL(psqlUrl);
   const databaseName = decodeURIComponent(url.pathname.replace(/^\//, ""));
   if (!databaseName) {
     throw new Error("DATABASE_URL has no database name in path.");
@@ -108,7 +116,7 @@ async function main() {
 
   const psql = resolveBinary("psql", "PSQL_PATH");
 
-  const adminUrl = new URL(databaseUrl);
+  const adminUrl = new URL(psqlUrl);
   adminUrl.pathname = "/postgres";
 
   const checkSql = `SELECT 1 FROM pg_database WHERE datname='${quoteSqlString(databaseName)}';`;
@@ -127,7 +135,7 @@ async function main() {
     console.log(`Database already exists: ${databaseName}`);
   }
 
-  await run(psql, [databaseUrl, "-v", "ON_ERROR_STOP=1", "-f", backupPath]);
+  await run(psql, [psqlUrl, "-v", "ON_ERROR_STOP=1", "-f", backupPath]);
   console.log(`Database initialized from backup: ${backupPath}`);
 }
 
