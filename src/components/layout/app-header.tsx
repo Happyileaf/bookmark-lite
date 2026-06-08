@@ -15,7 +15,7 @@ export async function AppHeader() {
   return (
     <header className="relative z-50 border-b border-slate-200 bg-white">
       <div className="grid w-full grid-cols-[1fr_auto] items-center gap-4 px-4 py-3">
-        <div className="min-w-0">
+        <div className="flex min-w-0 items-center">
           <Link href="/bookmarks" className="inline-flex max-w-full items-center gap-2 text-base font-semibold text-slate-900">
             <Image
               src="/logo_assets/logo_export.png"
