@@ -201,7 +201,13 @@ export async function DisplayBookmarksView({ scope, user, searchParams }: Props)
                     : "text-slate-600 hover:bg-slate-50"
                 }`}
               >
-                <span className="truncate">{tag.name}</span>
+                <span className="flex items-center gap-2 truncate">
+                  <span
+                    className="h-3 w-3 shrink-0 rounded-full"
+                    style={{ backgroundColor: tag.color ?? "#cbd5e1" }}
+                  />
+                  {tag.name}
+                </span>
                 <span className="ml-2 text-xs text-slate-400">{tag.bookmarkCount}</span>
               </Link>
             </li>
