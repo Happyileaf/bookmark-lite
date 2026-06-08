@@ -66,19 +66,9 @@ export const APP_SEED_BOOKMARK_GROUPS = [
     tagKey: "ai-llm",
     bookmarks: [
       {
-        title: "OpenAI API 文档",
-        url: "https://platform.openai.com/docs",
-        description: "OpenAI 官方 API 文档与示例。"
-      },
-      {
-        title: "OpenAI Research",
-        url: "https://openai.com/research/",
-        description: "OpenAI 研究发布与技术报告。"
-      },
-      {
-        title: "OpenAI Cookbook",
-        url: "https://cookbook.openai.com/",
-        description: "实践导向的提示词与工程示例。"
+        title: "OpenAI 官网",
+        url: "https://openai.com/",
+        description: "OpenAI 官方产品、研究与开发入口。"
       },
       {
         title: "Hugging Face",
@@ -86,29 +76,14 @@ export const APP_SEED_BOOKMARK_GROUPS = [
         description: "模型、数据集与社区协作平台。"
       },
       {
-        title: "Hugging Face Docs",
-        url: "https://huggingface.co/docs",
-        description: "Transformers 等核心库官方文档。"
-      },
-      {
         title: "Anthropic 官网",
         url: "https://www.anthropic.com/",
         description: "Claude 相关产品与研究信息。"
       },
       {
-        title: "Anthropic 文档",
-        url: "https://docs.anthropic.com/",
-        description: "Claude API 与开发接入文档。"
-      },
-      {
         title: "Google AI for Developers",
         url: "https://ai.google.dev/",
         description: "Google AI 开发者总入口。"
-      },
-      {
-        title: "Gemini API 文档",
-        url: "https://ai.google.dev/gemini-api/docs",
-        description: "Gemini API 指南与能力说明。"
       },
       {
         title: "Replicate",
@@ -122,7 +97,7 @@ export const APP_SEED_BOOKMARK_GROUPS = [
       },
       {
         title: "ModelScope",
-        url: "https://modelscope.cn/home",
+        url: "https://modelscope.cn/",
         description: "面向中文生态的模型与数据平台。"
       },
       {
@@ -131,14 +106,39 @@ export const APP_SEED_BOOKMARK_GROUPS = [
         description: "LLM 应用开发框架官网。"
       },
       {
-        title: "LangSmith",
-        url: "https://www.langchain.com/langsmith",
-        description: "LLM 应用观测、评估和调试平台。"
-      },
-      {
         title: "LlamaIndex",
         url: "https://www.llamaindex.ai/",
         description: "面向 RAG 的数据连接与检索框架。"
+      },
+      {
+        title: "Mistral AI",
+        url: "https://mistral.ai/",
+        description: "开源与商用并行的大模型厂商。"
+      },
+      {
+        title: "Cohere",
+        url: "https://cohere.com/",
+        description: "面向企业场景的语言模型与平台。"
+      },
+      {
+        title: "DeepSeek",
+        url: "https://www.deepseek.com/",
+        description: "中文与代码能力突出的通用模型平台。"
+      },
+      {
+        title: "Perplexity",
+        url: "https://www.perplexity.ai/",
+        description: "检索增强问答与 AI 搜索产品。"
+      },
+      {
+        title: "Midjourney",
+        url: "https://www.midjourney.com/",
+        description: "文生图创作社区与工具平台。"
+      },
+      {
+        title: "Stability AI",
+        url: "https://stability.ai/",
+        description: "生成式 AI 模型与多模态能力平台。"
       }
     ]
   },
@@ -431,9 +431,9 @@ export const APP_SEED_BOOKMARK_GROUPS = [
         description: "反向代理与网关 NGINX 文档。"
       },
       {
-        title: "GitHub Actions 文档",
-        url: "https://docs.github.com/en/actions",
-        description: "CI/CD 自动化流程配置文档。"
+        title: "Jenkins",
+        url: "https://www.jenkins.io/",
+        description: "经典 CI/CD 自动化服务器与插件生态。"
       },
       {
         title: "Argo CD 文档",
@@ -456,9 +456,9 @@ export const APP_SEED_BOOKMARK_GROUPS = [
         description: "腾讯云开发、部署与运维文档。"
       },
       {
-        title: "Cloudflare Developers",
-        url: "https://developers.cloudflare.com/",
-        description: "CDN、边缘计算与安全产品文档。"
+        title: "DigitalOcean Docs",
+        url: "https://docs.digitalocean.com/",
+        description: "云主机、网络与托管服务文档。"
       }
     ]
   },
@@ -471,9 +471,9 @@ export const APP_SEED_BOOKMARK_GROUPS = [
         description: "主流协同设计与原型工具。"
       },
       {
-        title: "Figma Community",
-        url: "https://www.figma.com/community",
-        description: "社区模板、插件与设计资源。"
+        title: "Mobbin",
+        url: "https://mobbin.com/",
+        description: "产品界面案例库与设计灵感平台。"
       },
       {
         title: "Dribbble",
@@ -551,9 +551,9 @@ export const APP_SEED_BOOKMARK_GROUPS = [
         description: "应用安全社区与项目集合。"
       },
       {
-        title: "OWASP Cheat Sheet",
-        url: "https://cheatsheetseries.owasp.org/",
-        description: "实用安全实践速查表。"
+        title: "CIS Benchmarks",
+        url: "https://www.cisecurity.org/cis-benchmarks",
+        description: "系统与服务的安全基线配置标准。"
       },
       {
         title: "CWE",
@@ -591,9 +591,9 @@ export const APP_SEED_BOOKMARK_GROUPS = [
         description: "免费 TLS 证书与自动化签发。"
       },
       {
-        title: "Cloudflare Security Learning",
-        url: "https://www.cloudflare.com/learning/security/",
-        description: "网络与应用安全基础内容。"
+        title: "HackerOne",
+        url: "https://www.hackerone.com/",
+        description: "漏洞众测与安全响应协作平台。"
       },
       {
         title: "国家信息安全漏洞共享平台 CNVD",
@@ -691,9 +691,9 @@ export const APP_SEED_BOOKMARK_GROUPS = [
         description: "macOS 终端增强工具。"
       },
       {
-        title: "tmux Wiki",
-        url: "https://github.com/tmux/tmux/wiki",
-        description: "终端复用与远程开发必备。"
+        title: "Warp",
+        url: "https://www.warp.dev/",
+        description: "现代化终端与命令增强工具。"
       },
       {
         title: "Oh My Zsh",
