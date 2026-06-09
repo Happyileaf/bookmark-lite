@@ -1,6 +1,7 @@
 import { getSessionUser } from "@/server/auth/session";
 import { bookmarkService } from "@/server/services/bookmark.service";
 import { AppError, isAppError } from "@/server/types/errors";
+import { DEFAULT_PAGE_SIZE } from "@/lib/constants";
 import type { DataScope } from "@prisma/client";
 import { z } from "zod";
 
@@ -14,7 +15,7 @@ const querySchema = z.object({
     .enum(["all", "favorites", "untagged", "recent_added", "recent_visited"])
     .default("all"),
   page: z.coerce.number().int().min(1).default(1),
-  pageSize: z.coerce.number().int().min(1).max(100).default(50),
+  pageSize: z.coerce.number().int().min(1).max(100).default(DEFAULT_PAGE_SIZE),
 });
 
 export async function GET(request: Request) {
@@ -27,7 +28,7 @@ export async function GET(request: Request) {
       tagId: searchParams.get("tagId") ?? undefined,
       view: searchParams.get("view") ?? "all",
       page: searchParams.get("page") ?? "1",
-      pageSize: searchParams.get("pageSize") ?? "50",
+      pageSize: searchParams.get("pageSize") ?? String(DEFAULT_PAGE_SIZE),
     });
 
     if (!parsed.success) {

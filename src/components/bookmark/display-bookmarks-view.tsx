@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Prisma, type DataScope } from "@prisma/client";
 import { saveAppBookmarkToUserAction } from "@/actions/bookmark.actions";
 import { InfiniteBookmarksGrid } from "@/components/bookmark/infinite-bookmarks-grid";
+import { DEFAULT_PAGE_SIZE } from "@/lib/constants";
 import type { SessionUser } from "@/server/auth/session";
 import { bookmarkService } from "@/server/services/bookmark.service";
 import { tagService } from "@/server/services/tag.service";
@@ -125,7 +126,7 @@ export async function DisplayBookmarksView({ scope, user, searchParams }: Props)
           tagId,
           view,
           page: 1,
-          pageSize: 50,
+          pageSize: DEFAULT_PAGE_SIZE,
         },
       }),
       scope === "APP" && user ? tagService.list("USER", user) : Promise.resolve([]),
@@ -139,7 +140,7 @@ export async function DisplayBookmarksView({ scope, user, searchParams }: Props)
       items: [],
       pagination: {
         page: 1,
-        pageSize: 50,
+        pageSize: DEFAULT_PAGE_SIZE,
         total: 0,
         totalPages: 1,
       },

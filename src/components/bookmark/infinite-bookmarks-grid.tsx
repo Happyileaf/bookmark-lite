@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { CopyBookmarkUrlButton } from "@/components/bookmark/copy-bookmark-url-button";
 import { SaveAppBookmarkModal } from "@/components/bookmark/save-app-bookmark-modal";
+import { DEFAULT_PAGE_SIZE } from "@/lib/constants";
 import type { DataScope } from "@prisma/client";
 
 type DisplayView = "all" | "favorites" | "untagged" | "recent_added" | "recent_visited";
@@ -88,7 +89,7 @@ export function InfiniteBookmarksGrid({
     const params = new URLSearchParams();
     params.set("scope", scope);
     params.set("view", query.view);
-    params.set("pageSize", "50");
+    params.set("pageSize", String(DEFAULT_PAGE_SIZE));
     if (query.q) params.set("q", query.q);
     if (query.tagId) params.set("tagId", query.tagId);
     return params;
@@ -224,9 +225,7 @@ export function InfiniteBookmarksGrid({
           <span>
             已加载 {items.length} / {pagination.total} 条
           </span>
-          <span>
-            每次 50 条{hasMore ? "，滚动到底自动加载" : "，已全部加载完成"}
-          </span>
+          <span>{hasMore ? "滚动到底自动加载" : "已全部加载完成"}</span>
         </div>
         {isLoading ? <p className="text-slate-500">正在加载更多...</p> : null}
         {errorMessage ? (
