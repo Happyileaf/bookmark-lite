@@ -37,26 +37,34 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 
 ## Local + Vercel database setup
 
-This project supports both local deployment and Vercel deployment with the same Prisma setup command.
+This project supports both local deployment and Vercel deployment with Prisma migrations.
 
-1. Make sure `DATABASE_URL` is configured:
+1. Configure database environment variables:
    - Local: create `.env` from `.env.example`.
    - Vercel: add `DATABASE_URL` in Project Settings -> Environment Variables.
-2. Initialize database schema (works in both environments):
+   - Recommended for Neon/Vercel Postgres: also add `DIRECT_URL` (unpooled connection) for migration commands.
+2. Initialize a new database schema:
 
 ```bash
-npm run db:setup
+npm run db:migrate:deploy
 ```
 
 3. (Optional) seed default APP bookmarks/tags:
 
 ```bash
-npm run db:setup:seed
+npm run seed:app-content
+```
+
+4. If your database was already initialized before migrations (for example using `db push`), run one-time baseline:
+
+```bash
+npm run db:migrate:baseline
 ```
 
 Notes:
-- `db:setup` uses Prisma `db push` (no local `psql` requirement).
-- On Vercel, you can set Build Command to `npm run build:with-db-setup` to run schema setup during each deployment.
+- `db:migrate:deploy` prefers `DIRECT_URL` when present; otherwise it uses `DATABASE_URL`.
+- On Vercel, set Build Command to `npm run build:with-db-migrate` so each deployment applies migrations first.
+- `db:setup` still exists as a local fast path (`prisma db push`) for prototyping.
 - `db:init` / `db:import` are for SQL backup workflows and require PostgreSQL client tools (`psql`/`pg_dump`), typically run on local machines or CI.
 
 ## Database backup and sync
