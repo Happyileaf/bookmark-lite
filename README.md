@@ -39,16 +39,10 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/bui
 
 This project supports both local deployment and Vercel deployment with Prisma migrations.
 
-Quick switch profiles by copying template content into `.env`:
-
-```bash
-cp .env.local.example .env
-# or
-cp .env.vercel.example .env
-```
+You can keep multiple backup env files with any names you prefer, and switch by updating `.env` to the target values.
 
 1. Configure database environment variables:
-   - Local: create `.env` from `.env.example`.
+   - Local: prepare `.env` and set `DATABASE_URL` to your local PostgreSQL.
    - Vercel: add `DATABASE_URL` in Project Settings -> Environment Variables.
    - Recommended for Neon/Vercel Postgres: also add `DIRECT_URL` (unpooled connection) for migration commands.
 2. Initialize a new database schema:

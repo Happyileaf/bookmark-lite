@@ -68,9 +68,11 @@ function DatabaseUnavailableNotice({ reason, runtimeTarget }: { reason: string; 
         </p>
       ) : (
         <p className="mt-2">
-          建议先执行
-          <code className="mx-1 rounded bg-amber-100 px-1 py-0.5">Copy-Item .env.example .env</code>
-          ，并确保 PostgreSQL 在本地 5432 端口可访问；首次可执行
+          请先准备
+          <code className="mx-1 rounded bg-amber-100 px-1 py-0.5">.env</code>
+          并配置
+          <code className="mx-1 rounded bg-amber-100 px-1 py-0.5">DATABASE_URL</code>
+          ，确保 PostgreSQL 在本地 5432 端口可访问；首次可执行
           <code className="mx-1 rounded bg-amber-100 px-1 py-0.5">npm run db:setup</code>
           初始化表结构。
         </p>
