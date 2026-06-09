@@ -35,6 +35,30 @@ The easiest way to deploy your Next.js app is to use the [Vercel Platform](https
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
 
+## Local + Vercel database setup
+
+This project supports both local deployment and Vercel deployment with the same Prisma setup command.
+
+1. Make sure `DATABASE_URL` is configured:
+   - Local: create `.env` from `.env.example`.
+   - Vercel: add `DATABASE_URL` in Project Settings -> Environment Variables.
+2. Initialize database schema (works in both environments):
+
+```bash
+npm run db:setup
+```
+
+3. (Optional) seed default APP bookmarks/tags:
+
+```bash
+npm run db:setup:seed
+```
+
+Notes:
+- `db:setup` uses Prisma `db push` (no local `psql` requirement).
+- On Vercel, you can set Build Command to `npm run build:with-db-setup` to run schema setup during each deployment.
+- `db:init` / `db:import` are for SQL backup workflows and require PostgreSQL client tools (`psql`/`pg_dump`), typically run on local machines or CI.
+
 ## Database backup and sync
 
 This project uses PostgreSQL (`DATABASE_URL` in `.env`).

@@ -17,18 +17,32 @@ type Props = {
 };
 
 type DisplayView = "all" | "favorites" | "untagged" | "recent_added" | "recent_visited";
+type RuntimeTarget = "local" | "vercel";
 
 function readParam(value: string | string[] | undefined): string | undefined {
   if (Array.isArray(value)) return value[0];
   return value;
 }
 
-function readDbUnavailableReason(error: unknown): string | null {
+function readRuntimeTarget(): RuntimeTarget {
+  if (process.env.VERCEL === "1" || process.env.VERCEL_ENV) {
+    return "vercel";
+  }
+  return "local";
+}
+
+function readDbUnavailableReason(error: unknown, runtimeTarget: RuntimeTarget): string | null {
   if (error instanceof Prisma.PrismaClientInitializationError) {
-    if (error.message.includes("Environment variable not found: DATABASE_URL")) {
+    if (error.message.includes("DATABASE_URL")) {
+      if (runtimeTarget === "vercel") {
+        return "Vercel 线上环境缺少 DATABASE_URL，请先在项目环境变量中配置。";
+      }
       return "DATABASE_URL 未配置，请先创建 .env 并启动 PostgreSQL。";
     }
     if (error.message.includes("Can't reach database server")) {
+      if (runtimeTarget === "vercel") {
+        return "当前无法连接线上数据库，请确认数据库实例可访问且连接串正确。";
+      }
       return "当前无法连接数据库，请确认 PostgreSQL 已启动。";
     }
     return "数据库尚未就绪，请先完成 Prisma 初始化。";
@@ -37,16 +51,30 @@ function readDbUnavailableReason(error: unknown): string | null {
   return null;
 }
 
-function DatabaseUnavailableNotice({ reason }: { reason: string }) {
+function DatabaseUnavailableNotice({ reason, runtimeTarget }: { reason: string; runtimeTarget: RuntimeTarget }) {
+  const isVercel = runtimeTarget === "vercel";
+
   return (
     <section className="rounded border border-amber-300 bg-amber-50 p-4 text-sm text-amber-900">
       <h2 className="text-base font-semibold">数据库尚未就绪</h2>
       <p className="mt-2">{reason}</p>
-      <p className="mt-2">
-        建议先执行
-        <code className="mx-1 rounded bg-amber-100 px-1 py-0.5">Copy-Item .env.example .env</code>
-        ，并确保 PostgreSQL 在本地 5432 端口可访问。
-      </p>
+      {isVercel ? (
+        <p className="mt-2">
+          请在 Vercel 项目中创建/绑定 PostgreSQL，并在 Environment Variables 中配置
+          <code className="mx-1 rounded bg-amber-100 px-1 py-0.5">DATABASE_URL</code>
+          后重新部署；首次可执行
+          <code className="mx-1 rounded bg-amber-100 px-1 py-0.5">npm run db:setup</code>
+          初始化表结构。
+        </p>
+      ) : (
+        <p className="mt-2">
+          建议先执行
+          <code className="mx-1 rounded bg-amber-100 px-1 py-0.5">Copy-Item .env.example .env</code>
+          ，并确保 PostgreSQL 在本地 5432 端口可访问；首次可执行
+          <code className="mx-1 rounded bg-amber-100 px-1 py-0.5">npm run db:setup</code>
+          初始化表结构。
+        </p>
+      )}
     </section>
   );
 }
@@ -70,8 +98,11 @@ async function canConnectTcp(host: string, port: number, timeoutMs = 300): Promi
   });
 }
 
-async function readLocalDbUnavailableReason(): Promise<string | null> {
+async function readLocalDbUnavailableReason(runtimeTarget: RuntimeTarget): Promise<string | null> {
   if (process.env.NODE_ENV !== "development") {
+    return null;
+  }
+  if (runtimeTarget !== "local") {
     return null;
   }
 
@@ -101,13 +132,14 @@ async function readLocalDbUnavailableReason(): Promise<string | null> {
 }
 
 export async function DisplayBookmarksView({ scope, user, searchParams }: Props) {
+  const runtimeTarget = readRuntimeTarget();
   const q = readParam(searchParams.q);
   const tagId = readParam(searchParams.tagId);
   const view = (readParam(searchParams.view) as DisplayView | undefined) ?? "all";
 
-  const localDbUnavailableReason = await readLocalDbUnavailableReason();
+  const localDbUnavailableReason = await readLocalDbUnavailableReason(runtimeTarget);
   if (localDbUnavailableReason) {
-    return <DatabaseUnavailableNotice reason={localDbUnavailableReason} />;
+    return <DatabaseUnavailableNotice reason={localDbUnavailableReason} runtimeTarget={runtimeTarget} />;
   }
 
   let tags: Awaited<ReturnType<typeof tagService.list>> = [];
@@ -132,7 +164,7 @@ export async function DisplayBookmarksView({ scope, user, searchParams }: Props)
       scope === "APP" && user ? tagService.list("USER", user) : Promise.resolve([]),
     ]);
   } catch (error) {
-    dbUnavailableReason = readDbUnavailableReason(error);
+    dbUnavailableReason = readDbUnavailableReason(error, runtimeTarget);
     if (!dbUnavailableReason) {
       throw error;
     }
@@ -148,7 +180,7 @@ export async function DisplayBookmarksView({ scope, user, searchParams }: Props)
   }
 
   if (dbUnavailableReason) {
-    return <DatabaseUnavailableNotice reason={dbUnavailableReason} />;
+    return <DatabaseUnavailableNotice reason={dbUnavailableReason} runtimeTarget={runtimeTarget} />;
   }
 
   const queryBase = q ? `&q=${encodeURIComponent(q)}` : "";
