@@ -8,6 +8,16 @@ function loginRedirect(request: NextRequest) {
   return NextResponse.redirect(url);
 }
 
+function continueWithPathHeader(request: NextRequest) {
+  const requestHeaders = new Headers(request.headers);
+  requestHeaders.set("x-bookmark-pathname", request.nextUrl.pathname);
+  return NextResponse.next({
+    request: {
+      headers: requestHeaders,
+    },
+  });
+}
+
 export async function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
   const token = await getToken({
@@ -34,9 +44,15 @@ export async function proxy(request: NextRequest) {
     }
   }
 
-  return NextResponse.next();
+  return continueWithPathHeader(request);
 }
 
 export const config = {
-  matcher: ["/my-bookmarks/:path*", "/manage/:path*", "/settings", "/admin/:path*"],
+  matcher: [
+    "/bookmarks/:path*",
+    "/my-bookmarks/:path*",
+    "/manage/:path*",
+    "/settings",
+    "/admin/:path*",
+  ],
 };
