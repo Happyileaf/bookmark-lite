@@ -29,7 +29,7 @@ export function CopyBookmarkUrlButton({ url }: Props) {
       onClick={onCopy}
       aria-label={copied ? "已复制" : "复制URL"}
       title={copied ? "已复制" : "复制URL"}
-      className="inline-flex h-7 w-7 items-center justify-center rounded border border-slate-300 bg-white text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+      className="inline-flex h-7 w-7 items-center justify-center rounded border border-slate-300 bg-white text-slate-600 hover:bg-slate-50 hover:text-slate-900 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-300 dark:hover:bg-slate-600"
     >
       {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
       <span className="sr-only">{copied ? "已复制" : "复制URL"}</span>
