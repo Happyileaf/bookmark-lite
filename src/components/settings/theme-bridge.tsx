@@ -8,6 +8,7 @@ type ThemePreference = "light" | "dark" | "system";
 type Props = {
   appTheme: ThemePreference;
   userTheme: ThemePreference | null;
+  systemDefault: ThemePreference;
 };
 
 function isUserScopePath(pathname: string): boolean {
@@ -30,12 +31,16 @@ function applyTheme(theme: "light" | "dark") {
   document.documentElement.style.colorScheme = theme;
 }
 
-export function ThemeBridge({ appTheme, userTheme }: Props) {
+export function ThemeBridge({ appTheme, userTheme, systemDefault }: Props) {
   const pathname = usePathname();
 
   useEffect(() => {
-    const preference =
-      isUserScopePath(pathname) && userTheme ? userTheme : appTheme;
+    // PRD 4.4.6 / 6.9.4: cross-domain reads are prohibited.
+    // USER-scoped pages use userTheme, falling back to systemDefault (not appTheme).
+    // APP-scoped pages use appTheme, falling back to systemDefault.
+    const preference = isUserScopePath(pathname)
+      ? (userTheme ?? systemDefault)
+      : (appTheme ?? systemDefault);
     const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
 
     const update = () => {
@@ -54,7 +59,7 @@ export function ThemeBridge({ appTheme, userTheme }: Props) {
     return () => {
       mediaQuery.removeEventListener("change", listener);
     };
-  }, [appTheme, pathname, userTheme]);
+  }, [appTheme, pathname, userTheme, systemDefault]);
 
   return null;
 }

@@ -47,6 +47,7 @@ export const settingsService = {
   async getThemePreferences(userId?: string | null): Promise<{
     appTheme: ThemePreference;
     userTheme: ThemePreference | null;
+    systemDefault: ThemePreference;
   }> {
     const [defaults, appSettings, userSettings] = await Promise.all([
       settingsRepo.getSystemDefaults(),
@@ -57,12 +58,13 @@ export const settingsService = {
     return {
       appTheme: appSettings.theme ?? defaults.theme,
       userTheme: userSettings ? (userSettings.theme ?? defaults.theme) : null,
+      systemDefault: defaults.theme,
     };
   },
 
   async get(scope: DataScope, user: SessionUser | null) {
-    assertCanManageScope(scope, user);
     const scopeCtx = resolveScopeContext(scope, user?.id);
+    assertCanManageScope(scope, user, scopeCtx.ownerUserId);
     return loadResolvedSettings(scopeCtx);
   },
 
@@ -73,8 +75,8 @@ export const settingsService = {
   },
 
   async update(scope: DataScope, user: SessionUser | null, input: unknown) {
-    assertCanManageScope(scope, user);
     const scopeCtx = resolveScopeContext(scope, user?.id);
+    assertCanManageScope(scope, user, scopeCtx.ownerUserId);
     const parsed = settingsUpdateSchema.safeParse(input);
     if (!parsed.success) {
       throw new AppError(

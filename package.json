@@ -12,6 +12,8 @@
     "start": "next start",
     "lint": "eslint .",
     "test:theme": "tsx --test src/server/services/theme.service.test.ts",
+    "test:settings": "tsx --test src/server/guard/authorize.test.ts src/server/guard/scope.test.ts src/server/services/settings.service.test.ts",
+    "test:all": "tsx --test src/server/guard/authorize.test.ts src/server/guard/scope.test.ts src/server/services/settings.service.test.ts src/server/services/theme.service.test.ts",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
     "db:init": "node scripts/db-init.mjs",
