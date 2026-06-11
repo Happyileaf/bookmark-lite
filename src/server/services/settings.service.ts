@@ -13,6 +13,8 @@ type ResolvedSettings = {
   auditRetentionDays: number;
 };
 
+type ThemePreference = ResolvedSettings["theme"];
+
 function resolveSystemSettings(
   scopeSettings: {
     theme: "light" | "dark" | "system" | null;
@@ -33,6 +35,22 @@ function resolveSystemSettings(
 }
 
 export const settingsService = {
+  async getThemePreferences(userId?: string | null): Promise<{
+    appTheme: ThemePreference;
+    userTheme: ThemePreference | null;
+  }> {
+    const [defaults, appSettings, userSettings] = await Promise.all([
+      settingsRepo.getSystemDefaults(),
+      settingsRepo.getScopeSettings("APP", null),
+      userId ? settingsRepo.getScopeSettings("USER", userId) : Promise.resolve(null),
+    ]);
+
+    return {
+      appTheme: appSettings.theme ?? defaults.theme,
+      userTheme: userSettings ? (userSettings.theme ?? defaults.theme) : null,
+    };
+  },
+
   async get(scope: DataScope, user: SessionUser | null) {
     assertCanManageScope(scope, user);
     const scopeCtx = resolveScopeContext(scope, user?.id);

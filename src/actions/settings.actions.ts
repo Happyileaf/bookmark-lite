@@ -15,6 +15,7 @@ export async function updateSettingsAction(scope: DataScope, formData: FormData)
       Number(String(formData.get("auditRetentionDays") ?? "")) || undefined,
   });
 
+  revalidatePath("/", "layout");
   if (scope === "APP") {
     revalidatePath("/admin/settings");
   } else {
