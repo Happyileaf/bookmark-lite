@@ -60,34 +60,34 @@ export function UserMenu({ email, isAdmin, userLabel }: UserMenuProps) {
         </span>
       </summary>
 
-      <div className="absolute right-0 z-50 mt-2 w-60 rounded border border-slate-200 bg-white p-2.5 shadow-lg">
-        <div className="space-y-2 border-b border-slate-100 px-2.5 pt-1.5 pb-4">
-          <div className="break-all text-sm leading-5 font-medium text-slate-800">{email}</div>
-          <div className="inline-flex rounded-full bg-slate-100 px-2 py-0.5 text-xs leading-4 text-slate-600">
+      <div className="absolute right-0 z-50 mt-2 w-60 rounded border border-slate-200 bg-white p-2.5 shadow-lg dark:border-slate-700 dark:bg-slate-900">
+        <div className="space-y-2 border-b border-slate-100 px-2.5 pt-1.5 pb-4 dark:border-slate-700">
+          <div className="break-all text-sm leading-5 font-medium text-slate-800 dark:text-slate-200">{email}</div>
+          <div className="inline-flex rounded-full bg-slate-100 px-2 py-0.5 text-xs leading-4 text-slate-600 dark:bg-slate-800 dark:text-slate-400">
             {isAdmin ? "超级管理员" : "普通用户"}
           </div>
         </div>
 
         <div className="mt-2.5 text-sm">
-          <div className="grid gap-1 border-b border-slate-100 px-1 pb-2">
+          <div className="grid gap-1 border-b border-slate-100 px-1 pb-2 dark:border-slate-700">
             <Link
               href="/my-bookmarks"
               onClick={closeMenu}
-              className="rounded px-2 py-1.5 text-slate-700 hover:bg-slate-50"
+              className="rounded px-2 py-1.5 text-slate-700 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-slate-800"
             >
               个人空间
             </Link>
             <Link
               href="/manage/bookmarks"
               onClick={closeMenu}
-              className="rounded px-2 py-1.5 text-slate-700 hover:bg-slate-50"
+              className="rounded px-2 py-1.5 text-slate-700 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-slate-800"
             >
               内容管理
             </Link>
             <Link
               href="/bookmarks"
               onClick={closeMenu}
-              className="rounded px-2 py-1.5 text-slate-700 hover:bg-slate-50"
+              className="rounded px-2 py-1.5 text-slate-700 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-slate-800"
             >
               应用空间
             </Link>
@@ -95,7 +95,7 @@ export function UserMenu({ email, isAdmin, userLabel }: UserMenuProps) {
               <Link
                 href="/admin/manage/bookmarks"
                 onClick={closeMenu}
-                className="rounded px-2 py-1.5 text-slate-700 hover:bg-slate-50"
+                className="rounded px-2 py-1.5 text-slate-700 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-slate-800"
               >
                 应用内容管理
               </Link>
@@ -106,7 +106,7 @@ export function UserMenu({ email, isAdmin, userLabel }: UserMenuProps) {
             <button
               type="button"
               onClick={handleSignOut}
-              className="rounded px-2 py-1.5 text-rose-600 hover:bg-rose-50"
+              className="rounded px-2 py-1.5 text-rose-600 hover:bg-rose-50 dark:text-rose-400 dark:hover:bg-rose-950"
             >
               退出登录
             </button>

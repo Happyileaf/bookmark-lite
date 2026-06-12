@@ -38,13 +38,13 @@ export function SaveAppBookmarkModal({ action, bookmarkId, triggerClassName, tag
               onClick={() => setOpen(false)}
             />
 
-            <div className="relative z-10 w-full max-w-md rounded border border-slate-200 bg-white shadow-xl">
-              <div className="flex items-center justify-between border-b border-slate-200 px-4 py-3">
-                <h2 className="text-base font-semibold text-slate-900">保存到个人库</h2>
+            <div className="relative z-10 w-full max-w-md rounded border border-slate-200 bg-white shadow-xl dark:border-slate-700 dark:bg-slate-900">
+              <div className="flex items-center justify-between border-b border-slate-200 px-4 py-3 dark:border-slate-700">
+                <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">保存到个人库</h2>
                 <button
                   type="button"
                   onClick={() => setOpen(false)}
-                  className="rounded border border-slate-300 px-2 py-1 text-xs text-slate-700 hover:bg-slate-50"
+                  className="rounded border border-slate-300 px-2 py-1 text-xs text-slate-700 hover:bg-slate-50 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-800"
                 >
                   关闭
                 </button>
@@ -61,14 +61,14 @@ export function SaveAppBookmarkModal({ action, bookmarkId, triggerClassName, tag
                   <button
                     type="button"
                     onClick={() => setOpen(false)}
-                    className="rounded border border-slate-300 px-3 py-2 text-sm text-slate-700 hover:bg-slate-50"
+                    className="rounded border border-slate-300 px-3 py-2 text-sm text-slate-700 hover:bg-slate-50 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-800"
                   >
                     取消
                   </button>
                   <button
                     type="submit"
                     disabled={isPending}
-                    className="rounded bg-slate-900 px-3 py-2 text-sm text-white hover:bg-slate-800 disabled:opacity-60"
+                    className="rounded bg-slate-900 px-3 py-2 text-sm text-white hover:bg-slate-800 disabled:opacity-60 dark:bg-slate-700 dark:hover:bg-slate-600"
                   >
                     {isPending ? "保存中..." : "保存"}
                   </button>
@@ -89,7 +89,7 @@ export function SaveAppBookmarkModal({ action, bookmarkId, triggerClassName, tag
         title="保存到个人库"
         className={
           triggerClassName ??
-          "inline-flex h-7 w-7 items-center justify-center rounded border border-slate-300 bg-white text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+          "inline-flex h-7 w-7 items-center justify-center rounded border border-slate-300 bg-white text-slate-600 hover:bg-slate-50 hover:text-slate-900 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-slate-100"
         }
       >
         <BookmarkPlus className="h-4 w-4" />

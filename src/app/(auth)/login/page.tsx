@@ -24,12 +24,12 @@ export default async function LoginPage({ searchParams }: PageProps) {
 
   return (
     <section className="flex h-full w-full items-center justify-center p-6">
-      <div className="-translate-y-12 w-full max-w-md rounded border border-slate-200 bg-white p-6">
-      <h1 className="mb-4 text-xl font-semibold text-slate-900">登录</h1>
+      <div className="-translate-y-12 w-full max-w-md rounded border border-slate-200 bg-white p-6 dark:border-slate-700 dark:bg-slate-900">
+      <h1 className="mb-4 text-xl font-semibold text-slate-900 dark:text-slate-100">登录</h1>
       <LoginForm nextUrl={nextUrl} />
-      <p className="mt-4 text-sm text-slate-600">
+      <p className="mt-4 text-sm text-slate-600 dark:text-slate-400">
         还没有账号？
-        <Link href="/register" className="ml-1 text-slate-900 hover:underline">
+        <Link href="/register" className="ml-1 text-slate-900 hover:underline dark:text-slate-100">
           去注册
         </Link>
       </p>
