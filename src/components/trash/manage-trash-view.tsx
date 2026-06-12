@@ -26,17 +26,17 @@ export async function ManageTrashView({ scope, user }: Props) {
         <form action={clearTrashAction.bind(null, scope)}>
           <button
             type="submit"
-            className="h-9 shrink-0 whitespace-nowrap rounded border border-rose-300 px-3 text-sm text-rose-600 hover:bg-rose-50"
+            className="h-9 shrink-0 whitespace-nowrap rounded border border-rose-300 px-3 text-sm text-rose-600 hover:bg-rose-50 dark:border-rose-700 dark:text-rose-400 dark:hover:bg-rose-950"
           >
             清空回收站
           </button>
         </form>
       </div>
 
-      <div className="overflow-x-auto rounded border border-slate-200 bg-white">
+      <div className="overflow-x-auto rounded border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800">
         <table className="w-full border-collapse text-sm">
           <thead>
-            <tr className="border-b border-slate-200 bg-slate-50 text-left text-slate-600">
+            <tr className="border-b border-slate-200 bg-slate-50 text-left text-slate-600 dark:border-slate-700 dark:bg-slate-900/50 dark:text-slate-400">
               <th className="px-3 py-2 font-medium">标题</th>
               <th className="px-3 py-2 font-medium">URL</th>
               <th className="px-3 py-2 font-medium">删除时间</th>
@@ -47,10 +47,10 @@ export async function ManageTrashView({ scope, user }: Props) {
             {items.map((item) => {
               const snapshot = (item.payload as { bookmark?: Snapshot })?.bookmark ?? {};
               return (
-                <tr key={item.id} className="border-b border-slate-100">
-                  <td className="px-3 py-2 text-slate-900">{snapshot.title ?? "-"}</td>
-                  <td className="px-3 py-2 text-slate-500">{snapshot.url ?? "-"}</td>
-                  <td className="px-3 py-2 text-slate-500">
+                <tr key={item.id} className="border-b border-slate-100 dark:border-slate-700">
+                  <td className="px-3 py-2 text-slate-900 dark:text-slate-100">{snapshot.title ?? "-"}</td>
+                  <td className="px-3 py-2 text-slate-500 dark:text-slate-400">{snapshot.url ?? "-"}</td>
+                  <td className="px-3 py-2 text-slate-500 dark:text-slate-400">
                     {new Date(item.deletedAt).toLocaleString("zh-CN")}
                   </td>
                   <td className="px-3 py-2">
@@ -59,7 +59,7 @@ export async function ManageTrashView({ scope, user }: Props) {
                         <input type="hidden" name="id" value={item.id} />
                         <button
                           type="submit"
-                          className="rounded border border-slate-300 px-2 py-1 text-xs text-slate-700 hover:bg-slate-50"
+                          className="rounded border border-slate-300 px-2 py-1 text-xs text-slate-700 hover:bg-slate-50 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700"
                         >
                           恢复
                         </button>
@@ -68,7 +68,7 @@ export async function ManageTrashView({ scope, user }: Props) {
                         <input type="hidden" name="id" value={item.id} />
                         <button
                           type="submit"
-                          className="rounded border border-rose-300 px-2 py-1 text-xs text-rose-600 hover:bg-rose-50"
+                          className="rounded border border-rose-300 px-2 py-1 text-xs text-rose-600 hover:bg-rose-50 dark:border-rose-700 dark:text-rose-400 dark:hover:bg-rose-950"
                         >
                           永久删除
                         </button>
@@ -80,7 +80,7 @@ export async function ManageTrashView({ scope, user }: Props) {
             })}
             {items.length === 0 ? (
               <tr>
-                <td colSpan={4} className="px-3 py-10 text-center text-slate-500">
+                <td colSpan={4} className="px-3 py-10 text-center text-slate-500 dark:text-slate-400">
                   回收站为空
                 </td>
               </tr>

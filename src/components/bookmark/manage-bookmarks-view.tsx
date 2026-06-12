@@ -79,36 +79,36 @@ export async function ManageBookmarksView({ scope, user, searchParams }: Props) 
     <section className="space-y-5">
       <header className="flex flex-wrap items-start justify-between gap-3">
         <div className="space-y-1">
-          <h1 className="text-lg font-semibold text-slate-900">书签管理</h1>
-          <p className="text-sm text-slate-600">统一查看、筛选并维护你的全部书签。</p>
+          <h1 className="text-lg font-semibold text-slate-900 dark:text-slate-100">书签管理</h1>
+          <p className="text-sm text-slate-600 dark:text-slate-400">统一查看、筛选并维护你的全部书签。</p>
         </div>
         <div className="flex items-center gap-2">
-          <span className="rounded border border-slate-200 bg-white px-2.5 py-1 text-xs text-slate-600">
+          <span className="rounded border border-slate-200 bg-white px-2.5 py-1 text-xs text-slate-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400">
             共 {listResult.pagination.total} 条
           </span>
           <CreateBookmarkModal action={createBookmarkAction.bind(null, scope)} tags={tags} />
         </div>
       </header>
 
-      <form className="space-y-3 rounded border border-slate-200 bg-white p-4">
-        <div className="inline-flex items-center gap-1.5 rounded bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-700">
+      <form className="space-y-3 rounded border border-slate-200 bg-white p-4 dark:border-slate-700 dark:bg-slate-800">
+        <div className="inline-flex items-center gap-1.5 rounded bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-700 dark:bg-slate-700 dark:text-slate-300">
           <Filter className="h-3.5 w-3.5" />
           查询与排序
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <label className="relative min-w-64 flex-1">
-            <Search className="pointer-events-none absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
+            <Search className="pointer-events-none absolute left-3 top-2.5 h-4 w-4 text-slate-400 dark:text-slate-500" />
             <input
               name="q"
               defaultValue={q}
               placeholder="搜索标题 / URL / 描述 / 标签"
-              className="w-full rounded border border-slate-300 py-2 pl-9 pr-3 text-sm text-slate-700"
+              className="w-full rounded border border-slate-300 py-2 pl-9 pr-3 text-sm text-slate-700 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100"
             />
           </label>
           <select
             name="sort"
             defaultValue={currentSort}
-            className="rounded border border-slate-300 px-3 py-2 text-sm text-slate-700"
+            className="rounded border border-slate-300 px-3 py-2 text-sm text-slate-700 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100"
           >
             <option value="default">默认排序</option>
             <option value="created_desc">创建时间（新到旧）</option>
@@ -118,14 +118,14 @@ export async function ManageBookmarksView({ scope, user, searchParams }: Props) 
           </select>
           <button
             type="submit"
-            className="rounded bg-slate-900 px-3 py-2 text-sm text-white hover:bg-slate-800"
+            className="rounded bg-slate-900 px-3 py-2 text-sm text-white hover:bg-slate-800 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-slate-200"
           >
             应用
           </button>
           {hasFilters ? (
             <Link
               href={listPath}
-              className="rounded border border-slate-300 px-3 py-2 text-sm text-slate-700 hover:bg-slate-50"
+              className="rounded border border-slate-300 px-3 py-2 text-sm text-slate-700 hover:bg-slate-50 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700"
             >
               清空
             </Link>
@@ -133,10 +133,10 @@ export async function ManageBookmarksView({ scope, user, searchParams }: Props) 
         </div>
       </form>
 
-      <div className="overflow-x-auto rounded border border-slate-200 bg-white">
+      <div className="overflow-x-auto rounded border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800">
         <table className="w-full border-collapse text-sm">
           <thead>
-            <tr className="border-b border-slate-200 bg-slate-50 text-left text-slate-600">
+            <tr className="border-b border-slate-200 bg-slate-50 text-left text-slate-600 dark:border-slate-700 dark:bg-slate-900/50 dark:text-slate-400">
               <th className="min-w-72 px-3 py-2 font-medium">标题与地址</th>
               <th className="min-w-48 px-3 py-2 font-medium">标签</th>
               <th className="px-3 py-2 font-medium">状态</th>
@@ -145,17 +145,17 @@ export async function ManageBookmarksView({ scope, user, searchParams }: Props) 
           </thead>
           <tbody>
             {listResult.items.map((bookmark) => (
-              <tr key={bookmark.id} className="border-b border-slate-100 align-middle">
+              <tr key={bookmark.id} className="border-b border-slate-100 align-middle dark:border-slate-700">
                 <td className="space-y-1 px-3 py-2">
                   <a
                     href={bookmark.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="font-medium text-slate-900 hover:text-slate-700"
+                    className="font-medium text-slate-900 hover:text-slate-700 dark:text-slate-100 dark:hover:text-slate-300"
                   >
                     {bookmark.title}
                   </a>
-                  <div className="break-all text-xs text-slate-500">{bookmark.url}</div>
+                  <div className="break-all text-xs text-slate-500 dark:text-slate-400">{bookmark.url}</div>
                 </td>
                 <td className="px-3 py-2">
                   {bookmark.tags.length > 0 ? (
@@ -163,14 +163,14 @@ export async function ManageBookmarksView({ scope, user, searchParams }: Props) 
                       {bookmark.tags.map((tag) => (
                         <span
                           key={tag.id}
-                          className="rounded border border-slate-200 bg-slate-50 px-2 py-1 text-xs text-slate-600"
+                          className="rounded border border-slate-200 bg-slate-50 px-2 py-1 text-xs text-slate-600 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-300"
                         >
                           {tag.name}
                         </span>
                       ))}
                     </div>
                   ) : (
-                    <span className="text-xs text-slate-400">未分配标签</span>
+                    <span className="text-xs text-slate-400 dark:text-slate-500">未分配标签</span>
                   )}
                 </td>
                 <td className="px-3 py-2">
@@ -178,8 +178,8 @@ export async function ManageBookmarksView({ scope, user, searchParams }: Props) 
                     <span
                       className={`rounded px-2 py-1 ${
                         bookmark.isFavorite
-                          ? "bg-amber-100 text-amber-700"
-                          : "bg-slate-100 text-slate-600"
+                          ? "bg-amber-100 text-amber-700 dark:bg-amber-900 dark:text-amber-300"
+                          : "bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-300"
                       }`}
                     >
                       {bookmark.isFavorite ? "已收藏" : "未收藏"}
@@ -187,8 +187,8 @@ export async function ManageBookmarksView({ scope, user, searchParams }: Props) 
                     <span
                       className={`rounded px-2 py-1 ${
                         bookmark.isVisible
-                          ? "bg-emerald-100 text-emerald-700"
-                          : "bg-slate-100 text-slate-600"
+                          ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900 dark:text-emerald-300"
+                          : "bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-300"
                       }`}
                     >
                       {bookmark.isVisible ? "可见" : "已隐藏"}
@@ -206,7 +206,7 @@ export async function ManageBookmarksView({ scope, user, searchParams }: Props) 
                       />
                       <button
                         type="submit"
-                        className="whitespace-nowrap rounded border border-slate-300 px-2 py-1 text-xs text-slate-700 hover:bg-slate-50"
+                        className="whitespace-nowrap rounded border border-slate-300 px-2 py-1 text-xs text-slate-700 hover:bg-slate-50 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700"
                       >
                         {bookmark.isFavorite ? "取消收藏" : "收藏"}
                       </button>
@@ -220,7 +220,7 @@ export async function ManageBookmarksView({ scope, user, searchParams }: Props) 
                       />
                       <button
                         type="submit"
-                        className="whitespace-nowrap rounded border border-slate-300 px-2 py-1 text-xs text-slate-700 hover:bg-slate-50"
+                        className="whitespace-nowrap rounded border border-slate-300 px-2 py-1 text-xs text-slate-700 hover:bg-slate-50 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700"
                       >
                         {bookmark.isVisible ? "隐藏" : "设为可见"}
                       </button>
@@ -234,7 +234,7 @@ export async function ManageBookmarksView({ scope, user, searchParams }: Props) 
                       <input type="hidden" name="id" value={bookmark.id} />
                       <button
                         type="submit"
-                        className="whitespace-nowrap rounded border border-rose-300 px-2 py-1 text-xs text-rose-600 hover:bg-rose-50"
+                        className="whitespace-nowrap rounded border border-rose-300 px-2 py-1 text-xs text-rose-600 hover:bg-rose-50 dark:border-rose-700 dark:text-rose-400 dark:hover:bg-rose-950"
                       >
                         删除
                       </button>
@@ -245,7 +245,7 @@ export async function ManageBookmarksView({ scope, user, searchParams }: Props) 
             ))}
             {listResult.items.length === 0 ? (
               <tr>
-                <td colSpan={4} className="px-3 py-10 text-center text-slate-500">
+                <td colSpan={4} className="px-3 py-10 text-center text-slate-500 dark:text-slate-400">
                   当前没有匹配的书签，先新增一条或调整筛选条件。
                 </td>
               </tr>
@@ -254,8 +254,8 @@ export async function ManageBookmarksView({ scope, user, searchParams }: Props) 
         </table>
       </div>
 
-      <footer className="flex flex-wrap items-center justify-between gap-2 rounded border border-slate-200 bg-white px-3 py-2 text-sm">
-        <span className="text-slate-600">
+      <footer className="flex flex-wrap items-center justify-between gap-2 rounded border border-slate-200 bg-white px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-800">
+        <span className="text-slate-600 dark:text-slate-400">
           第 {safePage} / {listResult.pagination.totalPages} 页
         </span>
         <div className="flex items-center gap-2">
@@ -264,8 +264,8 @@ export async function ManageBookmarksView({ scope, user, searchParams }: Props) 
             aria-disabled={safePage <= 1}
             className={`rounded border px-3 py-1.5 ${
               safePage <= 1
-                ? "pointer-events-none border-slate-200 text-slate-300"
-                : "border-slate-300 text-slate-700 hover:bg-slate-50"
+                ? "pointer-events-none border-slate-200 text-slate-300 dark:border-slate-700 dark:text-slate-600"
+                : "border-slate-300 text-slate-700 hover:bg-slate-50 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700"
             }`}
           >
             上一页
@@ -275,8 +275,8 @@ export async function ManageBookmarksView({ scope, user, searchParams }: Props) 
             aria-disabled={safePage >= listResult.pagination.totalPages}
             className={`rounded border px-3 py-1.5 ${
               safePage >= listResult.pagination.totalPages
-                ? "pointer-events-none border-slate-200 text-slate-300"
-                : "border-slate-300 text-slate-700 hover:bg-slate-50"
+                ? "pointer-events-none border-slate-200 text-slate-300 dark:border-slate-700 dark:text-slate-600"
+                : "border-slate-300 text-slate-700 hover:bg-slate-50 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700"
             }`}
           >
             下一页

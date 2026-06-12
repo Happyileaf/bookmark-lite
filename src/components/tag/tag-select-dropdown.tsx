@@ -84,24 +84,24 @@ export function TagSelectDropdown({
         aria-haspopup="listbox"
         aria-expanded={open}
         onClick={() => setOpen((prev) => !prev)}
-        className="flex w-full items-center justify-between rounded border border-slate-300 px-3 py-2 text-sm text-slate-700 hover:border-slate-400 hover:bg-slate-50"
+        className="flex w-full items-center justify-between rounded border border-slate-300 px-3 py-2 text-sm text-slate-700 hover:border-slate-400 hover:bg-slate-50 dark:border-slate-600 dark:text-slate-300 dark:hover:border-slate-500 dark:hover:bg-slate-700"
       >
-        <span className={selected.length === 0 ? "text-slate-400" : "text-slate-700"}>
+        <span className={selected.length === 0 ? "text-slate-400 dark:text-slate-500" : "text-slate-700 dark:text-slate-300"}>
           {selectedText}
         </span>
-        <ChevronDown className={`h-4 w-4 text-slate-500 ${open ? "rotate-180" : ""}`} />
+        <ChevronDown className={`h-4 w-4 text-slate-500 dark:text-slate-400 ${open ? "rotate-180" : ""}`} />
       </button>
 
       {open ? (
-        <div className="absolute z-50 mt-2 w-full rounded border border-slate-200 bg-white p-1 shadow-lg">
+        <div className="absolute z-50 mt-2 w-full rounded border border-slate-200 bg-white p-1 shadow-lg dark:border-slate-700 dark:bg-slate-800">
           {options.length > 0 ? (
             <>
-              <div className="flex items-center justify-between px-2 py-1.5 text-xs text-slate-500">
+              <div className="flex items-center justify-between px-2 py-1.5 text-xs text-slate-500 dark:text-slate-400">
                 <span>已选 {selected.length} 个</span>
                 <button
                   type="button"
                   onClick={() => setSelected([])}
-                  className="rounded px-1.5 py-0.5 text-slate-500 hover:bg-slate-100 hover:text-slate-700"
+                  className="rounded px-1.5 py-0.5 text-slate-500 hover:bg-slate-100 hover:text-slate-700 dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-slate-300"
                 >
                   清空
                 </button>
@@ -117,18 +117,18 @@ export function TagSelectDropdown({
                         aria-selected={active}
                         onClick={() => toggle(tag.name)}
                         className={`flex w-full items-center gap-2 rounded px-2 py-1.5 text-left text-sm ${
-                          active ? "bg-slate-100 text-slate-900" : "text-slate-700 hover:bg-slate-50"
+                          active ? "bg-slate-100 text-slate-900 dark:bg-slate-700 dark:text-slate-100" : "text-slate-700 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-slate-700"
                         }`}
                       >
                         <span
-                          className="h-2.5 w-2.5 shrink-0 rounded-full border border-slate-200"
+                          className="h-2.5 w-2.5 shrink-0 rounded-full border border-slate-200 dark:border-slate-600"
                           style={{ backgroundColor: tag.color ?? "#CBD5E1" }}
                           aria-hidden
                         />
                         <span className="min-w-0 flex-1 truncate">{tag.name}</span>
                         <Check
                           className={`h-4 w-4 shrink-0 ${
-                            active ? "text-slate-700 opacity-100" : "text-transparent opacity-0"
+                            active ? "text-slate-700 opacity-100 dark:text-slate-300" : "text-transparent opacity-0"
                           }`}
                         />
                       </button>
@@ -138,7 +138,7 @@ export function TagSelectDropdown({
               </ul>
             </>
           ) : (
-            <div className="px-2 py-3 text-sm text-slate-500">{emptyText}</div>
+            <div className="px-2 py-3 text-sm text-slate-500 dark:text-slate-400">{emptyText}</div>
           )}
         </div>
       ) : null}
@@ -146,7 +146,7 @@ export function TagSelectDropdown({
       {selected.length > 0 ? (
         <div className="mt-2 flex flex-wrap gap-1">
           {selected.map((item) => (
-            <span key={item} className="rounded bg-slate-100 px-2 py-1 text-xs text-slate-600">
+            <span key={item} className="rounded bg-slate-100 px-2 py-1 text-xs text-slate-600 dark:bg-slate-700 dark:text-slate-300">
               {item}
             </span>
           ))}

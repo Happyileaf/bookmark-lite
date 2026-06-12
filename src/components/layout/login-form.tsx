@@ -33,30 +33,30 @@ export function LoginForm({ nextUrl }: Props) {
       }}
     >
       <label className="block space-y-1 text-sm">
-        <span className="text-slate-700">邮箱</span>
+        <span className="text-slate-700 dark:text-slate-300">邮箱</span>
         <input
           name="email"
           required
           type="email"
-          className="w-full rounded border border-slate-300 px-3 py-2"
+          className="w-full rounded border border-slate-300 px-3 py-2 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
         />
       </label>
 
       <label className="block space-y-1 text-sm">
-        <span className="text-slate-700">密码</span>
+        <span className="text-slate-700 dark:text-slate-300">密码</span>
         <input
           name="password"
           required
           type="password"
-          className="w-full rounded border border-slate-300 px-3 py-2"
+          className="w-full rounded border border-slate-300 px-3 py-2 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
         />
       </label>
 
-      {error ? <p className="text-sm text-rose-600">{error}</p> : null}
+      {error ? <p className="text-sm text-rose-600 dark:text-rose-400">{error}</p> : null}
       <button
         type="submit"
         disabled={loading}
-        className="w-full rounded bg-slate-900 px-3 py-2 text-sm text-white hover:bg-slate-800 disabled:opacity-60"
+        className="w-full rounded bg-slate-900 px-3 py-2 text-sm text-white hover:bg-slate-800 disabled:opacity-60 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-slate-200"
       >
         {loading ? "登录中..." : "登录"}
       </button>

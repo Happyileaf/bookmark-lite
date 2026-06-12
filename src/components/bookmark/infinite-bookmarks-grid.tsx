@@ -147,7 +147,7 @@ export function InfiniteBookmarksGrid({
 
   if (items.length === 0) {
     return (
-      <div className="rounded border border-dashed border-slate-300 bg-white p-10 text-center text-sm text-slate-500">
+      <div className="rounded border border-dashed border-slate-300 bg-white p-10 text-center text-sm text-slate-500 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-400">
         当前视图下暂无书签
       </div>
     );
@@ -159,13 +159,13 @@ export function InfiniteBookmarksGrid({
         {items.map((bookmark) => (
           <li
             key={bookmark.id}
-            className="group relative h-full rounded border border-slate-200 bg-white p-4 hover:border-slate-300"
+            className="group relative h-full rounded border border-slate-200 bg-white p-4 hover:border-slate-300 dark:border-slate-700 dark:bg-slate-800 dark:hover:border-slate-600"
           >
             <a
               href={bookmark.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="absolute inset-0 z-10 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400"
+              className="absolute inset-0 z-10 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400 dark:focus-visible:ring-slate-500"
             >
               <span className="sr-only">打开书签：{bookmark.title}</span>
             </a>
@@ -183,21 +183,21 @@ export function InfiniteBookmarksGrid({
 
             <div className="pointer-events-none relative z-20 grid h-full content-start gap-2">
               <h3
-                className="h-6 truncate pr-16 text-base font-medium leading-6 text-slate-900 group-hover:text-slate-700"
+                className="h-6 truncate pr-16 text-base font-medium leading-6 text-slate-900 group-hover:text-slate-700 dark:text-slate-100 dark:group-hover:text-slate-300"
                 title={bookmark.title}
               >
                 {bookmark.title}
               </h3>
 
-              <p className="h-5 truncate text-sm leading-5 text-slate-500" title={bookmark.url}>
+              <p className="h-5 truncate text-sm leading-5 text-slate-500 dark:text-slate-400" title={bookmark.url}>
                 {bookmark.url}
               </p>
 
               <p
-                className="h-10 overflow-hidden text-sm leading-5 text-slate-700 [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:2]"
+                className="h-10 overflow-hidden text-sm leading-5 text-slate-700 [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:2] dark:text-slate-300"
                 title={bookmark.description ?? ""}
               >
-                {bookmark.description || "\u00A0"}
+                {bookmark.description || " "}
               </p>
 
               <div className="h-12 overflow-hidden" title={bookmark.tags.map((tag) => tag.name).join(" / ")}>
@@ -205,13 +205,13 @@ export function InfiniteBookmarksGrid({
                   {bookmark.tags.slice(0, 6).map((tag) => (
                     <span
                       key={tag.id}
-                      className="rounded bg-slate-100 px-2 py-1 text-xs text-slate-600"
+                      className="rounded bg-slate-100 px-2 py-1 text-xs text-slate-600 dark:bg-slate-700 dark:text-slate-300"
                     >
                       {tag.name}
                     </span>
                   ))}
                   {bookmark.tags.length > 6 ? (
-                    <span className="rounded bg-slate-100 px-2 py-1 text-xs text-slate-600">...</span>
+                    <span className="rounded bg-slate-100 px-2 py-1 text-xs text-slate-600 dark:bg-slate-700 dark:text-slate-300">...</span>
                   ) : null}
                 </div>
               </div>
@@ -220,21 +220,21 @@ export function InfiniteBookmarksGrid({
         ))}
       </ul>
 
-      <div className="space-y-2 rounded border border-slate-200 bg-white px-4 py-3 text-sm text-slate-600">
+      <div className="space-y-2 rounded border border-slate-200 bg-white px-4 py-3 text-sm text-slate-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400">
         <div className="flex items-center justify-between gap-3">
           <span>
             已加载 {items.length} / {pagination.total} 条
           </span>
           <span>{hasMore ? "滚动到底自动加载" : "已全部加载完成"}</span>
         </div>
-        {isLoading ? <p className="text-slate-500">正在加载更多...</p> : null}
+        {isLoading ? <p className="text-slate-500 dark:text-slate-400">正在加载更多...</p> : null}
         {errorMessage ? (
-          <p className="text-rose-600">
+          <p className="text-rose-600 dark:text-rose-400">
             {errorMessage}
             <button
               type="button"
               onClick={() => void loadNextPage()}
-              className="ml-2 text-rose-700 underline underline-offset-2 hover:text-rose-800"
+              className="ml-2 text-rose-700 underline underline-offset-2 hover:text-rose-800 dark:text-rose-400 dark:hover:text-rose-300"
             >
               点击重试
             </button>

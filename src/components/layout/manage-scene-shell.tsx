@@ -36,17 +36,17 @@ export function ManageSceneShell({ scope, current, children }: Props) {
 
   return (
     <section className="grid h-full min-h-0 overflow-hidden md:grid-cols-[240px_minmax(0,1fr)]">
-      <aside className="flex h-full min-h-0 self-stretch flex-col overflow-y-auto overflow-x-hidden rounded-b border-x border-b border-slate-200 bg-white">
+      <aside className="flex h-full min-h-0 self-stretch flex-col overflow-y-auto overflow-x-hidden rounded-b border-x border-b border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800">
         <div className="px-4 py-3">
-          <h2 className="text-sm font-semibold text-slate-900">快速入口</h2>
+          <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">快速入口</h2>
         </div>
 
-        <ul className="space-y-1.5 border-t border-slate-100 px-3 py-3 text-sm">
+        <ul className="space-y-1.5 border-t border-slate-100 px-3 py-3 text-sm dark:border-slate-700">
           {sceneMenu.map((item) => (
             <li key={item.href}>
               <Link
                 href={item.href}
-                className="block rounded px-3 py-2 text-slate-600 hover:bg-slate-50"
+                className="block rounded px-3 py-2 text-slate-600 hover:bg-slate-50 dark:text-slate-400 dark:hover:bg-slate-700"
               >
                 {item.label}
               </Link>
@@ -55,10 +55,10 @@ export function ManageSceneShell({ scope, current, children }: Props) {
         </ul>
 
         <div className="px-4 py-3">
-          <h2 className="text-sm font-semibold text-slate-900">管理菜单</h2>
+          <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">管理菜单</h2>
         </div>
 
-        <ul className="space-y-1.5 border-t border-slate-100 px-3 py-3 text-sm">
+        <ul className="space-y-1.5 border-t border-slate-100 px-3 py-3 text-sm dark:border-slate-700">
           {menu.map((item) => {
             const active = item.key === current;
             return (
@@ -67,8 +67,8 @@ export function ManageSceneShell({ scope, current, children }: Props) {
                   href={item.href}
                   className={`block rounded px-3 py-2 ${
                     active
-                      ? "bg-slate-100 font-medium text-slate-900"
-                      : "text-slate-600 hover:bg-slate-50"
+                      ? "bg-slate-100 font-medium text-slate-900 dark:bg-slate-700 dark:text-slate-100"
+                      : "text-slate-600 hover:bg-slate-50 dark:text-slate-400 dark:hover:bg-slate-700"
                   }`}
                 >
                   {item.label}

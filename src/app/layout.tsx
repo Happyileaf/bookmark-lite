@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
+import { ThemeProvider } from "@/components/theme/theme-provider";
 import { AppHeader } from "@/components/layout/app-header";
 import { getSessionUser } from "@/server/auth/session";
 import { resolveThemeForRequestFromSettings } from "@/server/services/theme.service";
@@ -21,10 +22,12 @@ export default async function RootLayout({
   const themeMode = await resolveThemeForRequestFromSettings(pathname, user);
 
   return (
-    <html lang="zh-CN" data-theme-mode={themeMode}>
+    <html lang="zh-CN" data-theme-mode={themeMode} suppressHydrationWarning>
       <body className="flex h-dvh min-h-dvh flex-col overflow-hidden bg-slate-50 text-slate-900">
-        <AppHeader />
-        <main className="flex min-h-0 flex-1 flex-col overflow-hidden">{children}</main>
+        <ThemeProvider>
+          <AppHeader />
+          <main className="flex min-h-0 flex-1 flex-col overflow-hidden">{children}</main>
+        </ThemeProvider>
       </body>
     </html>
   );
