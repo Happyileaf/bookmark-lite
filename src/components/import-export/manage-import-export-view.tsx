@@ -1,9 +1,35 @@
+"use client";
+
 import Link from "next/link";
+import { useCallback, useState } from "react";
 import type { DataScope } from "@prisma/client";
-import { Download, FileCode, FileSpreadsheet, FileText, Upload } from "lucide-react";
+import {
+  CheckCircle2,
+  Download,
+  FileCode,
+  FileSpreadsheet,
+  FileText,
+  Loader2,
+  Upload,
+  XCircle,
+} from "lucide-react";
 
 type Props = {
   scope: DataScope;
+};
+
+type ImportResult = {
+  ok: boolean;
+  data?: {
+    total: number;
+    success: number;
+    failed: number;
+    failures: Array<{ line: number; code: string; message: string }>;
+  };
+  error?: {
+    code: string;
+    message: string;
+  };
 };
 
 const importFormats = ["HTML", "CSV", "JSON"] as const;
@@ -19,6 +45,37 @@ const exportFormats: Array<{
 ];
 
 export function ManageImportExportView({ scope }: Props) {
+  const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState<ImportResult | null>(null);
+
+  const handleSubmit = useCallback(
+    async (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+      setLoading(true);
+      setResult(null);
+
+      const form = e.currentTarget;
+      const formData = new FormData(form);
+
+      try {
+        const res = await fetch(`/api/import?scope=${scope}`, {
+          method: "POST",
+          body: formData,
+        });
+        const json: ImportResult = await res.json();
+        setResult(json);
+      } catch {
+        setResult({
+          ok: false,
+          error: { code: "NETWORK_ERROR", message: "网络请求失败，请稍后再试" },
+        });
+      } finally {
+        setLoading(false);
+      }
+    },
+    [scope],
+  );
+
   return (
     <section className="space-y-4">
       <header className="space-y-1">
@@ -28,9 +85,7 @@ export function ManageImportExportView({ scope }: Props) {
 
       <div className="grid gap-4 lg:grid-cols-2">
         <form
-          action={`/api/import?scope=${scope}`}
-          method="post"
-          encType="multipart/form-data"
+          onSubmit={handleSubmit}
           className="space-y-4 rounded border border-slate-200 bg-white p-4 dark:border-slate-700 dark:bg-slate-900"
         >
           <div className="space-y-1">
@@ -66,11 +121,20 @@ export function ManageImportExportView({ scope }: Props) {
 
           <button
             type="submit"
-            className="inline-flex w-full items-center justify-center gap-1.5 rounded bg-slate-900 px-3 py-2 text-sm text-white transition hover:bg-slate-800 dark:bg-slate-700 dark:hover:bg-slate-600"
+            disabled={loading}
+            className="inline-flex w-full items-center justify-center gap-1.5 rounded bg-slate-900 px-3 py-2 text-sm text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-slate-700 dark:hover:bg-slate-600"
           >
-            <Upload className="h-4 w-4" />
-            上传并导入
+            {loading ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Upload className="h-4 w-4" />
+            )}
+            {loading ? "导入中..." : "上传并导入"}
           </button>
+
+          {result && (
+            <ImportResultDisplay result={result} />
+          )}
         </form>
 
         <section className="space-y-4 rounded border border-slate-200 bg-white p-4 dark:border-slate-700 dark:bg-slate-900">
@@ -107,4 +171,61 @@ export function ManageImportExportView({ scope }: Props) {
       </div>
     </section>
   );
+}
+
+function ImportResultDisplay({ result }: { result: ImportResult }) {
+  if (result.ok && result.data) {
+    const { total, success, failed, failures } = result.data;
+    return (
+      <div
+        className={`rounded border p-3 text-sm ${
+          failed > 0
+            ? "border-yellow-200 bg-yellow-50 text-yellow-800 dark:border-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-200"
+            : "border-green-200 bg-green-50 text-green-800 dark:border-green-700 dark:bg-green-900/30 dark:text-green-200"
+        }`}
+      >
+        <div className="mb-1 flex items-center gap-1.5 font-medium">
+          {failed > 0 ? (
+            <XCircle className="h-4 w-4 text-yellow-500" />
+          ) : (
+            <CheckCircle2 className="h-4 w-4 text-green-500" />
+          )}
+          导入完成
+        </div>
+        <p>
+          共 {total} 条，成功 {success} 条
+          {failed > 0 && `，失败 ${failed} 条`}
+        </p>
+        {failures.length > 0 && (
+          <details className="mt-2">
+            <summary className="cursor-pointer text-xs font-medium text-slate-500 dark:text-slate-400">
+              查看失败详情
+            </summary>
+            <ul className="mt-1 space-y-1">
+              {failures.map((f, i) => (
+                <li key={i} className="text-xs">
+                  <span className="font-medium">第 {f.line} 行：</span>
+                  {f.message}
+                </li>
+              ))}
+            </ul>
+          </details>
+        )}
+      </div>
+    );
+  }
+
+  if (!result.ok && result.error) {
+    return (
+      <div className="rounded border border-red-200 bg-red-50 p-3 text-sm text-red-800 dark:border-red-700 dark:bg-red-900/30 dark:text-red-200">
+        <div className="mb-1 flex items-center gap-1.5 font-medium">
+          <XCircle className="h-4 w-4 text-red-500" />
+          导入失败
+        </div>
+        <p>{result.error.message}</p>
+      </div>
+    );
+  }
+
+  return null;
 }
