@@ -19,7 +19,7 @@ export default function RootLayout({
       <head>
         <script dangerouslySetInnerHTML={{ __html: THEME_INLINE_SCRIPT }} />
       </head>
-      <body className="flex h-dvh min-h-dvh flex-col overflow-hidden bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100">
+      <body className="flex h-dvh min-h-dvh flex-col overflow-hidden bg-slate-50 text-slate-900 dark:bg-slate-900 dark:text-slate-200">
         <AppHeader />
         <main className="flex min-h-0 flex-1 flex-col overflow-hidden">{children}</main>
       </body>

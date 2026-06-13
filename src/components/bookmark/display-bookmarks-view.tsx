@@ -196,12 +196,12 @@ export async function DisplayBookmarksView({ scope, user, searchParams }: Props)
 
   return (
     <section className="grid h-full min-h-0 overflow-hidden md:grid-cols-[240px_minmax(0,1fr)]">
-      <aside className="flex h-full min-h-0 self-stretch flex-col overflow-y-auto overflow-x-hidden rounded-b border-x border-b border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-900">
+      <aside className="flex h-full min-h-0 self-stretch flex-col overflow-y-auto overflow-x-hidden rounded-b border-x border-b border-slate-200 bg-white dark:border-slate-700/50 dark:bg-slate-800/70">
         <div className="px-4 py-3">
-          <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">聚合视图</h2>
+          <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-200">聚合视图</h2>
         </div>
 
-        <ul className="space-y-1.5 border-t border-slate-100 px-3 py-3 text-sm dark:border-slate-700">
+        <ul className="space-y-1.5 border-t border-slate-100 px-3 py-3 text-sm dark:border-slate-700/40">
           {aggregateItems.map((item) => {
             const active = !tagId && view === item.key;
             return (
@@ -210,8 +210,8 @@ export async function DisplayBookmarksView({ scope, user, searchParams }: Props)
                   href={`?view=${item.key}${queryBase}`}
                   className={`block rounded px-3 py-2 ${
                     active
-                      ? "bg-slate-100 font-medium text-slate-900 dark:bg-slate-800 dark:text-slate-100"
-                      : "text-slate-600 hover:bg-slate-50 dark:text-slate-400 dark:hover:bg-slate-800"
+                      ? "bg-slate-100 font-medium text-slate-900 dark:bg-slate-700/50 dark:text-slate-200"
+                      : "text-slate-600 hover:bg-slate-50 dark:text-slate-400 dark:hover:bg-slate-700/40"
                   }`}
                 >
                   {item.label}
@@ -222,18 +222,18 @@ export async function DisplayBookmarksView({ scope, user, searchParams }: Props)
         </ul>
 
         <div className="px-4 py-3">
-          <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">标签</h2>
+          <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-200">标签</h2>
         </div>
 
-        <ul className="space-y-1.5 border-t border-slate-100 px-3 py-3 text-sm dark:border-slate-700">
+        <ul className="space-y-1.5 border-t border-slate-100 px-3 py-3 text-sm dark:border-slate-700/40">
           {tags.map((tag) => (
             <li key={tag.id}>
               <Link
                 href={`?tagId=${tag.id}${queryBase}`}
                 className={`flex items-center justify-between rounded px-3 py-2 ${
                   tagId === tag.id
-                    ? "bg-slate-100 font-medium text-slate-900 dark:bg-slate-800 dark:text-slate-100"
-                    : "text-slate-600 hover:bg-slate-50 dark:text-slate-400 dark:hover:bg-slate-800"
+                    ? "bg-slate-100 font-medium text-slate-900 dark:bg-slate-700/50 dark:text-slate-200"
+                    : "text-slate-600 hover:bg-slate-50 dark:text-slate-400 dark:hover:bg-slate-700/40"
                 }`}
               >
                 <span className="flex items-center gap-2 truncate">
@@ -251,18 +251,18 @@ export async function DisplayBookmarksView({ scope, user, searchParams }: Props)
       </aside>
 
       <div className="min-h-0 min-w-0 space-y-4 overflow-y-auto p-6">
-        <form className="flex items-center gap-2 rounded border border-slate-200 bg-white p-3 dark:border-slate-700 dark:bg-slate-900">
+        <form className="flex items-center gap-2 rounded border border-slate-200 bg-white p-3 dark:border-slate-700/50 dark:bg-slate-800/50">
           <input
             name="q"
             defaultValue={q}
             placeholder="搜索标题 / URL / 描述 / 标签"
-            className="min-w-0 flex-1 rounded border border-slate-300 px-3 py-2 text-sm dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:placeholder:text-slate-400"
+            className="min-w-0 flex-1 rounded border border-slate-300 px-3 py-2 text-sm dark:border-slate-600 dark:bg-slate-700/50 dark:text-slate-200 dark:placeholder:text-slate-400"
           />
           {tagId ? <input type="hidden" name="tagId" value={tagId} /> : null}
           {!tagId ? <input type="hidden" name="view" value={view} /> : null}
           <button
             type="submit"
-            className="shrink-0 whitespace-nowrap rounded bg-slate-900 px-4 py-2.5 text-sm text-white hover:bg-slate-800 dark:bg-slate-700 dark:hover:bg-slate-600"
+            className="shrink-0 whitespace-nowrap rounded bg-slate-900 px-4 py-2.5 text-sm text-white hover:bg-slate-800 dark:bg-slate-600 dark:hover:bg-slate-500"
           >
             搜索
           </button>

@@ -13,10 +13,10 @@ export async function AppHeader() {
     "U";
 
   return (
-    <header className="relative z-50 border-b border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-900">
+    <header className="relative z-50 border-b border-slate-200 bg-white dark:border-slate-700/50 dark:bg-slate-800/70">
       <div className="grid w-full grid-cols-[1fr_auto] items-center gap-4 px-4 py-3">
         <div className="flex min-w-0 items-center">
-          <Link href="/bookmarks" className="inline-flex max-w-full items-center gap-2 text-base font-semibold text-slate-900 dark:text-slate-100">
+          <Link href="/bookmarks" className="inline-flex max-w-full items-center gap-2 text-base font-semibold text-slate-900 dark:text-slate-200">
             <Image
               src="/logo_assets/logo_export.png"
               alt="Bookmark Lite Logo"
@@ -36,13 +36,13 @@ export async function AppHeader() {
             <>
               <Link
                 href="/login"
-                className="rounded border border-slate-300 px-3 py-1.5 text-slate-700 hover:bg-slate-50 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-800"
+                className="rounded border border-slate-300 px-3 py-1.5 text-slate-700 hover:bg-slate-50 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700/40"
               >
                 登录
               </Link>
               <Link
                 href="/register"
-                className="rounded bg-slate-900 px-3 py-1.5 text-white hover:bg-slate-800 dark:bg-slate-700 dark:hover:bg-slate-600"
+                className="rounded bg-slate-900 px-3 py-1.5 text-white hover:bg-slate-800 dark:bg-slate-600 dark:hover:bg-slate-500"
               >
                 注册
               </Link>

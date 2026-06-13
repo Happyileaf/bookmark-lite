@@ -17,7 +17,7 @@ export function RegisterForm() {
           name="email"
           required
           type="email"
-          className="w-full rounded border border-slate-300 px-3 py-2 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
+          className="w-full rounded border border-slate-300 px-3 py-2 dark:border-slate-600 dark:bg-slate-700/50 dark:text-slate-200"
         />
       </label>
 
@@ -28,7 +28,7 @@ export function RegisterForm() {
           required
           minLength={8}
           type="password"
-          className="w-full rounded border border-slate-300 px-3 py-2 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
+          className="w-full rounded border border-slate-300 px-3 py-2 dark:border-slate-600 dark:bg-slate-700/50 dark:text-slate-200"
         />
       </label>
 
@@ -39,7 +39,7 @@ export function RegisterForm() {
           required
           minLength={8}
           type="password"
-          className="w-full rounded border border-slate-300 px-3 py-2 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
+          className="w-full rounded border border-slate-300 px-3 py-2 dark:border-slate-600 dark:bg-slate-700/50 dark:text-slate-200"
         />
       </label>
 
@@ -52,7 +52,7 @@ export function RegisterForm() {
       <button
         type="submit"
         disabled={pending}
-        className="w-full rounded bg-slate-900 px-3 py-2 text-sm text-white hover:bg-slate-800 disabled:opacity-60 dark:bg-slate-700 dark:hover:bg-slate-600"
+        className="w-full rounded bg-slate-900 px-3 py-2 text-sm text-white hover:bg-slate-800 disabled:opacity-60 dark:bg-slate-600 dark:hover:bg-slate-500"
       >
         {pending ? "提交中..." : "注册"}
       </button>

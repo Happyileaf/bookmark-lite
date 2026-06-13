@@ -51,21 +51,21 @@ export async function ManageTagsView({ scope, user, searchParams }: Props) {
     <section className="space-y-5">
       <header className="flex flex-wrap items-start justify-between gap-3">
         <div className="space-y-1">
-          <h1 className="text-lg font-semibold text-slate-900 dark:text-slate-100">标签管理</h1>
+          <h1 className="text-lg font-semibold text-slate-900 dark:text-slate-200">标签管理</h1>
           <p className="text-sm text-slate-600 dark:text-slate-400">维护标签结构，便于后续按主题组织书签。</p>
         </div>
         <div className="flex items-center gap-2">
-          <span className="rounded border border-slate-200 bg-white px-2.5 py-1 text-xs text-slate-600 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-400">
+          <span className="rounded border border-slate-200 bg-white px-2.5 py-1 text-xs text-slate-600 dark:border-slate-700/50 dark:bg-slate-800/50 dark:text-slate-400">
             共 {result.pagination.total} 个标签
           </span>
           <CreateTagModal action={upsertTagAction.bind(null, scope)} />
         </div>
       </header>
 
-      <div className="overflow-x-auto rounded border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-900">
+      <div className="overflow-x-auto rounded border border-slate-200 bg-white dark:border-slate-700/50 dark:bg-slate-800/50">
         <table className="w-full border-collapse text-sm">
           <thead>
-            <tr className="border-b border-slate-200 bg-slate-50 text-left text-slate-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400">
+            <tr className="border-b border-slate-200 bg-slate-50 text-left text-slate-600 dark:border-slate-700/50 dark:bg-slate-700/40 dark:text-slate-400">
               <th className="min-w-56 px-3 py-2 font-medium">标签名</th>
               <th className="min-w-72 px-3 py-2 font-medium">描述</th>
               <th className="px-3 py-2 font-medium">书签数</th>
@@ -74,11 +74,11 @@ export async function ManageTagsView({ scope, user, searchParams }: Props) {
           </thead>
           <tbody>
             {tags.map((tag) => (
-              <tr key={tag.id} className="border-b border-slate-100 align-middle dark:border-slate-700">
-                <td className="px-3 py-2 font-medium text-slate-900 dark:text-slate-100">
+              <tr key={tag.id} className="border-b border-slate-100 align-middle dark:border-slate-700/40">
+                <td className="px-3 py-2 font-medium text-slate-900 dark:text-slate-200">
                   <span className="inline-flex items-center gap-2">
                     <span
-                      className="h-2.5 w-2.5 rounded-full border border-slate-300 dark:border-slate-600"
+                      className="h-2.5 w-2.5 rounded-full border border-slate-300 dark:border-slate-600/70"
                       style={{ backgroundColor: tag.color ?? "#cbd5e1" }}
                     />
                     {tag.name}
@@ -86,7 +86,7 @@ export async function ManageTagsView({ scope, user, searchParams }: Props) {
                 </td>
                 <td className="px-3 py-2 text-slate-600 dark:text-slate-400">{tag.description ?? "暂无描述"}</td>
                 <td className="px-3 py-2 text-slate-600 dark:text-slate-400">
-                  <span className="rounded bg-slate-100 px-2 py-1 text-xs dark:bg-slate-800 dark:text-slate-300">{tag.bookmarkCount}</span>
+                  <span className="rounded bg-slate-100 px-2 py-1 text-xs dark:bg-slate-700/40 dark:text-slate-300">{tag.bookmarkCount}</span>
                 </td>
                 <td className="px-3 py-2">
                   <div className="flex flex-wrap items-center gap-2">
@@ -95,7 +95,7 @@ export async function ManageTagsView({ scope, user, searchParams }: Props) {
                       <input type="hidden" name="id" value={tag.id} />
                       <button
                         type="submit"
-                        className="whitespace-nowrap rounded border border-rose-300 px-2 py-1 text-xs text-rose-600 hover:bg-rose-50 dark:border-rose-800 dark:text-rose-400 dark:hover:bg-rose-950"
+                        className="whitespace-nowrap rounded border border-rose-300 px-2 py-1 text-xs text-rose-600 hover:bg-rose-50 dark:border-rose-800/60 dark:text-rose-400 dark:hover:bg-rose-900/30"
                       >
                         删除
                       </button>
@@ -118,7 +118,7 @@ export async function ManageTagsView({ scope, user, searchParams }: Props) {
         </table>
       </div>
 
-      <footer className="flex flex-wrap items-center justify-between gap-2 rounded border border-slate-200 bg-white px-3 py-2 text-sm dark:border-slate-700 dark:bg-slate-900">
+      <footer className="flex flex-wrap items-center justify-between gap-2 rounded border border-slate-200 bg-white px-3 py-2 text-sm dark:border-slate-700/50 dark:bg-slate-800/50">
         <span className="text-slate-600 dark:text-slate-400">
           第 {safePage} / {result.pagination.totalPages} 页
         </span>
@@ -128,8 +128,8 @@ export async function ManageTagsView({ scope, user, searchParams }: Props) {
             aria-disabled={safePage <= 1}
             className={`rounded border px-3 py-1.5 ${
               safePage <= 1
-                ? "pointer-events-none border-slate-200 text-slate-300 dark:border-slate-700 dark:text-slate-600"
-                : "border-slate-300 text-slate-700 hover:bg-slate-50 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-800"
+                ? "pointer-events-none border-slate-200 text-slate-300 dark:border-slate-700/40 dark:text-slate-500"
+                : "border-slate-300 text-slate-700 hover:bg-slate-50 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700/40"
             }`}
           >
             上一页
@@ -139,8 +139,8 @@ export async function ManageTagsView({ scope, user, searchParams }: Props) {
             aria-disabled={safePage >= result.pagination.totalPages}
             className={`rounded border px-3 py-1.5 ${
               safePage >= result.pagination.totalPages
-                ? "pointer-events-none border-slate-200 text-slate-300 dark:border-slate-700 dark:text-slate-600"
-                : "border-slate-300 text-slate-700 hover:bg-slate-50 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-800"
+                ? "pointer-events-none border-slate-200 text-slate-300 dark:border-slate-700/40 dark:text-slate-500"
+                : "border-slate-300 text-slate-700 hover:bg-slate-50 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700/40"
             }`}
           >
             下一页

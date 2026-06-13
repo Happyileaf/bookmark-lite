@@ -15,7 +15,7 @@ export async function SettingsView({ scope, user }: Props) {
   return (
     <section className="space-y-6">
       <header className="space-y-1">
-        <h1 className="text-lg font-semibold text-slate-900 dark:text-slate-100">{scopeLabel}</h1>
+        <h1 className="text-lg font-semibold text-slate-900 dark:text-slate-200">{scopeLabel}</h1>
         <p className="text-sm text-slate-600 dark:text-slate-400">
           调整主题和数据保留策略，保存后立即生效。
         </p>

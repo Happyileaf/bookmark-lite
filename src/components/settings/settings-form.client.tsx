@@ -46,7 +46,7 @@ function SettingsSelectRow({
   return (
     <div className="grid gap-3 p-4 md:grid-cols-[minmax(0,1fr)_260px] md:items-center">
       <div className="space-y-1">
-        <div className="inline-flex items-center gap-2 text-sm font-medium text-slate-900 dark:text-slate-100">
+        <div className="inline-flex items-center gap-2 text-sm font-medium text-slate-900 dark:text-slate-200">
           {icon}
           <label htmlFor={id}>{label}</label>
         </div>
@@ -57,7 +57,7 @@ function SettingsSelectRow({
           id={id}
           name={name}
           defaultValue={defaultValue}
-          className="peer w-full appearance-none rounded border border-slate-300 bg-white px-3 py-2 pr-9 text-sm text-slate-900 shadow-sm outline-none transition hover:border-slate-400 focus:border-slate-500 focus:ring-2 focus:ring-slate-200 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:hover:border-slate-500 dark:focus:border-slate-400 dark:focus:ring-slate-700"
+          className="peer w-full appearance-none rounded border border-slate-300 bg-white px-3 py-2 pr-9 text-sm text-slate-900 shadow-sm outline-none transition hover:border-slate-400 focus:border-slate-500 focus:ring-2 focus:ring-slate-200 dark:border-slate-600 dark:bg-slate-700/50 dark:text-slate-200 dark:hover:border-slate-500 dark:focus:border-slate-400 dark:focus:ring-slate-700"
         >
           {options.map((option) => (
             <option key={`${name}-${option.value}`} value={option.value}>
@@ -98,8 +98,8 @@ export function SettingsFormClient({ scope, theme, trashRetentionDays, auditRete
   );
 
   return (
-    <form ref={formRef} onSubmit={handleSubmit} className="overflow-hidden rounded border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-900">
-      <div className="space-y-0 divide-y divide-slate-100 dark:divide-slate-700">
+    <form ref={formRef} onSubmit={handleSubmit} className="overflow-hidden rounded border border-slate-200 bg-white dark:border-slate-700/50 dark:bg-slate-800/50">
+      <div className="space-y-0 divide-y divide-slate-100 dark:divide-slate-700/40">
         <SettingsSelectRow
           id="theme"
           name="theme"
@@ -145,11 +145,11 @@ export function SettingsFormClient({ scope, theme, trashRetentionDays, auditRete
         />
       </div>
 
-      <div className="flex items-center justify-end border-t border-slate-200 bg-slate-50 px-4 py-3 dark:border-slate-700 dark:bg-slate-800/50">
+      <div className="flex items-center justify-end border-t border-slate-200 bg-slate-50 px-4 py-3 dark:border-slate-700/50 dark:bg-slate-700/40">
         <button
           type="submit"
           disabled={saving}
-          className="inline-flex items-center gap-1.5 rounded bg-slate-900 px-3 py-2 text-sm text-white transition hover:bg-slate-800 disabled:opacity-50 dark:bg-slate-700 dark:hover:bg-slate-600"
+          className="inline-flex items-center gap-1.5 rounded bg-slate-900 px-3 py-2 text-sm text-white transition hover:bg-slate-800 disabled:opacity-50 dark:bg-slate-600 dark:hover:bg-slate-500"
         >
           {saving ? "保存中..." : "保存设置"}
         </button>
