@@ -1,17 +1,20 @@
 import type { SessionUser } from "@/server/auth/session";
-import { assertCanManageScope } from "@/server/guard/authorize";
+import { assertCanManageScope, assertCanReadScope } from "@/server/guard/authorize";
 import { resolveScopeContext } from "@/server/guard/scope";
 import { settingsRepo } from "@/server/repositories/settings.repo";
 import { settingsUpdateSchema } from "@/server/validators/settings.schema";
 import type { DataScope } from "@prisma/client";
 import { AppError } from "@/server/types/errors";
 import { prisma } from "@/server/db/prisma";
+import type { ScopeContext } from "@/server/types/domain";
 
 type ResolvedSettings = {
   theme: "light" | "dark" | "system";
   trashRetentionDays: number;
   auditRetentionDays: number;
 };
+
+type ThemePreference = ResolvedSettings["theme"];
 
 function resolveSystemSettings(
   scopeSettings: {
@@ -32,21 +35,48 @@ function resolveSystemSettings(
   };
 }
 
+async function loadResolvedSettings(scopeCtx: ScopeContext): Promise<ResolvedSettings> {
+  const [defaults, settings] = await Promise.all([
+    settingsRepo.getSystemDefaults(),
+    settingsRepo.getScopeSettings(scopeCtx.scope, scopeCtx.ownerUserId),
+  ]);
+  return resolveSystemSettings(settings, defaults);
+}
+
 export const settingsService = {
-  async get(scope: DataScope, user: SessionUser | null) {
-    assertCanManageScope(scope, user);
-    const scopeCtx = resolveScopeContext(scope, user?.id);
-    const [defaults, settings] = await Promise.all([
+  async getThemePreferences(userId?: string | null): Promise<{
+    appTheme: ThemePreference;
+    userTheme: ThemePreference | null;
+    systemDefault: ThemePreference;
+  }> {
+    const [defaults, appSettings, userSettings] = await Promise.all([
       settingsRepo.getSystemDefaults(),
-      settingsRepo.getScopeSettings(scopeCtx.scope, scopeCtx.ownerUserId),
+      settingsRepo.getScopeSettings("APP", null),
+      userId ? settingsRepo.getScopeSettings("USER", userId) : Promise.resolve(null),
     ]);
 
-    return resolveSystemSettings(settings, defaults);
+    return {
+      appTheme: appSettings.theme ?? defaults.theme,
+      userTheme: userSettings ? (userSettings.theme ?? defaults.theme) : null,
+      systemDefault: defaults.theme,
+    };
+  },
+
+  async get(scope: DataScope, user: SessionUser | null) {
+    const scopeCtx = resolveScopeContext(scope, user?.id);
+    assertCanManageScope(scope, user, scopeCtx.ownerUserId);
+    return loadResolvedSettings(scopeCtx);
+  },
+
+  async getForRead(scope: DataScope, user: SessionUser | null) {
+    assertCanReadScope(scope, user);
+    const scopeCtx = resolveScopeContext(scope, user?.id);
+    return loadResolvedSettings(scopeCtx);
   },
 
   async update(scope: DataScope, user: SessionUser | null, input: unknown) {
-    assertCanManageScope(scope, user);
     const scopeCtx = resolveScopeContext(scope, user?.id);
+    assertCanManageScope(scope, user, scopeCtx.ownerUserId);
     const parsed = settingsUpdateSchema.safeParse(input);
     if (!parsed.success) {
       throw new AppError(

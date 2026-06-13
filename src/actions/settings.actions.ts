@@ -17,17 +17,7 @@ export async function updateSettingsAction(scope: DataScope, formData: FormData)
       Number(String(formData.get("auditRetentionDays") ?? "")) || undefined,
   });
 
-  // 设置主题 cookie，供前端 FOUC 防护脚本读取
-  const rawTheme = String(formData.get("theme") ?? "");
-  const parsed = settingsUpdateSchema.shape.theme.safeParse(rawTheme || undefined);
-  if (parsed.success && parsed.data) {
-    const cookieStore = await cookies();
-    cookieStore.set("theme", parsed.data, {
-      path: "/",
-      maxAge: 31536000,
-      sameSite: "lax",
-    });
-  }
+  revalidatePath("/", "layout");
 
   if (scope === "APP") {
     revalidatePath("/admin/settings");
