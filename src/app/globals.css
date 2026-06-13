@@ -5,11 +5,41 @@
 :root {
   --background: #f8fafc;
   --foreground: #0f172a;
+
+  --surface-0: #f8fafc;
+  --surface-1: #f1f5f9;
+  --surface-2: #e2e8f0;
+  --surface-3: #cbd5e1;
+  --surface-4: #94a3b8;
+
+  --text-1: #0f172a;
+  --text-2: #1e293b;
+  --text-3: #334155;
+  --text-4: #475569;
+  --text-5: #64748b;
+
+  --brand-1: #0f172a;
+  --brand-1-hover: #1e293b;
 }
 
 .dark {
   --background: #0f172a;
-  --foreground: #f1f5f9;
+  --foreground: #e2e8f0;
+
+  --surface-0: #0f172a;
+  --surface-1: #1e293b;
+  --surface-2: #334155;
+  --surface-3: #475569;
+  --surface-4: #64748b;
+
+  --text-1: #e2e8f0;
+  --text-2: #d0dce8;
+  --text-3: #cbd5e1;
+  --text-4: #94a3b8;
+  --text-5: #64748b;
+
+  --brand-1: #cbd5e1;
+  --brand-1-hover: #94a3b8;
 }
 
 * {
