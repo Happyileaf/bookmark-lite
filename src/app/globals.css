@@ -23,41 +23,41 @@ html[data-theme-mode="system"] {
 
 html[data-theme-mode="dark"] {
   color-scheme: dark;
-  --background: #0f172a;
-  --foreground: #e2e8f0;
-  --surface-0: #0f172a;
-  --surface-1: #1e293b;
-  --surface-2: #334155;
-  --surface-3: #475569;
-  --surface-4: #64748b;
-  --text-1: #e2e8f0;
-  --text-2: #d0dce8;
+  --background: #020617;
+  --foreground: #f1f5f9;
+  --surface-0: #020617;
+  --surface-1: #0f172a;
+  --surface-2: #1e293b;
+  --surface-3: #334155;
+  --surface-4: #475569;
+  --text-1: #f1f5f9;
+  --text-2: #e2e8f0;
   --text-3: #cbd5e1;
   --text-4: #94a3b8;
   --text-5: #64748b;
   --text-inverse: #0f172a;
-  --brand-1: #cbd5e1;
-  --brand-1-hover: #94a3b8;
+  --brand-1: #e2e8f0;
+  --brand-1-hover: #cbd5e1;
 }
 
 @media (prefers-color-scheme: dark) {
   html[data-theme-mode="system"] {
     color-scheme: dark;
-    --background: #0f172a;
-    --foreground: #e2e8f0;
-    --surface-0: #0f172a;
-    --surface-1: #1e293b;
-    --surface-2: #334155;
-    --surface-3: #475569;
-    --surface-4: #64748b;
-    --text-1: #e2e8f0;
-    --text-2: #d0dce8;
+    --background: #020617;
+    --foreground: #f1f5f9;
+    --surface-0: #020617;
+    --surface-1: #0f172a;
+    --surface-2: #1e293b;
+    --surface-3: #334155;
+    --surface-4: #475569;
+    --text-1: #f1f5f9;
+    --text-2: #e2e8f0;
     --text-3: #cbd5e1;
     --text-4: #94a3b8;
     --text-5: #64748b;
     --text-inverse: #0f172a;
-    --brand-1: #cbd5e1;
-    --brand-1-hover: #94a3b8;
+    --brand-1: #e2e8f0;
+    --brand-1-hover: #cbd5e1;
   }
 }
 
