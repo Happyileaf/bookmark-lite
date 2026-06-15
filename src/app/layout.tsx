@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   description: "标签驱动的书签管理工具",
 };
 
-const THEME_INLINE_SCRIPT = `(function(){try{var t=document.cookie.match(/(?:^|;\\s*)theme=(\\S+)/);var v=t?t[1]:null;var d;if(v==='dark')d=true;else if(v==='light')d=false;else d=window.matchMedia('(prefers-color-scheme:dark)').matches;if(d)document.documentElement.classList.add('dark')}catch(e){}})()`;
+const THEME_INLINE_SCRIPT = `(function(){try{var t=document.cookie.match(/(?:^|;\\s*)theme=([^;]+)/);var v=t?decodeURIComponent(t[1]):null;var n=v==='dark'||v==='light'||v==='system'?v:null;var p=window.matchMedia('(prefers-color-scheme:dark)').matches;var d=n==='dark'||((n==='system'||n===null)&&p);document.documentElement.classList.toggle('dark',d)}catch(e){}})()`;
 
 export default function RootLayout({
   children,
