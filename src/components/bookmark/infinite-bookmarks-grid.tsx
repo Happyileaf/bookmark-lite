@@ -193,11 +193,11 @@ export function InfiniteBookmarksGrid({
               className="pointer-events-auto relative z-20 grid h-full min-w-0 cursor-pointer content-start gap-2 select-text"
               onClick={(e) => handleContentClick(e, bookmark.url)}
             >
-              <div className="flex h-8 min-w-0 items-center gap-2 pr-20">
+              <div className="flex min-w-0 items-center gap-2 pr-20">
                 <img
                   src={bookmark.favicon || "/logo_assets/logo_export.ico"}
                   alt=""
-                  className="h-5 w-5 shrink-0 rounded object-contain"
+                  className="h-8 w-8 shrink-0 rounded object-contain"
                 />
                 <h3
                   className="min-w-0 flex-1 truncate text-base font-medium leading-6 text-slate-900 group-hover:text-slate-700 dark:text-slate-200 dark:group-hover:text-slate-300"
