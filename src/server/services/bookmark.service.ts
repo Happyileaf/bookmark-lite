@@ -120,6 +120,15 @@ export const bookmarkService = {
     };
   },
 
+  async countByView(args: { scope: DataScope; user: SessionUser | null }) {
+    assertCanReadScope(args.scope, args.user);
+    const ownerUserId = args.scope === "USER" ? args.user?.id ?? null : null;
+    return bookmarkRepo.countByView({
+      scope: args.scope,
+      ownerUserId,
+    });
+  },
+
   async create(input: unknown, user: SessionUser | null) {
     const parsed = bookmarkCreateSchema.safeParse(input);
     if (!parsed.success) {

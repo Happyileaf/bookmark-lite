@@ -136,4 +136,48 @@ export const bookmarkRepo = {
       },
     });
   },
+
+  async countByView(input: Omit<ListInput, "page" | "pageSize" | "sort" | "tagId" | "q">) {
+    const baseWhere = buildWhere({ ...input, view: "all", page: 1, pageSize: 1 });
+
+    const [all, favorites, untagged] = await Promise.all([
+      prisma.bookmark.count({ where: baseWhere }),
+      prisma.bookmark.count({
+        where: {
+          ...baseWhere,
+          isFavorite: true,
+        },
+      }),
+      prisma.bookmark.count({
+        where: {
+          ...baseWhere,
+          bookmarkTags: { none: {} },
+        },
+      }),
+    ]);
+
+    const recentAddedWhere = { ...baseWhere };
+    const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+    const recentAdded = await prisma.bookmark.count({
+      where: {
+        ...recentAddedWhere,
+        createdAt: { gte: thirtyDaysAgo },
+      },
+    });
+
+    const recentVisited = await prisma.bookmark.count({
+      where: {
+        ...recentAddedWhere,
+        lastVisitedAt: { gte: thirtyDaysAgo },
+      },
+    });
+
+    return {
+      all,
+      favorites,
+      untagged,
+      recent_added: recentAdded,
+      recent_visited: recentVisited,
+    };
+  },
 };

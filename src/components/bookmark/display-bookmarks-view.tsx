@@ -147,10 +147,17 @@ export async function DisplayBookmarksView({ scope, user, searchParams }: Props)
   let tags: Awaited<ReturnType<typeof tagService.list>> = [];
   let userTagsForSaving: Awaited<ReturnType<typeof tagService.list>> = [];
   let listResult: Awaited<ReturnType<typeof bookmarkService.list>>;
+  let viewCounts: Awaited<ReturnType<typeof bookmarkService.countByView>> = {
+    all: 0,
+    favorites: 0,
+    untagged: 0,
+    recent_added: 0,
+    recent_visited: 0,
+  };
   let dbUnavailableReason: string | null = null;
 
   try {
-    [tags, listResult, userTagsForSaving] = await Promise.all([
+    [tags, listResult, userTagsForSaving, viewCounts] = await Promise.all([
       tagService.list(scope, user),
       bookmarkService.list({
         scope,
@@ -164,6 +171,7 @@ export async function DisplayBookmarksView({ scope, user, searchParams }: Props)
         },
       }),
       scope === "APP" && user ? tagService.list("USER", user) : Promise.resolve([]),
+      bookmarkService.countByView({ scope, user }),
     ]);
   } catch (error) {
     dbUnavailableReason = readDbUnavailableReason(error, runtimeTarget);
@@ -186,12 +194,12 @@ export async function DisplayBookmarksView({ scope, user, searchParams }: Props)
   }
 
   const queryBase = q ? `&q=${encodeURIComponent(q)}` : "";
-  const aggregateItems: Array<{ key: DisplayView; label: string }> = [
-    { key: "all", label: "全部书签" },
-    { key: "untagged", label: "未分类" },
-    { key: "favorites", label: "收藏" },
-    { key: "recent_added", label: "最近添加" },
-    { key: "recent_visited", label: "最近访问" },
+  const aggregateItems: Array<{ key: DisplayView; label: string; count: number }> = [
+    { key: "all", label: "全部书签", count: viewCounts.all },
+    { key: "untagged", label: "未分类", count: viewCounts.untagged },
+    { key: "favorites", label: "收藏", count: viewCounts.favorites },
+    { key: "recent_added", label: "最近添加", count: viewCounts.recent_added },
+    { key: "recent_visited", label: "最近访问", count: viewCounts.recent_visited },
   ];
 
   return (
@@ -208,13 +216,14 @@ export async function DisplayBookmarksView({ scope, user, searchParams }: Props)
               <li key={item.key}>
                 <Link
                   href={`?view=${item.key}${queryBase}`}
-                  className={`block rounded px-3 py-2 ${
+                  className={`flex items-center justify-between rounded px-3 py-2 ${
                     active
                       ? "bg-slate-100 font-medium text-slate-900 dark:bg-slate-700/50 dark:text-slate-200"
                       : "text-slate-600 hover:bg-slate-50 dark:text-slate-400 dark:hover:bg-slate-700/40"
                   }`}
                 >
-                  {item.label}
+                  <span className="truncate">{item.label}</span>
+                  <span className="ml-2 shrink-0 text-xs text-slate-400 dark:text-slate-500">{item.count}</span>
                 </Link>
               </li>
             );
