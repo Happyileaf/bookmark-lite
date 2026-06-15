@@ -167,7 +167,7 @@ export function InfiniteBookmarksGrid({
         {items.map((bookmark) => (
           <li
             key={bookmark.id}
-            className="group relative h-full cursor-pointer rounded border border-slate-200 bg-white p-4 hover:border-slate-300 dark:border-slate-700/50 dark:bg-slate-800/50 dark:hover:border-slate-600/70"
+            className="group relative h-full cursor-pointer overflow-hidden rounded border border-slate-200 bg-white p-4 hover:border-slate-300 dark:border-slate-700/50 dark:bg-slate-800/50 dark:hover:border-slate-600/70"
           >
             <a
               href={bookmark.url}
@@ -190,29 +190,29 @@ export function InfiniteBookmarksGrid({
             </div>
 
             <div
-              className="pointer-events-auto relative z-20 grid h-full cursor-pointer content-start gap-2 select-text"
+              className="pointer-events-auto relative z-20 grid h-full min-w-0 cursor-pointer content-start gap-2 select-text"
               onClick={(e) => handleContentClick(e, bookmark.url)}
             >
-              <div className="flex items-center gap-2 pr-20">
+              <div className="flex h-8 min-w-0 items-center gap-2 pr-20">
                 <img
                   src={bookmark.favicon || "/logo_assets/logo_export.ico"}
                   alt=""
                   className="h-5 w-5 shrink-0 rounded object-contain"
                 />
                 <h3
-                  className="truncate text-base font-medium leading-6 text-slate-900 group-hover:text-slate-700 dark:text-slate-200 dark:group-hover:text-slate-300"
+                  className="min-w-0 flex-1 truncate text-base font-medium leading-6 text-slate-900 group-hover:text-slate-700 dark:text-slate-200 dark:group-hover:text-slate-300"
                   title={bookmark.title}
                 >
                   {bookmark.title}
                 </h3>
               </div>
 
-              <p className="h-5 truncate text-sm leading-5 text-slate-500 dark:text-slate-400" title={bookmark.url}>
+              <p className="h-4 min-w-0 w-full truncate text-xs leading-4 text-slate-500 dark:text-slate-400" title={bookmark.url}>
                 {bookmark.url}
               </p>
 
               <p
-                className="h-10 overflow-hidden text-sm leading-5 text-slate-700 dark:text-slate-300/80 [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:2]"
+                className="h-10 min-w-0 w-full overflow-hidden break-words text-sm leading-5 text-slate-700 dark:text-slate-300/80 [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:2]"
                 title={bookmark.description ?? ""}
               >
                 {bookmark.description || "\u00A0"}
