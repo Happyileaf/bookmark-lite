@@ -84,6 +84,13 @@ export function InfiniteBookmarksGrid({
   const loadingRef = useRef(false);
   const sentinelRef = useRef<HTMLDivElement | null>(null);
 
+  const handleContentClick = useCallback((e: React.MouseEvent, url: string) => {
+    const selection = window.getSelection();
+    if (selection && !selection.isCollapsed) return;
+
+    window.open(url, "_blank", "noopener,noreferrer");
+  }, []);
+
   const hasMore = pagination.page < pagination.totalPages;
 
   const queryBase = useMemo(() => {
@@ -160,15 +167,15 @@ export function InfiniteBookmarksGrid({
         {items.map((bookmark) => (
           <li
             key={bookmark.id}
-            className="group relative h-full rounded border border-slate-200 bg-white p-4 hover:border-slate-300 dark:border-slate-700/50 dark:bg-slate-800/50 dark:hover:border-slate-600/70"
+            className="group relative h-full cursor-pointer rounded border border-slate-200 bg-white p-4 hover:border-slate-300 dark:border-slate-700/50 dark:bg-slate-800/50 dark:hover:border-slate-600/70"
           >
             <a
               href={bookmark.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="absolute inset-0 z-10 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400"
+              className="sr-only focus-visible:not-sr-only focus-visible:absolute focus-visible:inset-0 focus-visible:z-50 focus-visible:rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400"
             >
-              <span className="sr-only">打开书签：{bookmark.title}</span>
+              打开书签：{bookmark.title}
             </a>
 
             <div className="pointer-events-auto absolute right-3 top-3 z-30 flex items-center gap-1">
@@ -182,7 +189,10 @@ export function InfiniteBookmarksGrid({
               ) : null}
             </div>
 
-            <div className="pointer-events-none relative z-20 grid h-full content-start gap-2">
+            <div
+              className="pointer-events-auto relative z-20 grid h-full cursor-pointer content-start gap-2 select-text"
+              onClick={(e) => handleContentClick(e, bookmark.url)}
+            >
               <div className="flex items-center gap-2 pr-16">
                 <img
                   src={bookmark.favicon || "/logo_assets/logo_export.ico"}
