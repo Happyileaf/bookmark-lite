@@ -41,6 +41,7 @@ export async function createBookmarkAction(scope: DataScope, formData: FormData)
       scope,
       title: String(formData.get("title") ?? ""),
       url: String(formData.get("url") ?? ""),
+      favicon: String(formData.get("favicon") ?? ""),
       description: String(formData.get("description") ?? ""),
       tagNames: splitTagNames(String(formData.get("tags") ?? "")),
     },
@@ -54,6 +55,7 @@ export async function updateBookmarkAction(scope: DataScope, formData: FormData)
   const id = String(formData.get("id") ?? "");
   const title = readOptionalString(formData, "title");
   const url = readOptionalString(formData, "url");
+  const favicon = readOptionalString(formData, "favicon");
   const description = readOptionalString(formData, "description");
   const tags = readOptionalString(formData, "tags");
   const isFavorite = readOptionalBoolean(formData, "isFavorite");
@@ -64,6 +66,7 @@ export async function updateBookmarkAction(scope: DataScope, formData: FormData)
     scope,
     ...(title !== undefined ? { title } : {}),
     ...(url !== undefined ? { url } : {}),
+    ...(favicon !== undefined ? { favicon } : {}),
     ...(description !== undefined ? { description } : {}),
     ...(tags !== undefined ? { tagNames: splitTagNames(tags) } : {}),
     ...(isFavorite !== undefined ? { isFavorite } : {}),

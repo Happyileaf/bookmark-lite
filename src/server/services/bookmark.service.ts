@@ -158,6 +158,7 @@ export const bookmarkService = {
           scopeOwnerKey: scopeCtx.scopeOwnerKey,
           title: parsed.data.title,
           url: parsed.data.url,
+          favicon: parsed.data.favicon || null,
           normalizedUrl,
           description: parsed.data.description || null,
         },
@@ -230,6 +231,9 @@ export const bookmarkService = {
     }
     if (typeof parsed.data.title === "string") {
       data.title = parsed.data.title;
+    }
+    if (typeof parsed.data.favicon === "string") {
+      data.favicon = parsed.data.favicon || null;
     }
     if (typeof parsed.data.description === "string") {
       data.description = parsed.data.description || null;
@@ -410,6 +414,7 @@ export const bookmarkService = {
           scopeOwnerKey: user.id,
           title: appBookmark.title,
           url: appBookmark.url,
+          favicon: appBookmark.favicon,
           normalizedUrl: appBookmark.normalizedUrl,
           description: appBookmark.description,
           isFavorite: false,

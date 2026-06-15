@@ -147,14 +147,21 @@ export async function ManageBookmarksView({ scope, user, searchParams }: Props) 
             {listResult.items.map((bookmark) => (
               <tr key={bookmark.id} className="border-b border-slate-100 align-middle dark:border-slate-700/40">
                 <td className="space-y-1 px-3 py-2">
-                  <a
-                    href={bookmark.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="font-medium text-slate-900 hover:text-slate-700 dark:text-slate-200 dark:hover:text-slate-300"
-                  >
-                    {bookmark.title}
-                  </a>
+                  <div className="flex items-center gap-2">
+                    <img
+                      src={(bookmark as { favicon?: string | null }).favicon || "/logo_assets/logo_export.ico"}
+                      alt=""
+                      className="h-5 w-5 shrink-0 rounded object-contain"
+                    />
+                    <a
+                      href={bookmark.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="font-medium text-slate-900 hover:text-slate-700 dark:text-slate-200 dark:hover:text-slate-300"
+                    >
+                      {bookmark.title}
+                    </a>
+                  </div>
                   <div className="break-all text-xs text-slate-500 dark:text-slate-400">{bookmark.url}</div>
                 </td>
                 <td className="px-3 py-2">

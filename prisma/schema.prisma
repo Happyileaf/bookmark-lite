@@ -52,6 +52,7 @@ model Bookmark {
   ownerUser     User?         @relation(fields: [ownerUserId], references: [id], onDelete: SetNull)
   title         String        @db.VarChar(300)
   url           String
+  favicon       String?
   normalizedUrl String        @map("normalized_url")
   description   String?
   isFavorite    Boolean       @default(false) @map("is_favorite")

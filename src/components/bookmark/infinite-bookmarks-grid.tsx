@@ -18,6 +18,7 @@ type BookmarkItem = {
   id: string;
   title: string;
   url: string;
+  favicon: string | null;
   description: string | null;
   tags: BookmarkTag[];
 };
@@ -182,12 +183,19 @@ export function InfiniteBookmarksGrid({
             </div>
 
             <div className="pointer-events-none relative z-20 grid h-full content-start gap-2">
-              <h3
-                className="h-6 truncate pr-16 text-base font-medium leading-6 text-slate-900 group-hover:text-slate-700 dark:text-slate-200 dark:group-hover:text-slate-300"
-                title={bookmark.title}
-              >
-                {bookmark.title}
-              </h3>
+              <div className="flex items-center gap-2 pr-16">
+                <img
+                  src={bookmark.favicon || "/logo_assets/logo_export.ico"}
+                  alt=""
+                  className="h-5 w-5 shrink-0 rounded object-contain"
+                />
+                <h3
+                  className="truncate text-base font-medium leading-6 text-slate-900 group-hover:text-slate-700 dark:text-slate-200 dark:group-hover:text-slate-300"
+                  title={bookmark.title}
+                >
+                  {bookmark.title}
+                </h3>
+              </div>
 
               <p className="h-5 truncate text-sm leading-5 text-slate-500 dark:text-slate-400" title={bookmark.url}>
                 {bookmark.url}
