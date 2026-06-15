@@ -178,7 +178,7 @@ export function InfiniteBookmarksGrid({
               打开书签：{bookmark.title}
             </a>
 
-            <div className="pointer-events-auto absolute right-3 top-3 z-30 flex items-center gap-1">
+            <div className="pointer-events-auto absolute right-4 top-4 z-30 flex items-center gap-1">
               <CopyBookmarkUrlButton url={bookmark.url} />
               {canSaveToUser && saveToUserAction ? (
                 <SaveAppBookmarkModal
@@ -193,7 +193,7 @@ export function InfiniteBookmarksGrid({
               className="pointer-events-auto relative z-20 grid h-full cursor-pointer content-start gap-2 select-text"
               onClick={(e) => handleContentClick(e, bookmark.url)}
             >
-              <div className="flex items-center gap-2 pr-16">
+              <div className="flex items-center gap-2 pr-20">
                 <img
                   src={bookmark.favicon || "/logo_assets/logo_export.ico"}
                   alt=""
