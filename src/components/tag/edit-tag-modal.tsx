@@ -25,6 +25,7 @@ export function EditTagModal({ action, tag }: Props) {
   const [isPending, startTransition] = useTransition();
   const [colorValue, setColorValue] = useState(tag.color ?? "");
   const colorRef = useRef<HTMLInputElement>(null);
+  const pickerRef = useRef<HTMLInputElement>(null);
 
   const submit = (formData: FormData) => {
     startTransition(async () => {
@@ -82,9 +83,24 @@ export function EditTagModal({ action, tag }: Props) {
                 className="rounded border border-slate-300 px-3 py-2 text-sm dark:border-slate-600 dark:bg-slate-700/50 dark:text-slate-200 dark:placeholder:text-slate-400"
               />
               <div className="flex items-center gap-2">
-                <span
-                  className="h-5 w-5 shrink-0 rounded-full"
+                <input
+                  ref={pickerRef}
+                  type="color"
+                  className="absolute h-0 w-0 opacity-0"
+                  value={colorValue || "#cbd5e1"}
+                  onChange={(e) => {
+                    setColorValue(e.target.value);
+                    if (colorRef.current) {
+                      colorRef.current.value = e.target.value;
+                    }
+                  }}
+                />
+                <button
+                  type="button"
+                  onClick={() => pickerRef.current?.click()}
+                  className="h-5 w-5 shrink-0 rounded-full cursor-pointer"
                   style={{ backgroundColor: colorValue || "#cbd5e1" }}
+                  title="选取颜色"
                 />
                 <input
                   ref={colorRef}
