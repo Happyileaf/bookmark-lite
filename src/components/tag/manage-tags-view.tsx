@@ -1,10 +1,11 @@
 import Link from "next/link";
 import type { DataScope } from "@prisma/client";
-import { ArrowDown, ArrowUp, Filter, Search, Tag as TagIcon } from "lucide-react";
+import { Filter, Search, Tag as TagIcon } from "lucide-react";
 import { DEFAULT_PAGE_SIZE } from "@/lib/constants";
 import { deleteTagAction, reorderTagAction, upsertTagAction } from "@/actions/tag.actions";
 import { CreateTagModal } from "@/components/tag/create-tag-modal";
 import { EditTagModal } from "@/components/tag/edit-tag-modal";
+import { ReorderTagModal } from "@/components/tag/reorder-tag-modal";
 import type { SessionUser } from "@/server/auth/session";
 import { tagService } from "@/server/services/tag.service";
 
@@ -36,6 +37,7 @@ export async function ManageTagsView({ scope, user, searchParams }: Props) {
   const page = readPage(searchParams.page);
   const currentSort = sort ?? "default";
   const listPath = scope === "APP" ? "/admin/manage/tags" : "/manage/tags";
+  const allTags = await tagService.list(scope, user);
   const result = await tagService.listPaged(scope, user, {
     q,
     sort: (sort as
@@ -73,6 +75,7 @@ export async function ManageTagsView({ scope, user, searchParams }: Props) {
           <span className="rounded border border-slate-200 bg-white px-2.5 py-1 text-xs text-slate-600 dark:border-slate-700/50 dark:bg-slate-800/50 dark:text-slate-400">
             共 {result.pagination.total} 个标签
           </span>
+          <ReorderTagModal action={reorderTagAction.bind(null, scope)} tags={allTags.map((t) => ({ id: t.id, name: t.name, color: t.color }))} />
           <CreateTagModal action={upsertTagAction.bind(null, scope)} />
         </div>
       </header>
@@ -131,10 +134,7 @@ export async function ManageTagsView({ scope, user, searchParams }: Props) {
             </tr>
           </thead>
           <tbody>
-            {tags.map((tag, index) => {
-              const isFirst = index === 0;
-              const isLast = index === tags.length - 1;
-              return (
+            {tags.map((tag) => (
               <tr key={tag.id} className="border-b border-slate-100 align-middle dark:border-slate-700/40">
                 <td className="px-3 py-2 font-medium text-slate-900 dark:text-slate-200">
                   <span className="inline-flex items-center gap-2">
@@ -151,40 +151,6 @@ export async function ManageTagsView({ scope, user, searchParams }: Props) {
                 </td>
                 <td className="px-3 py-2">
                   <div className="flex flex-wrap items-center gap-2">
-                    {currentSort === "default" ? (
-                      <>
-                        <form action={reorderTagAction.bind(null, scope)}>
-                          <input type="hidden" name="id" value={tag.id} />
-                          <input type="hidden" name="direction" value="up" />
-                          <button
-                            type="submit"
-                            disabled={isFirst}
-                            className={`rounded border px-2 py-1 text-xs ${
-                              isFirst
-                                ? "pointer-events-none border-slate-200 text-slate-300 dark:border-slate-700/40 dark:text-slate-500"
-                                : "border-slate-300 text-slate-700 hover:bg-slate-50 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700/40"
-                            }`}
-                          >
-                            <ArrowUp className="h-3.5 w-3.5" />
-                          </button>
-                        </form>
-                        <form action={reorderTagAction.bind(null, scope)}>
-                          <input type="hidden" name="id" value={tag.id} />
-                          <input type="hidden" name="direction" value="down" />
-                          <button
-                            type="submit"
-                            disabled={isLast}
-                            className={`rounded border px-2 py-1 text-xs ${
-                              isLast
-                                ? "pointer-events-none border-slate-200 text-slate-300 dark:border-slate-700/40 dark:text-slate-500"
-                                : "border-slate-300 text-slate-700 hover:bg-slate-50 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700/40"
-                            }`}
-                          >
-                            <ArrowDown className="h-3.5 w-3.5" />
-                          </button>
-                        </form>
-                      </>
-                    ) : null}
                     <EditTagModal action={upsertTagAction.bind(null, scope)} tag={tag} />
                     <form action={deleteTagAction.bind(null, scope)}>
                       <input type="hidden" name="id" value={tag.id} />
@@ -198,8 +164,7 @@ export async function ManageTagsView({ scope, user, searchParams }: Props) {
                   </div>
                 </td>
               </tr>
-              );
-            })}
+            ))}
             {tags.length === 0 ? (
               <tr>
                 <td colSpan={4} className="px-3 py-10 text-center text-slate-500 dark:text-slate-400">
