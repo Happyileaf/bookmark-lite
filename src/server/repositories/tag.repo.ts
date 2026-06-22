@@ -60,7 +60,7 @@ function buildOrderBy(sort?: TagSortOption): Prisma.TagOrderByWithRelationInput[
       return [{ bookmarkCount: "asc" }, { sortOrder: "asc" }, { id: "asc" }];
     case "default":
     default:
-      return [{ sortOrder: "asc" }, { name: "asc" }];
+      return [{ createdAt: "asc" }, { id: "asc" }];
   }
 }
 
