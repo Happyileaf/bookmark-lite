@@ -36,7 +36,6 @@ export async function ManageTagsView({ scope, user, searchParams }: Props) {
   const page = readPage(searchParams.page);
   const currentSort = sort ?? "default";
   const listPath = scope === "APP" ? "/admin/manage/tags" : "/manage/tags";
-  const hasFilters = Boolean(q) || currentSort !== "default";
   const result = await tagService.listPaged(scope, user, {
     q,
     sort: (sort as
@@ -108,18 +107,16 @@ export async function ManageTagsView({ scope, user, searchParams }: Props) {
           </select>
           <button
             type="submit"
-            className="rounded bg-slate-900 px-3 py-2 text-sm text-white hover:bg-slate-800 dark:bg-slate-700 dark:hover:bg-slate-600"
+            className="flex h-[36px] items-center justify-center rounded bg-slate-900 px-3 text-white hover:bg-slate-800 dark:bg-slate-700 dark:hover:bg-slate-600"
           >
-            应用
+            <Search className="h-4 w-4" />
           </button>
-          {hasFilters ? (
-            <Link
-              href={listPath}
-              className="rounded border border-slate-300 px-3 py-2 text-sm text-slate-700 hover:bg-slate-50 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-800"
-            >
-              清空
-            </Link>
-          ) : null}
+          <Link
+            href={listPath}
+            className="flex h-[36px] items-center justify-center rounded border border-slate-300 px-3 text-sm text-slate-700 hover:bg-slate-50 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-800"
+          >
+            清空
+          </Link>
         </div>
       </form>
 
