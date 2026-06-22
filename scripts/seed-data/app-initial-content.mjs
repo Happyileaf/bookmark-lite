@@ -83,17 +83,12 @@ export const APP_SEED_BOOKMARK_GROUPS = [
         description: "OpenAI 官方产品、研究与开发入口。"
       },
       {
-        title: "OpenAI",
-        url: "https://openai.com/",
-        description: "OpenAI 官方产品、研究与开发入口。"
+        title: "ChatGPT",
+        url: "https://chatgpt.com/",
+        description: "OpenAI ChatGPT 产品入口。"
       },
       {
-        title: "Hugging Face",
-        url: "https://huggingface.co/",
-        description: "模型、数据集与社区协作平台。"
-      },
-      {
-        title: "Anthropic 官网",
+        title: "Anthropic",
         url: "https://www.anthropic.com/",
         description: "Claude 相关产品与研究信息。"
       },
@@ -101,6 +96,16 @@ export const APP_SEED_BOOKMARK_GROUPS = [
         title: "Google AI for Developers",
         url: "https://ai.google.dev/",
         description: "Google AI 开发者总入口。"
+      },
+      {
+        title: "Google AI Studio",
+        url: "https://aistudio.google.com/",
+        description: "Google AI Studio 平台，用于构建和管理大模型。"
+      },
+      {
+        title: "Hugging Face",
+        url: "https://huggingface.co/",
+        description: "模型、数据集与社区协作平台。"
       },
       {
         title: "Replicate",
