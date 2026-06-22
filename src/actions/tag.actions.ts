@@ -36,3 +36,14 @@ export async function deleteTagAction(scope: DataScope, formData: FormData) {
   await tagService.delete(id, scope, user);
   revalidateTagViews(scope);
 }
+
+export async function reorderTagAction(scope: DataScope, formData: FormData) {
+  const user = await getSessionUser();
+  const id = String(formData.get("id") ?? "");
+  const direction = String(formData.get("direction") ?? "");
+  if (direction !== "up" && direction !== "down") {
+    return;
+  }
+  await tagService.reorder(id, direction, scope, user);
+  revalidateTagViews(scope);
+}

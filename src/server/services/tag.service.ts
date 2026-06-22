@@ -126,4 +126,53 @@ export const tagService = {
       });
     });
   },
+
+  /**
+   * 调整标签展示顺序
+   *
+   * @description 将指定标签移动到目标位置，通过交换 sortOrder 值实现
+   * @param id - 要移动的标签ID
+   * @param direction - 移动方向，"up" 向上移动（sortOrder 减小），"down" 向下移动（sortOrder 增大）
+   * @param scope - 数据域
+   * @param user - 当前用户
+   * @example
+   * await tagService.reorder("tag-uuid", "up", "APP", user);
+   */
+  async reorder(id: string, direction: "up" | "down", scope: DataScope, user: SessionUser | null) {
+    assertCanManageScope(scope, user);
+    const scopeCtx = resolveScopeContext(scope, user?.id);
+
+    const tag = await prisma.tag.findUnique({ where: { id } });
+    if (!tag) {
+      throw new AppError("RESOURCE_NOT_FOUND", "标签不存在", 404);
+    }
+    ensureTagOwner(tag, scopeCtx.scope, scopeCtx.ownerUserId);
+
+    /** 查找相邻标签：up 找 sortOrder 更小的，down 找 sortOrder 更大的 */
+    const neighbor = await prisma.tag.findFirst({
+      where: {
+        scope: scopeCtx.scope,
+        ownerUserId: scopeCtx.ownerUserId,
+        ...(direction === "up"
+          ? { sortOrder: { lt: tag.sortOrder } }
+          : { sortOrder: { gt: tag.sortOrder } }),
+      },
+      orderBy: direction === "up" ? [{ sortOrder: "desc" }, { id: "desc" }] : [{ sortOrder: "asc" }, { id: "asc" }],
+    });
+
+    if (!neighbor) {
+      return;
+    }
+
+    await prisma.$transaction(async (tx) => {
+      await tx.tag.update({
+        where: { id: tag.id },
+        data: { sortOrder: neighbor.sortOrder },
+      });
+      await tx.tag.update({
+        where: { id: neighbor.id },
+        data: { sortOrder: tag.sortOrder },
+      });
+    });
+  },
 };
