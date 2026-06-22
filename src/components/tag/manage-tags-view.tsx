@@ -151,36 +151,40 @@ export async function ManageTagsView({ scope, user, searchParams }: Props) {
                 </td>
                 <td className="px-3 py-2">
                   <div className="flex flex-wrap items-center gap-2">
-                    <form action={reorderTagAction.bind(null, scope)}>
-                      <input type="hidden" name="id" value={tag.id} />
-                      <input type="hidden" name="direction" value="up" />
-                      <button
-                        type="submit"
-                        disabled={isFirst}
-                        className={`rounded border px-2 py-1 text-xs ${
-                          isFirst
-                            ? "pointer-events-none border-slate-200 text-slate-300 dark:border-slate-700/40 dark:text-slate-500"
-                            : "border-slate-300 text-slate-700 hover:bg-slate-50 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700/40"
-                        }`}
-                      >
-                        <ArrowUp className="h-3.5 w-3.5" />
-                      </button>
-                    </form>
-                    <form action={reorderTagAction.bind(null, scope)}>
-                      <input type="hidden" name="id" value={tag.id} />
-                      <input type="hidden" name="direction" value="down" />
-                      <button
-                        type="submit"
-                        disabled={isLast}
-                        className={`rounded border px-2 py-1 text-xs ${
-                          isLast
-                            ? "pointer-events-none border-slate-200 text-slate-300 dark:border-slate-700/40 dark:text-slate-500"
-                            : "border-slate-300 text-slate-700 hover:bg-slate-50 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700/40"
-                        }`}
-                      >
-                        <ArrowDown className="h-3.5 w-3.5" />
-                      </button>
-                    </form>
+                    {currentSort === "default" ? (
+                      <>
+                        <form action={reorderTagAction.bind(null, scope)}>
+                          <input type="hidden" name="id" value={tag.id} />
+                          <input type="hidden" name="direction" value="up" />
+                          <button
+                            type="submit"
+                            disabled={isFirst}
+                            className={`rounded border px-2 py-1 text-xs ${
+                              isFirst
+                                ? "pointer-events-none border-slate-200 text-slate-300 dark:border-slate-700/40 dark:text-slate-500"
+                                : "border-slate-300 text-slate-700 hover:bg-slate-50 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700/40"
+                            }`}
+                          >
+                            <ArrowUp className="h-3.5 w-3.5" />
+                          </button>
+                        </form>
+                        <form action={reorderTagAction.bind(null, scope)}>
+                          <input type="hidden" name="id" value={tag.id} />
+                          <input type="hidden" name="direction" value="down" />
+                          <button
+                            type="submit"
+                            disabled={isLast}
+                            className={`rounded border px-2 py-1 text-xs ${
+                              isLast
+                                ? "pointer-events-none border-slate-200 text-slate-300 dark:border-slate-700/40 dark:text-slate-500"
+                                : "border-slate-300 text-slate-700 hover:bg-slate-50 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700/40"
+                            }`}
+                          >
+                            <ArrowDown className="h-3.5 w-3.5" />
+                          </button>
+                        </form>
+                      </>
+                    ) : null}
                     <EditTagModal action={upsertTagAction.bind(null, scope)} tag={tag} />
                     <form action={deleteTagAction.bind(null, scope)}>
                       <input type="hidden" name="id" value={tag.id} />
