@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { DataScope } from "@prisma/client";
-import { Tag as TagIcon } from "lucide-react";
+import { Filter, Search, Tag as TagIcon } from "lucide-react";
 import { DEFAULT_PAGE_SIZE } from "@/lib/constants";
 import { deleteTagAction, upsertTagAction } from "@/actions/tag.actions";
 import { CreateTagModal } from "@/components/tag/create-tag-modal";
@@ -31,9 +31,23 @@ function readPage(value: string | string[] | undefined): number {
 }
 
 export async function ManageTagsView({ scope, user, searchParams }: Props) {
+  const q = readParam(searchParams.q);
+  const sort = readParam(searchParams.sort);
   const page = readPage(searchParams.page);
+  const currentSort = sort ?? "default";
   const listPath = scope === "APP" ? "/admin/manage/tags" : "/manage/tags";
+  const hasFilters = Boolean(q) || currentSort !== "default";
   const result = await tagService.listPaged(scope, user, {
+    q,
+    sort: (sort as
+      | "default"
+      | "name_asc"
+      | "name_desc"
+      | "created_desc"
+      | "created_asc"
+      | "bookmark_count_desc"
+      | "bookmark_count_asc"
+      | undefined) ?? "default",
     page,
     pageSize: DEFAULT_PAGE_SIZE,
   });
@@ -41,10 +55,12 @@ export async function ManageTagsView({ scope, user, searchParams }: Props) {
   const safePage = Math.min(result.pagination.page, result.pagination.totalPages);
 
   const buildPageHref = (targetPage: number) => {
-    if (targetPage <= 1) {
-      return listPath;
-    }
-    return `${listPath}?page=${targetPage}`;
+    const params = new URLSearchParams();
+    if (q) params.set("q", q);
+    if (currentSort !== "default") params.set("sort", currentSort);
+    if (targetPage > 1) params.set("page", String(targetPage));
+    const query = params.toString();
+    return query ? `${listPath}?${query}` : listPath;
   };
 
   return (
@@ -61,6 +77,51 @@ export async function ManageTagsView({ scope, user, searchParams }: Props) {
           <CreateTagModal action={upsertTagAction.bind(null, scope)} />
         </div>
       </header>
+
+      <form className="space-y-3 rounded border border-slate-200 bg-white p-4 dark:border-slate-700/50 dark:bg-slate-800/50">
+        <div className="inline-flex items-center gap-1.5 rounded bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-700 dark:bg-slate-700/50 dark:text-slate-300">
+          <Filter className="h-3.5 w-3.5" />
+          查询与排序
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <label className="relative min-w-64 flex-1">
+            <Search className="pointer-events-none absolute left-3 top-2.5 h-4 w-4 text-slate-400 dark:text-slate-500" />
+            <input
+              name="q"
+              defaultValue={q}
+              placeholder="搜索标签名 / 描述"
+              className="w-full rounded border border-slate-300 py-2 pl-9 pr-3 text-sm text-slate-700 dark:border-slate-600 dark:bg-slate-700/50 dark:text-slate-200 dark:placeholder:text-slate-400"
+            />
+          </label>
+          <select
+            name="sort"
+            defaultValue={currentSort}
+            className="rounded border border-slate-300 px-3 py-2 text-sm text-slate-700 dark:border-slate-600 dark:bg-slate-700/50 dark:text-slate-200"
+          >
+            <option value="default">默认排序</option>
+            <option value="name_asc">标签名 A-Z</option>
+            <option value="name_desc">标签名 Z-A</option>
+            <option value="created_desc">创建时间（新到旧）</option>
+            <option value="created_asc">创建时间（旧到新）</option>
+            <option value="bookmark_count_desc">书签数（多到少）</option>
+            <option value="bookmark_count_asc">书签数（少到多）</option>
+          </select>
+          <button
+            type="submit"
+            className="rounded bg-slate-900 px-3 py-2 text-sm text-white hover:bg-slate-800 dark:bg-slate-700 dark:hover:bg-slate-600"
+          >
+            应用
+          </button>
+          {hasFilters ? (
+            <Link
+              href={listPath}
+              className="rounded border border-slate-300 px-3 py-2 text-sm text-slate-700 hover:bg-slate-50 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-800"
+            >
+              清空
+            </Link>
+          ) : null}
+        </div>
+      </form>
 
       <div className="overflow-x-auto rounded border border-slate-200 bg-white dark:border-slate-700/50 dark:bg-slate-800/50">
         <table className="w-full border-collapse text-sm">

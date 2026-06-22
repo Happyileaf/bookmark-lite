@@ -29,7 +29,7 @@ export const tagService = {
   async listPaged(
     scope: DataScope,
     user: SessionUser | null,
-    query?: Partial<{ page: number; pageSize: number }>,
+    query?: Partial<{ q: string; sort: string; page: number; pageSize: number }>,
   ) {
     if (scope === "USER" && !user) {
       throw new AppError("AUTH_REQUIRED", "请先登录", 401);
@@ -39,6 +39,15 @@ export const tagService = {
     const result = await tagRepo.listPaged({
       scope,
       ownerUserId,
+      q: parsed.q,
+      sort: parsed.sort as
+        | "default"
+        | "name_asc"
+        | "name_desc"
+        | "created_desc"
+        | "created_asc"
+        | "bookmark_count_desc"
+        | "bookmark_count_asc",
       page: parsed.page,
       pageSize: parsed.pageSize,
     });

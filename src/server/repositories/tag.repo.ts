@@ -1,20 +1,67 @@
 import { prisma } from "@/server/db/prisma";
-import type { DataScope } from "@prisma/client";
+import type { DataScope, Prisma } from "@prisma/client";
 
 type ListInput = {
   scope: DataScope;
   ownerUserId: string | null;
 };
 
+type TagSortOption =
+  | "default"
+  | "name_asc"
+  | "name_desc"
+  | "created_desc"
+  | "created_asc"
+  | "bookmark_count_desc"
+  | "bookmark_count_asc";
+
 type ListPagedInput = ListInput & {
+  q?: string;
+  sort?: TagSortOption;
   page: number;
   pageSize: number;
 };
 
-function buildWhere(input: ListInput) {
-  return input.scope === "APP"
-    ? { scope: "APP" as const, ownerUserId: null }
-    : { scope: "USER" as const, ownerUserId: input.ownerUserId };
+function buildWhere(input: ListInput & { q?: string }): Prisma.TagWhereInput {
+  const scopeWhere: Prisma.TagWhereInput =
+    input.scope === "APP"
+      ? { scope: "APP", ownerUserId: null }
+      : { scope: "USER", ownerUserId: input.ownerUserId };
+
+  const q = input.q?.trim();
+  const keywordWhere: Prisma.TagWhereInput | undefined = q
+    ? {
+        OR: [
+          { name: { contains: q, mode: "insensitive" } },
+          { description: { contains: q, mode: "insensitive" } },
+        ],
+      }
+    : undefined;
+
+  const clauses: Prisma.TagWhereInput[] = [scopeWhere];
+  if (keywordWhere) clauses.push(keywordWhere);
+
+  return { AND: clauses };
+}
+
+function buildOrderBy(sort?: TagSortOption): Prisma.TagOrderByWithRelationInput[] {
+  switch (sort ?? "default") {
+    case "name_asc":
+      return [{ name: "asc" }, { id: "asc" }];
+    case "name_desc":
+      return [{ name: "desc" }, { id: "desc" }];
+    case "created_desc":
+      return [{ createdAt: "desc" }, { id: "desc" }];
+    case "created_asc":
+      return [{ createdAt: "asc" }, { id: "asc" }];
+    case "bookmark_count_desc":
+      return [{ bookmarkCount: "desc" }, { sortOrder: "asc" }, { id: "asc" }];
+    case "bookmark_count_asc":
+      return [{ bookmarkCount: "asc" }, { sortOrder: "asc" }, { id: "asc" }];
+    case "default":
+    default:
+      return [{ sortOrder: "asc" }, { name: "asc" }];
+  }
 }
 
 export const tagRepo = {
@@ -31,7 +78,7 @@ export const tagRepo = {
       prisma.tag.count({ where }),
       prisma.tag.findMany({
         where,
-        orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
+        orderBy: buildOrderBy(input.sort),
         skip: (input.page - 1) * input.pageSize,
         take: input.pageSize,
       }),

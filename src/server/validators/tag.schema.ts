@@ -10,6 +10,18 @@ export const tagUpsertSchema = z.object({
 });
 
 export const tagQuerySchema = z.object({
+  q: z.string().trim().max(200).optional(),
+  sort: z
+    .enum([
+      "default",
+      "name_asc",
+      "name_desc",
+      "created_desc",
+      "created_asc",
+      "bookmark_count_desc",
+      "bookmark_count_asc",
+    ])
+    .default("default"),
   page: z.coerce.number().int().min(1).default(1),
   pageSize: z.coerce.number().int().min(1).max(100).default(30),
 });
