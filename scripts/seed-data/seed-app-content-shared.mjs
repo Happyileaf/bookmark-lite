@@ -2,8 +2,8 @@ import { createHash } from "node:crypto";
 import { APP_SEED_BOOKMARK_GROUPS, APP_SEED_TAGS } from "./app-initial-content.mjs";
 
 export const APP_SCOPE_KEY = "APP";
-export const EXPECTED_TAG_COUNT = 10;
-export const EXPECTED_BOOKMARK_COUNT = 150;
+export const EXPECTED_TAG_COUNT = 12;
+export const EXPECTED_BOOKMARK_COUNT = 182;
 
 function uuidFromSeed(seed) {
   const hex = createHash("md5").update(seed).digest("hex");
