@@ -1,9 +1,21 @@
 export const APP_SEED_TAGS = [
   {
     key: "ai-llm",
-    name: "AI",
+    name: "AI-LLM",
     color: "#7C3AED",
     description: "大模型、智能体、提示工程与推理相关资源。"
+  },
+  {
+    key: "design-ux",
+    name: "设计与交互",
+    color: "#DB2777",
+    description: "产品设计、交互规范、视觉与体验灵感。"
+  },
+  {
+    key: "image-media",
+    name: "图片",
+    color: "#E11D48",
+    description: "图片素材、图像处理与视觉资源平台。"
   },
   {
     key: "frontend",
@@ -24,16 +36,16 @@ export const APP_SEED_TAGS = [
     description: "关系型与非关系型数据库及数据基础设施。"
   },
   {
+    key: "cloud-service",
+    name: "云服务",
+    color: "#6D28D9",
+    description: "云平台、云存储与云端计算服务。"
+  },
+  {
     key: "cloud-devops",
     name: "云原生与运维",
     color: "#0284C7",
     description: "容器、编排、可观测性与云平台文档。"
-  },
-  {
-    key: "design-ux",
-    name: "设计与交互",
-    color: "#DB2777",
-    description: "产品设计、交互规范、视觉与体验灵感。"
   },
   {
     key: "security",
@@ -859,6 +871,166 @@ export const APP_SEED_BOOKMARK_GROUPS = [
         title: "ResearchGate",
         url: "https://www.researchgate.net/",
         description: "研究者社交与论文交流平台。"
+      }
+    ]
+  },
+  {
+    tagKey: "image-media",
+    bookmarks: [
+      {
+        title: "Unsplash",
+        url: "https://unsplash.com/",
+        description: "高质量免费图片素材库。"
+      },
+      {
+        title: "Pexels",
+        url: "https://www.pexels.com/",
+        description: "免费图片与视频素材平台。"
+      },
+      {
+        title: "Pixabay",
+        url: "https://pixabay.com/",
+        description: "免费图片、插画与矢量素材。"
+      },
+      {
+        title: "500px",
+        url: "https://500px.com/",
+        description: "摄影师社区与高品质图片展示。"
+      },
+      {
+        title: "Getty Images",
+        url: "https://www.gettyimages.com/",
+        description: "商业图片授权与专业素材库。"
+      },
+      {
+        title: "Shutterstock",
+        url: "https://www.shutterstock.com/",
+        description: "商业图片、视频与音乐素材平台。"
+      },
+      {
+        title: "Flickr",
+        url: "https://www.flickr.com/",
+        description: "图片社区与摄影作品分享平台。"
+      },
+      {
+        title: "Freepik",
+        url: "https://www.freepik.com/",
+        description: "免费与付费插画、矢量与 PSD 资源。"
+      },
+      {
+        title: "Canva",
+        url: "https://www.canva.com/",
+        description: "在线平面设计与图片编辑工具。"
+      },
+      {
+        title: "Remove.bg",
+        url: "https://www.remove.bg/",
+        description: "AI 自动抠图与背景去除工具。"
+      },
+      {
+        title: "TinyPNG",
+        url: "https://tinypng.com/",
+        description: "图片压缩与优化在线工具。"
+      },
+      {
+        title: "Squoosh",
+        url: "https://squoosh.app/",
+        description: "Google 出品的图片压缩与格式转换工具。"
+      },
+      {
+        title: "Imgur",
+        url: "https://imgur.com/",
+        description: "图片托管与社区分享平台。"
+      },
+      {
+        title: "图虫创意",
+        url: "https://creative.tuchong.com/",
+        description: "中文正版图片素材与授权平台。"
+      },
+      {
+        title: "千图网",
+        url: "https://www.58pic.com/",
+        description: "中文设计素材与免费图片资源。"
+      }
+    ]
+  },
+  {
+    tagKey: "cloud-service",
+    bookmarks: [
+      {
+        title: "AWS",
+        url: "https://aws.amazon.com/",
+        description: "Amazon 云服务全球基础设施平台。"
+      },
+      {
+        title: "Azure",
+        url: "https://azure.microsoft.com/",
+        description: "Microsoft 云计算与 AI 服务平台。"
+      },
+      {
+        title: "Google Cloud",
+        url: "https://cloud.google.com/",
+        description: "Google 云平台与大数据服务。"
+      },
+      {
+        title: "阿里云",
+        url: "https://www.aliyun.com/",
+        description: "中国领先的云计算与数据服务平台。"
+      },
+      {
+        title: "腾讯云",
+        url: "https://cloud.tencent.com/",
+        description: "腾讯旗下云计算与互联网服务。"
+      },
+      {
+        title: "华为云",
+        url: "https://www.huaweicloud.com/",
+        description: "华为云计算与企业数字化转型服务。"
+      },
+      {
+        title: "Vercel",
+        url: "https://vercel.com/",
+        description: "前端项目部署与 Serverless 托管平台。"
+      },
+      {
+        title: "Cloudflare",
+        url: "https://www.cloudflare.com/",
+        description: "CDN、安全防护与边缘计算服务。"
+      },
+      {
+        title: "DigitalOcean",
+        url: "https://www.digitalocean.com/",
+        description: "简洁云主机与托管数据库服务。"
+      },
+      {
+        title: "Railway",
+        url: "https://railway.app/",
+        description: "一键部署全栈应用的云平台。"
+      },
+      {
+        title: "Fly.io",
+        url: "https://fly.io/",
+        description: "边缘部署与全球分布式应用运行。"
+      },
+      {
+        title: "Heroku",
+        url: "https://www.heroku.com/",
+        description: "经典 PaaS 平台与快速应用部署。"
+      },
+      {
+        title: "Firebase",
+        url: "https://firebase.google.com/",
+        description: "Google BaaS 平台与移动后端服务。"
+      },
+      {
+        title: "Supabase",
+        url: "https://supabase.com/",
+        description: "开源 BaaS 与 Postgres 托管服务。"
+      },
+      {
+        title: "Netlify",
+        url: "https://www.netlify.com/",
+        description: "静态站点与 Jamstack 部署平台。"
       }
     ]
   }
