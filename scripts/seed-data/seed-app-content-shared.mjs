@@ -19,6 +19,16 @@ function canonicalizeUrl(rawUrl) {
   return url.toString();
 }
 
+// 为书签生成 createdAt，数组中靠前的书签时间更晚（因为默认排序 createdAt DESC）。
+// 使用秒级偏移，避免全部相同导致排序退化到 id。
+
+function createdAt(indexFromEnd) {
+  // indexFromEnd 越大 = 数组越靠后 = 时间越早
+  const base = new Date();
+  base.setSeconds(base.getSeconds() + (EXPECTED_BOOKMARK_COUNT - 1 - indexFromEnd));
+  return base.toISOString();
+}
+
 export function buildSeedData() {
   if (APP_SEED_TAGS.length !== EXPECTED_TAG_COUNT) {
     throw new Error(`Tag count must be ${EXPECTED_TAG_COUNT}, got ${APP_SEED_TAGS.length}.`);
@@ -63,7 +73,8 @@ export function buildSeedData() {
         description: item.description ?? "",
         isFavorite: item.isFavorite ?? false,
         isVisible: item.isVisible ?? true,
-        tagKeys: combinedTagKeys
+        tagKeys: combinedTagKeys,
+        createdAt: createdAt(bookmarks.length)
       });
     }
   }

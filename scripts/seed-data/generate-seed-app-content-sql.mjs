@@ -65,8 +65,8 @@ function buildSql() {
     sqlBool(bookmark.isFavorite),
     sqlBool(bookmark.isVisible),
     sqlText(APP_SCOPE_KEY),
-    "NOW()",
-    "NOW()"
+    sqlText(bookmark.createdAt),
+    sqlText(bookmark.createdAt)
   ]));
 
   const bookmarkTagValues = bookmarkTags.map((row) => formatTuple([

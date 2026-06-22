@@ -81,7 +81,9 @@ async function seedAppData() {
           description: bookmark.description,
           isFavorite: bookmark.isFavorite,
           isVisible: bookmark.isVisible,
-          scopeOwnerKey: APP_SCOPE_KEY
+          scopeOwnerKey: APP_SCOPE_KEY,
+          createdAt: new Date(bookmark.createdAt),
+          updatedAt: new Date(bookmark.createdAt)
         }))
       });
 
