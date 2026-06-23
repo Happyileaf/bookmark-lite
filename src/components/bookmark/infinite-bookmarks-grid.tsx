@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { CopyBookmarkUrlButton } from "@/components/bookmark/copy-bookmark-url-button";
+import { FavoriteBookmarkButton } from "@/components/bookmark/favorite-bookmark-button";
 import { SaveAppBookmarkModal } from "@/components/bookmark/save-app-bookmark-modal";
 import { DEFAULT_PAGE_SIZE } from "@/lib/constants";
 import type { DataScope } from "@prisma/client";
@@ -20,6 +21,7 @@ type BookmarkItem = {
   url: string;
   favicon: string | null;
   description: string | null;
+  isFavorite: boolean;
   tags: BookmarkTag[];
 };
 
@@ -179,6 +181,13 @@ export function InfiniteBookmarksGrid({
             </a>
 
             <div className="pointer-events-auto absolute right-4 top-4 z-30 flex items-center gap-1">
+              {scope === "USER" ? (
+                <FavoriteBookmarkButton
+                  bookmarkId={bookmark.id}
+                  isFavorite={bookmark.isFavorite}
+                  scope={scope}
+                />
+              ) : null}
               <CopyBookmarkUrlButton url={bookmark.url} />
               {canSaveToUser && saveToUserAction ? (
                 <SaveAppBookmarkModal

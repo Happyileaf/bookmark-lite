@@ -82,6 +82,21 @@ export async function deleteBookmarkAction(scope: DataScope, formData: FormData)
   revalidateBookmarkViews(scope);
 }
 
+export async function toggleFavoriteAction(scope: DataScope, formData: FormData) {
+  const user = await getSessionUser();
+  const id = String(formData.get("id") ?? "");
+  const isFavorite = readOptionalBoolean(formData, "isFavorite");
+  await bookmarkService.update(
+    {
+      id,
+      scope,
+      ...(isFavorite !== undefined ? { isFavorite } : {}),
+    },
+    user,
+  );
+  revalidateBookmarkViews(scope);
+}
+
 export async function saveAppBookmarkToUserAction(formData: FormData) {
   const user = await getSessionUser();
   const bookmarkId = String(formData.get("bookmarkId") ?? "");
