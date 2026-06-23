@@ -70,7 +70,7 @@ export function ReorderTagModal({ action, tags }: Props) {
                       >
                         <span className="inline-flex items-center gap-2 text-sm font-medium text-slate-900 dark:text-slate-200">
                           <span
-                            className="h-2.5 w-2.5 rounded-full border border-slate-300 dark:border-slate-600/70"
+                            className="h-4 w-4 rounded-full"
                             style={{ backgroundColor: tag.color ?? "#cbd5e1" }}
                           />
                           {tag.name}
