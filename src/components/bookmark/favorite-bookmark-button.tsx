@@ -9,6 +9,7 @@ type Props = {
   bookmarkId: string;
   isFavorite: boolean;
   scope: DataScope;
+  onToggle?: (bookmarkId: string, nextIsFavorite: boolean) => void;
 };
 
 /**
@@ -18,16 +19,19 @@ type Props = {
  * @param bookmarkId - 书签ID
  * @param isFavorite - 当前是否已收藏
  * @param scope - 数据域
+ * @param onToggle - 切换成功后的回调
  */
-export function FavoriteBookmarkButton({ bookmarkId, isFavorite, scope }: Props) {
+export function FavoriteBookmarkButton({ bookmarkId, isFavorite, scope, onToggle }: Props) {
   const toggleAction = toggleFavoriteAction.bind(null, scope);
   const [isPending, startTransition] = useTransition();
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
-    startTransition(() => {
-      void toggleAction(formData);
+    const nextIsFavorite = !isFavorite;
+    startTransition(async () => {
+      await toggleAction(formData);
+      onToggle?.(bookmarkId, nextIsFavorite);
     });
   };
 

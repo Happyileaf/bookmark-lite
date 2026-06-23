@@ -86,6 +86,14 @@ export function InfiniteBookmarksGrid({
   const loadingRef = useRef(false);
   const sentinelRef = useRef<HTMLDivElement | null>(null);
 
+  const handleToggleFavorite = useCallback((bookmarkId: string, nextIsFavorite: boolean) => {
+    setItems((prev) =>
+      prev.map((item) =>
+        item.id === bookmarkId ? { ...item, isFavorite: nextIsFavorite } : item,
+      ),
+    );
+  }, []);
+
   const handleContentClick = useCallback((e: React.MouseEvent, url: string) => {
     const selection = window.getSelection();
     if (selection && !selection.isCollapsed) return;
@@ -186,6 +194,7 @@ export function InfiniteBookmarksGrid({
                   bookmarkId={bookmark.id}
                   isFavorite={bookmark.isFavorite}
                   scope={scope}
+                  onToggle={handleToggleFavorite}
                 />
               ) : null}
               <CopyBookmarkUrlButton url={bookmark.url} />
