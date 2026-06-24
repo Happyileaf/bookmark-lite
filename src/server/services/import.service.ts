@@ -65,16 +65,33 @@ function mapFromJson(content: string): ImportBookmarkRecord[] {
 function mapFromHtml(content: string): ImportBookmarkRecord[] {
   const $ = load(content);
   const records: ImportBookmarkRecord[] = [];
+
   $("a[href]").each((_, el) => {
-    const url = $(el).attr("href") ?? "";
-    const title = $(el).text().trim() || url;
+    const $el = $(el);
+    const url = $el.attr("href") ?? "";
+    const title = $el.text().trim() || url;
+
+    const folderNames: string[] = [];
+    $el.parents("dl").each((_, dl) => {
+      const $dl = $(dl);
+      let folderName = $dl.prevAll("h3").first().text().trim();
+      if (!folderName) {
+        folderName = $dl.prevAll("dt").first().find("h3").first().text().trim();
+      }
+      if (folderName) folderNames.push(folderName);
+    });
+
+    const topLevelFolder =
+      folderNames.length > 0 ? folderNames[folderNames.length - 1] : "";
+
     records.push({
       title,
       url,
       description: "",
-      tags: [],
+      tags: topLevelFolder ? [topLevelFolder] : [],
     });
   });
+
   return records;
 }
 
