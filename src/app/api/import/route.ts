@@ -41,7 +41,7 @@ export async function POST(request: Request) {
       throw new AppError("IMPORT_TOO_LARGE", "导入文件大小不能超过 10MB", 413);
     }
 
-    const records = importService.parse(file.name, await file.text());
+    const records = await importService.parse(file.name, await file.text());
     const data = await importService.importBookmarks(scope, user, records);
     return json({ ok: true, data }, 200, requestId);
   } catch (error) {
