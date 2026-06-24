@@ -1,5 +1,6 @@
 import { prisma } from "@/server/db/prisma";
 import { verifyPassword } from "@/server/auth/password";
+import { getNextAuthSecret } from "@/server/auth/secret";
 import type { Role } from "@prisma/client";
 import { getServerSession, type NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
@@ -11,7 +12,7 @@ const credentialSchema = z.object({
 });
 
 export const authOptions: NextAuthOptions = {
-  secret: process.env.NEXTAUTH_SECRET ?? "dev-only-secret-change-me",
+  secret: getNextAuthSecret(),
   session: {
     strategy: "jwt",
   },

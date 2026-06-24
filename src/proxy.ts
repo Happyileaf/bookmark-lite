@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { getToken } from "next-auth/jwt";
+import { getNextAuthSecret } from "@/server/auth/secret";
 
 function loginRedirect(request: NextRequest) {
   const url = new URL("/login", request.url);
@@ -12,7 +13,7 @@ export async function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
   const token = await getToken({
     req: request,
-    secret: process.env.NEXTAUTH_SECRET ?? "dev-only-secret-change-me",
+    secret: getNextAuthSecret(),
   });
 
   const isUserArea =
