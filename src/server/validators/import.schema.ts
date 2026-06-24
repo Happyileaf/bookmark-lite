@@ -34,5 +34,7 @@ export const IMPORT_PARSE_LIMITS = {
   MAX_HTML_LENGTH: 2 * 1024 * 1024,
   /** JSON 解析后最大记录数，超限拒绝以避免后续逐条写入放大 */
   MAX_JSON_RECORDS: 20_000,
+  /** 批量写入时每批的记录数，平衡单次 SQL 大小与连接占用时间 */
+  IMPORT_BATCH_SIZE: 500,
 } as const;
 
