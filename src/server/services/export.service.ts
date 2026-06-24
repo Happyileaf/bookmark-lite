@@ -50,6 +50,7 @@ export const exportService = {
           include: {
             tag: true,
           },
+          orderBy: [{ createdAt: "asc" }],
         },
       },
       orderBy: [{ createdAt: "desc" }],
@@ -83,15 +84,43 @@ export const exportService = {
   },
 
   toHtml(bookmarks: ExportBookmark[]): string {
-    const links = bookmarks
-      .map((bookmark) => `<DT><A HREF="${bookmark.url}">${bookmark.title}</A></DT>`)
-      .join("\n");
+    const untagged: ExportBookmark[] = [];
+    const groups = new Map<string, ExportBookmark[]>();
+
+    for (const bookmark of bookmarks) {
+      const firstTag = bookmark.bookmarkTags[0]?.tag;
+      if (!firstTag) {
+        untagged.push(bookmark);
+        continue;
+      }
+      const group = groups.get(firstTag.name);
+      if (group) {
+        group.push(bookmark);
+      } else {
+        groups.set(firstTag.name, [bookmark]);
+      }
+    }
+
+    const parts: string[] = [];
+
+    for (const bookmark of untagged) {
+      parts.push(renderBookmarkLink(bookmark));
+    }
+
+    for (const [tagName, items] of groups) {
+      const links = items.map(renderBookmarkLink).join("\n");
+      parts.push(`<DT><H3>${escapeHtml(tagName)}</H3>`);
+      parts.push("<DL><p>");
+      parts.push(links);
+      parts.push("</DL><p>");
+    }
+
     return `<!DOCTYPE NETSCAPE-Bookmark-file-1>
 <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=UTF-8">
 <TITLE>Bookmarks</TITLE>
 <H1>Bookmarks</H1>
 <DL><p>
-${links}
+${parts.join("\n")}
 </DL><p>`;
   },
 
@@ -108,3 +137,18 @@ ${links}
     }
   },
 };
+
+function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function renderBookmarkLink(bookmark: ExportBookmark): string {
+  const title = escapeHtml(bookmark.title || bookmark.url);
+  const url = escapeHtml(bookmark.url);
+  return `<DT><A HREF="${url}">${title}</A></DT>`;
+}
