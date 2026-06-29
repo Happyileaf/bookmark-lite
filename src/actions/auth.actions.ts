@@ -2,8 +2,6 @@
 
 import { hashPassword } from "@/server/auth/password";
 import { prisma } from "@/server/db/prisma";
-import { AppError } from "@/server/types/errors";
-import { redirect } from "next/navigation";
 import { z } from "zod";
 
 const registerSchema = z
@@ -62,18 +60,4 @@ export async function registerAction(
   });
 
   return { ok: true, message: "注册成功，请登录" };
-}
-
-export async function ensureSuperAdminByEmailAction(formData: FormData) {
-  const email = String(formData.get("email") ?? "")
-    .trim()
-    .toLowerCase();
-  if (!email) {
-    throw new AppError("VALIDATION_FAILED", "邮箱不能为空", 422);
-  }
-  await prisma.user.update({
-    where: { email },
-    data: { role: "super_admin" },
-  });
-  redirect("/login");
 }
