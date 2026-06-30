@@ -79,7 +79,7 @@ async function main() {
 
   const inputArg = process.argv[2];
   if (!inputArg) {
-    throw new Error("Usage: npm run db:import -- <backup-file.sql>");
+    throw new Error("Usage: pnpm run db:import -- <backup-file.sql>");
   }
 
   const inputPath = resolve(inputArg);

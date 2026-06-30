@@ -100,7 +100,7 @@ async function main() {
 
   const backupArg = process.argv[2];
   if (!backupArg) {
-    throw new Error("Usage: npm run db:init -- <backup-file.sql>");
+    throw new Error("Usage: pnpm run db:init -- <backup-file.sql>");
   }
 
   const backupPath = resolve(backupArg);

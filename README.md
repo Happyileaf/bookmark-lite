@@ -5,13 +5,7 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 First, run the development server:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
 pnpm dev
-# or
-bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
@@ -48,24 +42,24 @@ You can keep multiple backup env files with any names you prefer, and switch by 
 2. Initialize a new database schema:
 
 ```bash
-npm run db:migrate:deploy
+pnpm run db:migrate:deploy
 ```
 
 3. (Optional) seed default APP bookmarks/tags:
 
 ```bash
-npm run seed:app-content
+pnpm run seed:app-content
 ```
 
 4. If your database was already initialized before migrations (for example using `db push`), run one-time baseline:
 
 ```bash
-npm run db:migrate:baseline
+pnpm run db:migrate:baseline
 ```
 
 Notes:
 - `db:migrate:deploy` prefers `DIRECT_URL` when present; otherwise it uses `DATABASE_URL`.
-- On Vercel, set Build Command to `npm run build:with-db-migrate` so each deployment applies migrations first.
+- On Vercel, set Build Command to `pnpm run build:with-db-migrate` so each deployment applies migrations first.
 - `db:setup` still exists as a local fast path (`prisma db push`) for prototyping.
 - `db:init` / `db:import` are for SQL backup workflows and require PostgreSQL client tools (`psql`/`pg_dump`), typically run on local machines or CI.
 
@@ -76,37 +70,37 @@ This project uses PostgreSQL (`DATABASE_URL` in `.env`).
 1. Export current database (schema + data):
 
 ```bash
-npm run db:export
+pnpm run db:export
 ```
 
 Optional custom output path:
 
 ```bash
-npm run db:export -- backups/my-snapshot.sql
+pnpm run db:export -- backups/my-snapshot.sql
 ```
 
 2. Import backup on another machine:
 
 ```bash
-npm run db:import -- backups/my-snapshot.sql
+pnpm run db:import -- backups/my-snapshot.sql
 ```
 
 If the target database does not exist yet, create it and import in one step:
 
 ```bash
-npm run db:init -- backups/my-snapshot.sql
+pnpm run db:init -- backups/my-snapshot.sql
 ```
 
 3. One-command roundtrip verification (export -> clear APP bookmarks/tags -> import -> count check):
 
 ```bash
-npm run db:roundtrip-test
+pnpm run db:roundtrip-test
 ```
 
 Optional custom backup path:
 
 ```bash
-npm run db:roundtrip-test -- backups/roundtrip-check.sql
+pnpm run db:roundtrip-test -- backups/roundtrip-check.sql
 ```
 
 ## Seed default APP bookmarks and tags
@@ -114,7 +108,7 @@ npm run db:roundtrip-test -- backups/roundtrip-check.sql
 Seed curated APP scope data for Chinese developers/designers/engineers/AI researchers:
 
 ```bash
-npm run seed:app-content
+pnpm run seed:app-content
 ```
 
 Data and logic are separated:
@@ -124,19 +118,19 @@ Data and logic are separated:
 Generate equivalent SQL from the same seed data:
 
 ```bash
-npm run seed:app-content:sql
+pnpm run seed:app-content:sql
 ```
 
 Optional output path:
 
 ```bash
-npm run seed:app-content:sql -- scripts/seed-data/my-seed.sql
+pnpm run seed:app-content:sql -- scripts/seed-data/my-seed.sql
 ```
 
 Apply generated SQL:
 
 ```bash
-npx prisma db execute --file scripts/seed-data/seed-app-content.generated.sql --schema prisma/schema.prisma
+pnpm exec prisma db execute --file scripts/seed-data/seed-app-content.generated.sql --schema prisma/schema.prisma
 ```
 
 Notes:

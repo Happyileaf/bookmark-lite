@@ -63,7 +63,7 @@ function DatabaseUnavailableNotice({ reason, runtimeTarget }: { reason: string; 
           请在 Vercel 项目中创建/绑定 PostgreSQL，并在 Environment Variables 中配置
           <code className="mx-1 rounded bg-amber-100 px-1 py-0.5">DATABASE_URL</code>
           后重新部署；首次可执行
-          <code className="mx-1 rounded bg-amber-100 px-1 py-0.5">npm run db:migrate:deploy</code>
+          <code className="mx-1 rounded bg-amber-100 px-1 py-0.5">pnpm run db:migrate:deploy</code>
           初始化表结构。
         </p>
       ) : (
@@ -73,7 +73,7 @@ function DatabaseUnavailableNotice({ reason, runtimeTarget }: { reason: string; 
           并配置
           <code className="mx-1 rounded bg-amber-100 px-1 py-0.5">DATABASE_URL</code>
           ，确保 PostgreSQL 在本地 5432 端口可访问；首次可执行
-          <code className="mx-1 rounded bg-amber-100 px-1 py-0.5">npm run db:setup</code>
+          <code className="mx-1 rounded bg-amber-100 px-1 py-0.5">pnpm run db:setup</code>
           初始化表结构。
         </p>
       )}

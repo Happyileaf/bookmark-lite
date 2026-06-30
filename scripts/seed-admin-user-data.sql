@@ -1,6 +1,6 @@
 -- Seed personal(USER scope) data for all super admins.
 -- Run with:
---   npx prisma db execute --file scripts/seed-admin-user-data.sql --schema prisma/schema.prisma
+--   pnpm exec prisma db execute --file scripts/seed-admin-user-data.sql --schema prisma/schema.prisma
 
 WITH admin_users AS (
   SELECT id AS user_id
