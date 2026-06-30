@@ -19,7 +19,7 @@ export function generateApiToken(): {
   tokenHash: string;
   tokenPrefix: string;
 } {
-  const raw = TOKEN_PREFIX + randomBytes(32).toString("base64url");
+  const raw = TOKEN_PREFIX + randomBytes(32).toString("hex");
   return {
     raw,
     tokenHash: hashApiToken(raw),
