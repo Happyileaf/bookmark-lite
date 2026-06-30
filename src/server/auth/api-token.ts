@@ -1,7 +1,10 @@
 import { createHash, randomBytes } from "node:crypto";
 
 /** Token 明文前缀 */
-const TOKEN_PREFIX = "blt_";
+const TOKEN_PREFIX = "linkflow_";
+
+/** tokenPrefix 展示的随机字符位数（仅用于识别，泄露无害） */
+const TOKEN_DISPLAY_RANDOM = 12;
 
 /**
  * 生成新的 API Token 明文及其派生信息
@@ -20,7 +23,7 @@ export function generateApiToken(): {
   return {
     raw,
     tokenHash: hashApiToken(raw),
-    tokenPrefix: raw.slice(0, 12),
+    tokenPrefix: raw.slice(0, TOKEN_PREFIX.length + TOKEN_DISPLAY_RANDOM),
   };
 }
 
