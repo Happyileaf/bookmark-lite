@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { KeyRound, Plus, Trash2, Copy, Check, X } from "lucide-react";
+import { Plus, Trash2, Copy, Check, X } from "lucide-react";
 import {
   createApiTokenAction,
   revokeApiTokenAction,
@@ -84,16 +84,6 @@ export function ApiTokenSection({ tokens: initialTokens }: Props) {
 
   return (
     <section className="space-y-3">
-      <header className="space-y-1">
-        <h2 className="inline-flex items-center gap-2 text-base font-semibold text-slate-900 dark:text-slate-200">
-          <KeyRound className="h-4 w-4 text-slate-500" />
-          API Token / 浏览器插件
-        </h2>
-        <p className="text-xs text-slate-500 dark:text-slate-400">
-          生成 Token 后粘贴到浏览器插件中使用。明文仅在生成时展示一次，请妥善保存。
-        </p>
-      </header>
-
       <div className="overflow-hidden rounded border border-slate-200 bg-white dark:border-slate-700/50 dark:bg-slate-800/50">
         {/* 生成区 */}
         <div className="flex items-center gap-2 border-b border-slate-100 p-4 dark:border-slate-700/40">

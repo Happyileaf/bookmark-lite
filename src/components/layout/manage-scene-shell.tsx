@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { DataScope } from "@prisma/client";
 
-type ManageKey = "bookmarks" | "tags" | "import-export" | "trash" | "settings";
+type ManageKey = "bookmarks" | "tags" | "import-export" | "trash" | "settings" | "extension";
 
 type Props = {
   scope: DataScope;
@@ -20,6 +20,7 @@ const userMenu: Array<{ key: ManageKey; label: string; href: string }> = [
   { key: "import-export", label: "导入导出", href: "/manage/import-export" },
   { key: "trash", label: "回收站", href: "/manage/trash" },
   { key: "settings", label: "设置", href: "/settings" },
+  { key: "extension", label: "API Token", href: "/api-tokens" },
 ];
 
 const appMenu: Array<{ key: ManageKey; label: string; href: string }> = [
@@ -28,6 +29,7 @@ const appMenu: Array<{ key: ManageKey; label: string; href: string }> = [
   { key: "import-export", label: "导入导出", href: "/admin/manage/import-export" },
   { key: "trash", label: "回收站", href: "/admin/manage/trash" },
   { key: "settings", label: "设置", href: "/admin/settings" },
+  { key: "extension", label: "API Token", href: "/admin/api-tokens" },
 ];
 
 export function ManageSceneShell({ scope, current, children }: Props) {
