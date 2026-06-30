@@ -41,8 +41,28 @@ model User {
   trashDeleted TrashItem[] @relation("trashDeletedBy")
   auditLogs    AuditLog[]
   metrics      EventMetric[]
+  apiTokens    ApiToken[]
 
   @@map("users")
+}
+
+/**
+ * API 访问令牌
+ * 用于浏览器插件等外部客户端调用平台接口
+ */
+model ApiToken {
+  id          String    @id @default(uuid()) @db.Uuid
+  userId      String    @map("user_id") @db.Uuid
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name        String    @db.VarChar(100)
+  tokenHash   String    @unique @map("token_hash") @db.VarChar(64)
+  tokenPrefix String    @map("token_prefix") @db.VarChar(12)
+  lastUsedAt  DateTime? @map("last_used_at") @db.Timestamptz(6)
+  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  revokedAt   DateTime? @map("revoked_at") @db.Timestamptz(6)
+
+  @@index([userId, createdAt(sort: Desc)], map: "idx_api_tokens_user_created")
+  @@map("api_tokens")
 }
 
 model Bookmark {

@@ -1,0 +1,19 @@
+{
+  "manifest_version": 3,
+  "name": "Bookmark Lite Sync",
+  "version": "1.0.0",
+  "description": "一键收藏当前页面，并自动同步浏览器原生书签到 Bookmark Lite 平台。",
+  "permissions": ["bookmarks", "storage", "activeTab", "tabs"],
+  "host_permissions": ["http://localhost:3000/*", "https://*/"],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Bookmark Lite"
+  },
+  "icons": {
+    "128": "icons/icon-128.png"
+  }
+}
