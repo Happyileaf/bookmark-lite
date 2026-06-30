@@ -62,3 +62,40 @@ export async function pushBookmark(
 
   return { alreadyExists: json.data?.alreadyExists === true };
 }
+
+/**
+ * 校验 Token 有效性
+ *
+ * @description 调用 GET /api/extension/verify，用于保存 Token 前验证；
+ * 接受待校验的 Token 明文（此时可能尚未写入存储）
+ * @param token - 待校验的 Token 明文
+ * @returns 有效返回 true
+ * @throws {AuthError} Token 无效或缺失
+ * @throws {Error} 网络或服务端错误
+ * @example
+ * await verifyToken("blt_xxxx");
+ */
+export async function verifyToken(token: string): Promise<boolean> {
+  const trimmed = token.trim();
+  if (!trimmed) {
+    throw new AuthError("请填写 API Token");
+  }
+
+  const apiBaseUrl = await storage.getApiBaseUrl();
+  const response = await fetch(`${apiBaseUrl}/api/extension/verify`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${trimmed}`,
+    },
+  });
+
+  if (response.status === 401) {
+    throw new AuthError("Token 无效或已撤销");
+  }
+
+  if (!response.ok) {
+    throw new Error(`服务端错误：${response.status}`);
+  }
+
+  return true;
+}
