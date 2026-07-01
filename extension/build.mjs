@@ -1,5 +1,6 @@
 import * as esbuild from "esbuild";
-import { cpSync, mkdirSync, existsSync } from "node:fs";
+import { cpSync, mkdirSync, existsSync, rmSync } from "node:fs";
+import { execFileSync } from "node:child_process";
 import { resolve, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -40,6 +41,21 @@ function copyStaticAssets() {
   }
 }
 
+/**
+ * 将 dist 内容打包为 zip 并覆盖分发目录下的压缩包
+ *
+ * description manifest.json 需位于 zip 根目录，故在 dist 内打包其内容；
+ * 仅在生产构建时执行，输出到 Next 项目的 public/downloads
+ */
+function packageExtension() {
+  const distDir = resolve(__dirname, "dist");
+  const outputZip = resolve(__dirname, "..", "public", "downloads", "bookmark-lite-extension.zip");
+  mkdirSync(dirname(outputZip), { recursive: true });
+  rmSync(outputZip, { force: true });
+  execFileSync("zip", ["-r", "-q", outputZip, "."], { cwd: distDir });
+  return outputZip;
+}
+
 if (isWatch) {
   const ctx = await esbuild.context(buildOptions);
   await ctx.watch();
@@ -49,4 +65,6 @@ if (isWatch) {
   await esbuild.build(buildOptions);
   copyStaticAssets();
   console.log("[extension] build done");
+  const outputZip = packageExtension();
+  console.log(`[extension] packaged -> ${outputZip}`);
 }
