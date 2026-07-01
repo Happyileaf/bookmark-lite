@@ -123,7 +123,7 @@ async function handleSaveCurrent(): Promise<void> {
 /**
  * 保存 Token
  *
- * @description 先调用平台校验 Token 有效性，通过后写入存储；无效则提示且不保存
+ * @description 先写入存储，不因校验失败拦截保存；保存后自动校验并更新连接状态
  */
 async function handleSaveToken(): Promise<void> {
   const token = state.token.trim();
@@ -132,24 +132,23 @@ async function handleSaveToken(): Promise<void> {
     return;
   }
 
+  await storage.setToken(token);
+  state.token = token;
   state.verifyingToken = true;
-  state.status = "idle";
-  state.message = "";
+  state.status = "success";
+  state.message = "Token 已保存，正在校验";
   render();
 
   try {
     await verifyToken(token);
-    await storage.setToken(token);
     state.tokenValid = true;
     setStatusAfterVerify("success", "Token 有效，已保存");
   } catch (error) {
-    if (error instanceof AuthError) {
-      // 校验失败不保存：回滚输入框为已存储的 Token，tokenValid 保持反映已存储值
-      state.token = await storage.getToken();
-      setStatusAfterVerify("authError", "新 Token 无效，未保存");
-    } else {
-      setStatusAfterVerify("error", "校验失败，请检查网络");
-    }
+    state.tokenValid = error instanceof AuthError ? false : null;
+    setStatusAfterVerify(
+      error instanceof AuthError ? "authError" : "error",
+      error instanceof AuthError ? "Token 已保存，但校验无效" : "Token 已保存，校验失败，请检查网络",
+    );
   }
 }
 
