@@ -1,5 +1,19 @@
-/** 平台基址默认值（开发期为本地，生产可改为实际域名） */
-const DEFAULT_API_BASE_URL = "http://localhost:3000";
+declare const process: {
+  env: {
+    NODE_ENV: "production" | "development";
+  };
+};
+
+const API_BASE_URL_BY_NODE_ENV = {
+  production: "https://bookmark-lite.contextlab.top",
+  development: "http://localhost:3000",
+} as const;
+
+/** 当前构建环境 */
+const NODE_ENV = process.env.NODE_ENV;
+
+/** 平台基址 */
+const API_BASE_URL = (API_BASE_URL_BY_NODE_ENV[NODE_ENV] ?? API_BASE_URL_BY_NODE_ENV.development).replace(/\/+$/, "");
 
 /** 同步开关默认值 */
 const DEFAULT_SYNC_ENABLED = true;
@@ -9,7 +23,6 @@ const MAX_RETRY_COUNT = 3;
 
 /** 存储键 */
 const STORAGE_KEYS = {
-  apiBaseUrl: "apiBaseUrl",
   token: "token",
   syncEnabled: "syncEnabled",
   failedQueue: "failedQueue",
@@ -57,11 +70,10 @@ export const storage = {
   /**
    * 获取平台基址
    *
-   * @description 缺省回退到默认值
    * @returns 平台基址
    */
   async getApiBaseUrl(): Promise<string> {
-    return (await getStorage<string>(STORAGE_KEYS.apiBaseUrl)) ?? DEFAULT_API_BASE_URL;
+    return API_BASE_URL;
   },
 
   /**

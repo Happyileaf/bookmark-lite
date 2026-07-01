@@ -5,6 +5,7 @@ import { fileURLToPath } from "node:url";
 
 const isWatch = process.argv.includes("--watch");
 const __dirname = dirname(fileURLToPath(import.meta.url));
+const nodeEnv = process.env.NODE_ENV === "production" ? "production" : "development";
 
 /** esbuild 构建上下文配置 */
 const buildOptions = {
@@ -18,6 +19,9 @@ const buildOptions = {
   target: "es2020",
   sourcemap: false,
   legalComments: "none",
+  define: {
+    "process.env.NODE_ENV": JSON.stringify(nodeEnv),
+  },
 };
 
 /**
