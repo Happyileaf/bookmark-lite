@@ -135,8 +135,6 @@ async function handleSaveToken(): Promise<void> {
   await storage.setToken(token);
   state.token = token;
   state.verifyingToken = true;
-  state.status = "success";
-  state.message = "Token 已保存，正在校验";
   render();
 
   try {

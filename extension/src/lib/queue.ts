@@ -33,9 +33,10 @@ async function updateBadge(): Promise<void> {
 }
 
 /**
- * 尝试推送单条载荷，失败时入队或标记失败
+ * 尝试推送单条载荷，失败时入队等待后续补偿
  *
- * @description 鉴权失败不入队（不可重试）；其他错误按重试次数入队
+ * @description 所有错误（含 AuthError）均入队：鉴权失败时 Token 可能正在被用户修复，
+ * 入队可避免原生书签静默丢失；flush 会在 Token 修复后补偿推送，且对 AuthError 不计重试次数
  * @param payload - 书签载荷
  * @returns 成功时返回 alreadyExists 标记
  */
@@ -45,11 +46,8 @@ async function attemptPush(
   try {
     return await pushBookmark(payload);
   } catch (error) {
-    if (error instanceof AuthError) {
-      // 鉴权错误不重试，直接抛给调用方处理
-      throw error;
-    }
-    // 其他错误入队
+    // 所有错误统一入队，避免 Token 失效或网络异常期间书签丢失；
+    // 鉴权错误仍向上抛出，便于调用方（popup）更新连接状态
     await enqueue(payload);
     throw error;
   }

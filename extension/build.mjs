@@ -1,8 +1,8 @@
 import * as esbuild from "esbuild";
-import { cpSync, mkdirSync, existsSync, rmSync, readFileSync, writeFileSync } from "node:fs";
-import { execFileSync } from "node:child_process";
-import { resolve, dirname } from "node:path";
+import { cpSync, mkdirSync, existsSync, rmSync, readFileSync, writeFileSync, readdirSync, statSync } from "node:fs";
+import { resolve, dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import AdmZip from "adm-zip";
 
 const isWatch = process.argv.includes("--watch");
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -49,7 +49,8 @@ function copyStaticAssets() {
  * 将 dist 内容打包为 zip 并覆盖分发目录下的压缩包
  *
  * description manifest.json 需位于 zip 根目录，故在 dist 内打包其内容；
- * 输出带版本号的包与一个固定名的 latest 包，均写入 Next 项目的 public/downloads
+ * 输出带版本号的包与一个固定名的 latest 包，均写入 Next 项目的 public/downloads；
+ * 使用纯 JS 的 adm-zip 打包，避免依赖系统 zip 命令，保证跨平台可移植
  */
 function packageExtension() {
   const distDir = resolve(__dirname, "dist");
@@ -59,9 +60,31 @@ function packageExtension() {
   mkdirSync(downloadsDir, { recursive: true });
   rmSync(versionedZip, { force: true });
   rmSync(latestZip, { force: true });
-  execFileSync("zip", ["-r", "-q", versionedZip, "."], { cwd: distDir });
+
+  const zip = new AdmZip();
+  addDirToZip(zip, distDir, "");
+  zip.writeZip(versionedZip);
   cpSync(versionedZip, latestZip);
   return { versionedZip, latestZip };
+}
+
+/**
+ * 递归将目录加入 zip
+ *
+ * @param zip - adm-zip 实例
+ * @param absDir - 待打包的绝对目录
+ * @param zipDir - 在 zip 内的相对目录
+ */
+function addDirToZip(zip, absDir, zipDir) {
+  for (const entry of readdirSync(absDir)) {
+    const absPath = join(absDir, entry);
+    if (statSync(absPath).isDirectory()) {
+      const subZipDir = zipDir ? `${zipDir}/${entry}` : entry;
+      addDirToZip(zip, absPath, subZipDir);
+    } else {
+      zip.addLocalFile(absPath, zipDir);
+    }
+  }
 }
 
 if (isWatch) {

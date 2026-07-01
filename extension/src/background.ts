@@ -37,7 +37,7 @@ function initBookmarkListener(): void {
       await queue.push(payload);
     } catch (error) {
       if (error instanceof AuthError) {
-        // 鉴权错误静默处理，popup 会展示状态
+        // 鉴权失败：载荷已由 queue 入队，待 Token 修复后 flush 补偿；popup 会展示连接状态
         return;
       }
       // 其他错误已由 queue 内部入队
