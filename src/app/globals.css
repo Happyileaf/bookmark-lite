@@ -215,3 +215,82 @@ body {
   border-color: #1f5a44;
   background-color: #0c2a21;
 }
+
+/* ============================================================
+   Guide page — 浅色品牌色作用域（始终浅色，不受 .dark 影响）
+   对应设计稿 bookmark-auth/pages/guide.html
+   ============================================================ */
+
+.guide-page {
+  --bm-color-primary: #0d9488;
+  --bm-color-primary-hover: #0b8074;
+  --bm-color-primary-active: #086e64;
+  --bm-color-primary-soft: #ccfbf1;
+  --bm-color-primary-softer: #f0fdfa;
+  --bm-color-primary-border: #5eead4;
+
+  --bm-color-bg: #ffffff;
+  --bm-color-bg-subtle: #f8fafb;
+  --bm-color-bg-muted: #f1f5f7;
+  --bm-color-surface: #ffffff;
+
+  --bm-color-text: #0f1f1c;
+  --bm-color-text-secondary: #4b5c58;
+  --bm-color-text-muted: #7a8a86;
+  --bm-color-text-on-primary: #ffffff;
+
+  --bm-color-border: #e2eef0;
+  --bm-color-border-strong: #c8d8db;
+  --bm-color-border-focus: #0d9488;
+
+  --bm-radius-sm: 4px;
+  --bm-radius-md: 8px;
+  --bm-radius-lg: 12px;
+  --bm-radius-full: 9999px;
+
+  --bm-shadow-focus: 0 0 0 4px rgba(13, 148, 136, 0.12);
+  --bm-shadow-primary: 0 4px 16px rgba(13, 148, 136, 0.25);
+
+  --bm-font-sans: "Inter", "Noto Sans SC", -apple-system, BlinkMacSystemFont,
+    "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  --bm-font-display: "Inter", "Noto Sans SC", -apple-system, BlinkMacSystemFont,
+    "Segoe UI", "PingFang SC", sans-serif;
+
+  background-color: var(--bm-color-bg);
+  color: var(--bm-color-text);
+  font-family: var(--bm-font-sans);
+}
+
+.guide-page .bm-font-display {
+  font-family: var(--bm-font-display);
+}
+
+.guide-page .bm-card {
+  background-color: var(--bm-color-surface);
+  border: 1px solid var(--bm-color-border);
+  border-radius: var(--bm-radius-lg);
+  box-shadow: none;
+}
+
+.guide-page .bm-mint-glow {
+  background: radial-gradient(
+      circle at 30% 20%,
+      var(--bm-color-primary-softer) 0%,
+      transparent 55%
+    ),
+    radial-gradient(
+      circle at 80% 70%,
+      var(--bm-color-primary-soft) 0%,
+      transparent 50%
+    );
+}
+
+.guide-page .bm-link {
+  color: var(--bm-color-primary);
+  font-weight: 500;
+  transition: color 0.15s ease;
+}
+.guide-page .bm-link:hover {
+  color: var(--bm-color-primary-hover);
+  text-decoration: underline;
+}
