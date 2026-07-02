@@ -51,9 +51,20 @@ AI 客户端  ──(stdio / MCP 协议)──▶  bookmark-lite-mcp  ──(HTT
 | 变量名 | 是否必填 | 说明 |
 | --- | --- | --- |
 | `LINKFLOW_TOKEN` | 必填 | 步骤 1 生成的 API Token，形如 `linkflow_xxx` |
-| `LINKFLOW_BASE_URL` | 可选 | 平台基址，默认已内置生产地址 `https://bookmark-lite.contextlab.top`；仅当连本地开发或自托管实例时才需要覆盖（如 `http://localhost:3000`） |
+| `LINKFLOW_BASE_URL` | 可选 | 平台基址。缺省时使用构建期内置的默认域名（见下），仅当需要连其它实例时才覆盖 |
 
 缺少必填变量时，Server 启动时会在 stderr 打印中文错误并退出。
+
+### 平台域名的解析优先级
+
+与浏览器插件一致，域名由**构建环境**决定默认值，并支持运行时覆盖，优先级从高到低：
+
+1. **运行时** `LINKFLOW_BASE_URL` 环境变量（最高，用于临时覆盖）
+2. **构建期** `NODE_ENV` 注入的默认域名：
+   - `NODE_ENV=production` → `https://bookmark-lite.contextlab.top`
+   - `NODE_ENV=development`（默认）→ `http://localhost:3000`
+
+发布到 npm 的产物由 `build:prod`（`NODE_ENV=production`）构建，因此 `npx` 拉取的版本默认连线上；本地 `pnpm --filter bookmark-lite-mcp build` 为开发构建，默认连 `localhost:3000`。启动日志会打印当前实际连接的平台地址，便于确认。
 
 ### 从源码构建（仅开发 / 未发布前）
 
@@ -61,10 +72,11 @@ AI 客户端  ──(stdio / MCP 协议)──▶  bookmark-lite-mcp  ──(HTT
 
 ```bash
 pnpm install
-pnpm --filter bookmark-lite-mcp build
+pnpm --filter bookmark-lite-mcp build        # 开发构建，默认连 localhost:3000
+# 或：pnpm --filter bookmark-lite-mcp build:prod   # 生产构建，默认连线上
 ```
 
-构建产物为 `mcp-server/dist/index.js`，此时客户端配置改用本地绝对路径（连本地平台时再加 `LINKFLOW_BASE_URL`）：
+构建产物为 `mcp-server/dist/index.js`，此时客户端配置改用本地绝对路径（如需覆盖域名再加 `LINKFLOW_BASE_URL`）：
 
 ```json
 {
@@ -73,8 +85,7 @@ pnpm --filter bookmark-lite-mcp build
       "command": "node",
       "args": ["/absolute/path/to/mcp-server/dist/index.js"],
       "env": {
-        "LINKFLOW_TOKEN": "linkflow_xxxxxxxx",
-        "LINKFLOW_BASE_URL": "http://localhost:3000"
+        "LINKFLOW_TOKEN": "linkflow_xxxxxxxx"
       }
     }
   }

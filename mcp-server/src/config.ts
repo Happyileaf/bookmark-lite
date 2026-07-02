@@ -1,4 +1,12 @@
-const DEFAULT_BASE_URL = "https://bookmark-lite.contextlab.top";
+const API_BASE_URL_BY_NODE_ENV: Record<string, string> = {
+  production: "https://bookmark-lite.contextlab.top",
+  development: "http://localhost:3000",
+};
+
+const NODE_ENV = process.env.NODE_ENV === "production" ? "production" : "development";
+
+const BUILD_TIME_BASE_URL =
+  API_BASE_URL_BY_NODE_ENV[NODE_ENV] ?? API_BASE_URL_BY_NODE_ENV.development;
 
 interface AppConfig {
   token: string;
@@ -16,7 +24,8 @@ function loadConfig(): AppConfig {
     process.exit(1);
   }
 
-  const baseUrl = (process.env.LINKFLOW_BASE_URL?.trim() || DEFAULT_BASE_URL).replace(/\/+$/, "");
+  // 优先级：运行时 LINKFLOW_BASE_URL 覆盖 > 构建期 NODE_ENV 注入的默认域名
+  const baseUrl = (process.env.LINKFLOW_BASE_URL?.trim() || BUILD_TIME_BASE_URL).replace(/\/+$/, "");
 
   return { token, baseUrl };
 }

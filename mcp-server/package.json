@@ -14,9 +14,12 @@
     "node": ">=18"
   },
   "scripts": {
-    "build": "tsc && chmod +x dist/index.js",
+    "typecheck": "tsc --noEmit",
+    "build": "node build.mjs",
+    "build:prod": "NODE_ENV=production node build.mjs",
+    "watch": "node build.mjs --watch",
     "start": "node dist/index.js",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run typecheck && npm run build:prod"
   },
   "keywords": [
     "mcp",
@@ -34,6 +37,7 @@
   },
   "devDependencies": {
     "@types/node": "^20.14.0",
+    "esbuild": "^0.21.5",
     "typescript": "^5.9.3"
   }
 }

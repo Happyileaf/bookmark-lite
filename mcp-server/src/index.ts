@@ -1,7 +1,7 @@
-#!/usr/bin/env node
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
+import { config } from "./config.js";
 import { httpClient, ApiError } from "./http-client.js";
 
 const scopeSchema = z
@@ -289,7 +289,9 @@ server.registerTool(
 async function main() {
   const transport = new StdioServerTransport();
   await server.connect(transport);
-  process.stderr.write("[bookmark-lite-mcp] MCP Server 已启动（stdio 传输），等待客户端连接。\n");
+  process.stderr.write(
+    `[bookmark-lite-mcp] MCP Server 已启动（stdio 传输），连接平台 ${config.baseUrl}，等待客户端连接。\n`,
+  );
 }
 
 main().catch((error) => {
