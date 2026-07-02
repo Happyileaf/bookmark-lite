@@ -24,16 +24,7 @@ AI 客户端  ──(stdio / MCP 协议)──▶  bookmark-lite-mcp  ──(HTT
 
 > 权限说明：普通用户的 Token 只能操作个人库（`scope=USER`）；`super_admin` 用户的 Token 可额外操作平台公共库（`scope=APP`）。
 
-## 步骤 2：获取平台地址
-
-本 MCP Server 只负责转发 HTTP 请求，平台可部署在任意地址。
-
-- 远程部署（生产）：`https://bookmark-lite.contextlab.top`
-- 本地开发：`http://localhost:3000`
-
-后续在客户端配置的 `LINKFLOW_BASE_URL` 处填入对应地址（结尾是否带 `/` 均可）。
-
-## 步骤 3：在 AI 客户端中配置（推荐 npx 零安装）
+## 步骤 2：在 AI 客户端中配置（推荐 npx 零安装）
 
 本包已发布到 npm，名为 `bookmark-lite-mcp`。在支持 MCP 的 AI 客户端（Claude Desktop、Cursor 等）的配置文件 `mcpServers` 中加入下述条目即可，**无需手动克隆或构建**：
 
@@ -44,8 +35,7 @@ AI 客户端  ──(stdio / MCP 协议)──▶  bookmark-lite-mcp  ──(HTT
       "command": "npx",
       "args": ["-y", "bookmark-lite-mcp"],
       "env": {
-        "LINKFLOW_TOKEN": "linkflow_xxxxxxxx",
-        "LINKFLOW_BASE_URL": "https://bookmark-lite.contextlab.top"
+        "LINKFLOW_TOKEN": "linkflow_xxxxxxxx"
       }
     }
   }
@@ -53,7 +43,7 @@ AI 客户端  ──(stdio / MCP 协议)──▶  bookmark-lite-mcp  ──(HTT
 ```
 
 - `npx -y bookmark-lite-mcp` 会自动拉取最新版本并以 stdio 方式运行；
-- `env` 中注入步骤 1 的 Token 与步骤 2 的平台地址；
+- `env` 中只需注入步骤 1 生成的 `LINKFLOW_TOKEN`；
 - 保存后重载 / 重启 AI 客户端使配置生效。
 
 ### 环境变量
@@ -61,9 +51,9 @@ AI 客户端  ──(stdio / MCP 协议)──▶  bookmark-lite-mcp  ──(HTT
 | 变量名 | 是否必填 | 说明 |
 | --- | --- | --- |
 | `LINKFLOW_TOKEN` | 必填 | 步骤 1 生成的 API Token，形如 `linkflow_xxx` |
-| `LINKFLOW_BASE_URL` | 必填 | 平台基址，如 `https://bookmark-lite.contextlab.top` |
+| `LINKFLOW_BASE_URL` | 可选 | 平台基址，默认已内置生产地址 `https://bookmark-lite.contextlab.top`；仅当连本地开发或自托管实例时才需要覆盖（如 `http://localhost:3000`） |
 
-任一缺失，Server 启动时会在 stderr 打印中文错误并退出。
+缺少必填变量时，Server 启动时会在 stderr 打印中文错误并退出。
 
 ### 从源码构建（仅开发 / 未发布前）
 
@@ -74,7 +64,7 @@ pnpm install
 pnpm --filter bookmark-lite-mcp build
 ```
 
-构建产物为 `mcp-server/dist/index.js`，此时客户端配置改用本地绝对路径：
+构建产物为 `mcp-server/dist/index.js`，此时客户端配置改用本地绝对路径（连本地平台时再加 `LINKFLOW_BASE_URL`）：
 
 ```json
 {
@@ -91,14 +81,14 @@ pnpm --filter bookmark-lite-mcp build
 }
 ```
 
-## 步骤 4：验证接入
+## 步骤 3：验证接入
 
 1. 重载客户端后，在其 MCP / 工具面板中确认能列出本 Server 的 **9 个 tools**。
 2. 调用一个只读工具做连通性验证，例如 `list_tags` 或 `list_bookmarks`：
    - 返回标签 / 书签数据 → 接入成功；
    - 返回错误信息 → 参考下方常见问题排查。
 
-## 步骤 5：常见问题排查
+## 步骤 4：常见问题排查
 
 | 现象 | 可能原因与处理 |
 | --- | --- |
