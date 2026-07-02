@@ -1,5 +1,0 @@
-[2026-07-02T21:24:13.823+08:00] CLI invoked: midscene-web connect --url http://localhost:3000/login
-[2026-07-02T21:24:13.864+08:00] command: connect, args: {"web.url":"http://localhost:3000/login"}
-[2026-07-02T21:24:23.682+08:00] CLI invoked: midscene-web connect --url http://localhost:3000/login
-[2026-07-02T21:24:23.695+08:00] command: connect, args: {"web.url":"http://localhost:3000/login"}
-[2026-07-02T21:24:25.922+08:00] command connect completed, isError: false
