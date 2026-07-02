@@ -1,14 +1,32 @@
 {
   "name": "bookmark-lite-mcp",
   "version": "1.0.0",
-  "private": true,
+  "description": "MCP server exposing Bookmark Lite (LinkFlow) bookmark & tag capabilities as standard MCP tools for AI agents.",
   "type": "module",
   "bin": {
     "bookmark-lite-mcp": "dist/index.js"
   },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
-    "build": "tsc",
-    "start": "node dist/index.js"
+    "build": "tsc && chmod +x dist/index.js",
+    "start": "node dist/index.js",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "bookmark",
+    "linkflow",
+    "ai-agent"
+  ],
+  "publishConfig": {
+    "access": "public"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.12.0",
