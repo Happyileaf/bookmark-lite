@@ -1,6 +1,7 @@
 import { requireApiTokenUser } from "@/server/auth/api-token-guard";
 import { tagService } from "@/server/services/tag.service";
-import { AppError, isAppError } from "@/server/types/errors";
+import { AppError } from "@/server/types/errors";
+import { successResponse, errorResponse } from "@/app/api/v1/_lib";
 import type { DataScope } from "@prisma/client";
 import { z } from "zod";
 
@@ -38,38 +39,9 @@ export async function GET(request: Request) {
 
     const data = await tagService.list(parsed.data.scope as DataScope, user);
 
-    return Response.json({
-      ok: true,
-      data,
-      requestId,
-    });
+    return successResponse(data, requestId);
   } catch (error) {
-    if (isAppError(error)) {
-      return Response.json(
-        {
-          ok: false,
-          error: {
-            code: error.code,
-            message: error.message,
-            fieldErrors: error.fieldErrors,
-          },
-          requestId,
-        },
-        { status: error.status },
-      );
-    }
-
-    return Response.json(
-      {
-        ok: false,
-        error: {
-          code: "INTERNAL_ERROR",
-          message: "获取标签列表失败",
-        },
-        requestId,
-      },
-      { status: 500 },
-    );
+    return errorResponse(error, requestId, "获取标签列表失败");
   }
 }
 
@@ -99,40 +71,8 @@ export async function POST(request: Request) {
       user,
     );
 
-    return Response.json(
-      {
-        ok: true,
-        data,
-        requestId,
-      },
-      { status: 201 },
-    );
+    return successResponse(data, requestId, 201);
   } catch (error) {
-    if (isAppError(error)) {
-      return Response.json(
-        {
-          ok: false,
-          error: {
-            code: error.code,
-            message: error.message,
-            fieldErrors: error.fieldErrors,
-          },
-          requestId,
-        },
-        { status: error.status },
-      );
-    }
-
-    return Response.json(
-      {
-        ok: false,
-        error: {
-          code: "INTERNAL_ERROR",
-          message: "创建标签失败",
-        },
-        requestId,
-      },
-      { status: 500 },
-    );
+    return errorResponse(error, requestId, "创建标签失败");
   }
 }

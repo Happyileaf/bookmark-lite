@@ -1,7 +1,8 @@
 import { NextRequest } from "next/server";
 import * as cheerio from "cheerio";
 import { requireApiTokenUser } from "@/server/auth/api-token-guard";
-import { AppError, isAppError } from "@/server/types/errors";
+import { AppError } from "@/server/types/errors";
+import { successResponse, errorResponse } from "@/app/api/v1/_lib";
 
 export const dynamic = "force-dynamic";
 
@@ -22,18 +23,18 @@ async function fetchUrlMetadata(rawUrl: unknown): Promise<{
   favicon: string;
 }> {
   if (typeof rawUrl !== "string" || !rawUrl.trim()) {
-    throw new AppError("VALIDATION_FAILED", "缺少有效的 URL 参数", 400);
+    throw new AppError("VALIDATION_FAILED", "缺少有效的 URL 参数", 422);
   }
 
   let parsed: URL;
   try {
     parsed = new URL(rawUrl.trim());
   } catch {
-    throw new AppError("VALIDATION_FAILED", "URL 格式不正确", 400);
+    throw new AppError("VALIDATION_FAILED", "URL 格式不正确", 422);
   }
 
   if (!["http:", "https:"].includes(parsed.protocol)) {
-    throw new AppError("VALIDATION_FAILED", "仅支持 HTTP/HTTPS 协议", 400);
+    throw new AppError("VALIDATION_FAILED", "仅支持 HTTP/HTTPS 协议", 422);
   }
 
   const controller = new AbortController();
@@ -115,11 +116,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const data = await fetchUrlMetadata(body?.url);
 
-    return Response.json({
-      ok: true,
-      data,
-      requestId,
-    });
+    return successResponse(data, requestId);
   } catch (error) {
     if (error instanceof Error && error.name === "AbortError") {
       return Response.json(
@@ -135,32 +132,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (isAppError(error)) {
-      return Response.json(
-        {
-          ok: false,
-          error: {
-            code: error.code,
-            message: error.message,
-            fieldErrors: error.fieldErrors,
-          },
-          requestId,
-        },
-        { status: error.status },
-      );
-    }
-
-    const message = error instanceof Error ? error.message : "解析失败";
-    return Response.json(
-      {
-        ok: false,
-        error: {
-          code: "INTERNAL_ERROR",
-          message,
-        },
-        requestId,
-      },
-      { status: 500 },
-    );
+    return errorResponse(error, requestId, "解析失败");
   }
 }

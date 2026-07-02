@@ -1,6 +1,7 @@
 import { requireApiTokenUser } from "@/server/auth/api-token-guard";
 import { bookmarkService } from "@/server/services/bookmark.service";
-import { AppError, isAppError } from "@/server/types/errors";
+import { AppError } from "@/server/types/errors";
+import { successResponse, errorResponse } from "@/app/api/v1/_lib";
 import { dataScopeSchema } from "@/server/validators/bookmark.schema";
 import type { DataScope } from "@prisma/client";
 import { z } from "zod";
@@ -17,32 +18,6 @@ const patchSchema = z.object({
   isVisible: z.boolean().optional(),
   tagNames: z.array(z.string().trim().min(1).max(80)).optional(),
 });
-
-function errorResponse(error: unknown, requestId: string, fallbackMessage: string) {
-  if (isAppError(error)) {
-    return Response.json(
-      {
-        ok: false,
-        error: {
-          code: error.code,
-          message: error.message,
-          fieldErrors: error.fieldErrors,
-        },
-        requestId,
-      },
-      { status: error.status },
-    );
-  }
-
-  return Response.json(
-    {
-      ok: false,
-      error: { code: "INTERNAL_ERROR", message: fallbackMessage },
-      requestId,
-    },
-    { status: 500 },
-  );
-}
 
 /**
  * 更新书签（v1 REST）
@@ -87,7 +62,7 @@ export async function PATCH(
       user,
     );
 
-    return Response.json({ ok: true, data: { id }, requestId }, { status: 200 });
+    return successResponse({ id }, requestId);
   } catch (error) {
     return errorResponse(error, requestId, "更新书签失败");
   }

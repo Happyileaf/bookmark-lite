@@ -1,6 +1,7 @@
 import { requireApiTokenUser } from "@/server/auth/api-token-guard";
 import { tagService } from "@/server/services/tag.service";
-import { AppError, isAppError } from "@/server/types/errors";
+import { AppError } from "@/server/types/errors";
+import { successResponse, errorResponse } from "@/app/api/v1/_lib";
 import type { DataScope } from "@prisma/client";
 import { z } from "zod";
 
@@ -48,38 +49,9 @@ export async function PATCH(
       user,
     );
 
-    return Response.json({
-      ok: true,
-      data,
-      requestId,
-    });
+    return successResponse(data, requestId);
   } catch (error) {
-    if (isAppError(error)) {
-      return Response.json(
-        {
-          ok: false,
-          error: {
-            code: error.code,
-            message: error.message,
-            fieldErrors: error.fieldErrors,
-          },
-          requestId,
-        },
-        { status: error.status },
-      );
-    }
-
-    return Response.json(
-      {
-        ok: false,
-        error: {
-          code: "INTERNAL_ERROR",
-          message: "更新标签失败",
-        },
-        requestId,
-      },
-      { status: 500 },
-    );
+    return errorResponse(error, requestId, "更新标签失败");
   }
 }
 
@@ -113,37 +85,8 @@ export async function DELETE(
 
     await tagService.delete(id, parsed.data.scope as DataScope, user);
 
-    return Response.json({
-      ok: true,
-      data: { id },
-      requestId,
-    });
+    return successResponse({ id }, requestId);
   } catch (error) {
-    if (isAppError(error)) {
-      return Response.json(
-        {
-          ok: false,
-          error: {
-            code: error.code,
-            message: error.message,
-            fieldErrors: error.fieldErrors,
-          },
-          requestId,
-        },
-        { status: error.status },
-      );
-    }
-
-    return Response.json(
-      {
-        ok: false,
-        error: {
-          code: "INTERNAL_ERROR",
-          message: "删除标签失败",
-        },
-        requestId,
-      },
-      { status: 500 },
-    );
+    return errorResponse(error, requestId, "删除标签失败");
   }
 }

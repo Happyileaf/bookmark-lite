@@ -1,6 +1,7 @@
 import { requireApiTokenUser } from "@/server/auth/api-token-guard";
 import { bookmarkService } from "@/server/services/bookmark.service";
-import { AppError, isAppError } from "@/server/types/errors";
+import { AppError } from "@/server/types/errors";
+import { successResponse, errorResponse } from "@/app/api/v1/_lib";
 import { DEFAULT_PAGE_SIZE } from "@/lib/constants";
 import { dataScopeSchema } from "@/server/validators/bookmark.schema";
 import type { DataScope } from "@prisma/client";
@@ -32,7 +33,7 @@ const querySchema = z.object({
 
 const createSchema = z.object({
   scope: dataScopeSchema.default("USER"),
-  url: z.string().trim().min(1, "URL 不能为空"),
+  url: z.string().trim().url("URL 格式不正确").min(1, "URL 不能为空"),
   title: z.string().trim().max(300, "标题长度不能超过 300").optional(),
   description: z
     .string()
@@ -48,36 +49,6 @@ const deleteSchema = z.object({
   scope: dataScopeSchema.default("USER"),
   ids: z.array(z.string().uuid()).min(1, "ids 不能为空"),
 });
-
-function successResponse(data: unknown, requestId: string, status = 200) {
-  return Response.json({ ok: true, data, requestId }, { status });
-}
-
-function errorResponse(error: unknown, requestId: string, fallbackMessage: string) {
-  if (isAppError(error)) {
-    return Response.json(
-      {
-        ok: false,
-        error: {
-          code: error.code,
-          message: error.message,
-          fieldErrors: error.fieldErrors,
-        },
-        requestId,
-      },
-      { status: error.status },
-    );
-  }
-
-  return Response.json(
-    {
-      ok: false,
-      error: { code: "INTERNAL_ERROR", message: fallbackMessage },
-      requestId,
-    },
-    { status: 500 },
-  );
-}
 
 /**
  * 查询书签列表（v1 REST）
@@ -183,7 +154,7 @@ export async function POST(request: Request) {
       );
     } catch (error) {
       // 去重命中：转换为已存在语义
-      if (isAppError(error) && error.code === "BOOKMARK_DUPLICATE_URL") {
+      if (error instanceof AppError && error.code === "BOOKMARK_DUPLICATE_URL") {
         return successResponse({ alreadyExists: true }, requestId);
       }
       throw error;
