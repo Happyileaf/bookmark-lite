@@ -64,7 +64,7 @@ AI 客户端  ──(stdio / MCP 协议)──▶  bookmark-lite-mcp  ──(HTT
    - `NODE_ENV=production` → `https://bookmark-lite.contextlab.top`
    - `NODE_ENV=development`（默认）→ `http://localhost:3000`
 
-发布到 npm 的产物由 `build:prod`（`NODE_ENV=production`）构建，因此 `npx` 拉取的版本默认连线上；本地 `pnpm --filter bookmark-lite-mcp build` 为开发构建，默认连 `localhost:3000`。启动日志会打印当前实际连接的平台地址，便于确认。
+发布到 npm 的产物由 `build`（`NODE_ENV=production`）构建，因此 `npx` 拉取的版本默认连线上；本地 `pnpm --filter bookmark-lite-mcp build:local` 为开发构建，默认连 `localhost:3000`。启动日志会打印当前实际连接的平台地址，便于确认。
 
 ### 从源码构建（仅开发 / 未发布前）
 
@@ -72,8 +72,8 @@ AI 客户端  ──(stdio / MCP 协议)──▶  bookmark-lite-mcp  ──(HTT
 
 ```bash
 pnpm install
-pnpm --filter bookmark-lite-mcp build        # 开发构建，默认连 localhost:3000
-# 或：pnpm --filter bookmark-lite-mcp build:prod   # 生产构建，默认连线上
+pnpm --filter bookmark-lite-mcp build:local    # 开发构建，默认连 localhost:3000
+# 或：pnpm --filter bookmark-lite-mcp build     # 生产构建，默认连线上
 ```
 
 构建产物为 `mcp-server/dist/index.js`，此时客户端配置改用本地绝对路径（如需覆盖域名再加 `LINKFLOW_BASE_URL`）：
