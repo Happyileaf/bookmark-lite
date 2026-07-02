@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { auth } from "@/server/auth/auth";
-import { UserMenu } from "@/components/layout/user-menu";
+import { HeaderActions } from "@/components/layout/header-actions";
 
 export async function AppHeader() {
   const session = await auth();
@@ -30,24 +30,12 @@ export async function AppHeader() {
         </div>
 
         <div className="flex items-center justify-end gap-2 text-sm">
-          {isAuthed ? (
-            <UserMenu email={session?.user?.email ?? "已登录用户"} isAdmin={isAdmin} userLabel={userLabel} />
-          ) : (
-            <>
-              <Link
-                href="/login"
-                className="rounded border border-slate-300 px-3 py-1.5 text-slate-700 hover:bg-slate-50 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700/40"
-              >
-                登录
-              </Link>
-              <Link
-                href="/register"
-                className="rounded bg-slate-900 px-3 py-1.5 text-white hover:bg-slate-800 dark:bg-slate-600 dark:hover:bg-slate-500"
-              >
-                注册
-              </Link>
-            </>
-          )}
+          <HeaderActions
+            isAuthed={isAuthed}
+            email={session?.user?.email ?? "已登录用户"}
+            isAdmin={isAdmin}
+            userLabel={userLabel}
+          />
         </div>
       </div>
     </header>
