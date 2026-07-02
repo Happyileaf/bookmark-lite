@@ -1,5 +1,6 @@
 packages:
   - "extension"
+  - "mcp-server"
 allowBuilds:
   '@prisma/client': true
   '@prisma/engines': true
