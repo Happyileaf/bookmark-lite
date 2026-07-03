@@ -101,7 +101,7 @@
 系统 SHALL 依据设计稿 `bookmark-auth/pages/guide.html` 1:1 还原页面结构、间距、字号、配色、圆角与阴影，品牌色为浅色 teal（`#0d9488`）。
 
 #### Scenario: 浅色品牌色始终生效
-- **WHEN` 页面在任意全局主题下渲染
+- **WHEN** 页面在任意全局主题下渲染
 - **THEN** 指南页内容始终为浅色品牌色视觉（不受全局 `.dark` 影响），与设计稿一致
 
 ### Requirement: MCP 配置复制交互
@@ -119,8 +119,8 @@
 - **THEN** 该配置可被 MCP 客户端用于启动 `bookmark-lite-mcp`（`npx -y bookmark-lite-mcp`）
 
 #### Scenario: 插件下载链接可达
-- **WHEN` 用户点击「下载 Bookmark Lite 浏览器插件」按钮
-- **THEN` 浏览器开始下载 `/downloads/bookmark-lite-extension.zip`
+- **WHEN** 用户点击「下载 Bookmark Lite 浏览器插件」按钮
+- **THEN** 浏览器开始下载 `/downloads/bookmark-lite-extension.zip`
 
 ### Requirement: 全局头部使用指南入口
 系统 SHALL 在全局 `AppHeader` 中提供一个「使用指南」入口，指向 `/guide`，对所有访客（含未登录用户）可见。

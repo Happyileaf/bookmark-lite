@@ -31,7 +31,7 @@ export const metadata = {
 
 export default function GuidePage() {
   return (
-    <div className="guide-page min-h-screen overflow-hidden">
+    <div className="guide-page h-full w-full overflow-y-auto">
       <section className="relative mx-auto grid max-w-7xl gap-10 px-6 py-14 sm:px-8 sm:py-16 lg:grid-cols-[1.02fr_0.98fr] lg:px-10 lg:py-20">
         <div className="flex min-w-0 flex-col justify-center">
           <h1 className="bm-font-display max-w-2xl text-[34px] font-extrabold leading-[1.18] tracking-[-0.025em] sm:text-[42px] lg:text-[46px]">
