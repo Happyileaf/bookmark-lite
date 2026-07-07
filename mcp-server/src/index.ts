@@ -76,14 +76,33 @@ server.registerTool(
   {
     title: "收藏书签",
     description:
-      "收藏一个网址到书签库。若 URL 已存在会返回 alreadyExists:true。标签用标签名数组传入（tagNames），不存在的标签会自动创建。",
+`【强制要求！调用前必须100%完成以下所有操作，否则视为无效调用】
+### 前置流程（必须执行）
+1. **必须优先使用你自身的知识与分析能力**，解析URL对应的网页内容，完整提取以下信息：
+   - ✅ 准确的网页标题（**绝对禁止直接使用URL作为标题**，必须是网页真实内容的标题）
+    - ✅ 精炼的内容描述（1-2句话概括网页核心价值，100字以内，禁止空描述）
+    - ✅ 建议提供1-3个与内容主题高度相关的分类标签（用户有明确要求的除外，标签应为简洁的分类词，如"前端开发"、"AI工具"、"设计资源"等）
+    - ✅ 网页favicon图标URL（如果能分析到）
+2. **用户要求优先原则**：如果用户有明确的标签要求（包括明确指定标签、明确要求不要标签），请优先严格按照用户要求执行，无需遵守上述建议数量限制。
+3. 仅当你**完全无法分析该URL内容**时，才允许**先调用fetch_url_metadata工具获取基础元数据**，再结合你自身的理解补全信息后调用本工具
+4. 标签自动关联机制（无需人工干预）：
+   - 你无需关心标签是否已存在，只需传入你认为适合的标签名即可
+   - 平台会自动匹配已有标签，完全匹配的会直接关联
+   - 不存在的标签会自动创建并关联
+   - 无需提前调用list_tags查询现有标签，也无需提前调用create_tag创建标签
+
+### 调用规范
+- 禁止仅传入url参数调用本工具，必须同时提供title、description、tagNames
+- 提供的元数据越准确完整，用户后续检索和管理书签的体验越好，请严格按照要求执行
+
+收藏一个网址到书签库。若URL已存在会返回alreadyExists:true。`,
     inputSchema: {
       scope: scopeSchema,
       url: z.string().describe("要收藏的网址（必填）"),
-      title: z.string().optional().describe("标题，缺省时自动回退为 URL host"),
-      description: z.string().optional().describe("描述"),
-      favicon: z.string().optional().describe("图标 URL"),
-      tagNames: z.array(z.string()).optional().describe("标签名数组，用名称而非 ID"),
+      title: z.string().describe("网页标题（必填，必须优先通过自身分析获取，禁止直接使用URL作为标题）"),
+      description: z.string().describe("网页内容的精炼描述（必填，概括核心价值，100字以内）"),
+      favicon: z.string().optional().describe("网页图标URL，可通过分析或fetch_url_metadata获取"),
+      tagNames: z.array(z.string()).optional().describe("1-3个内容相关的分类标签名数组（建议填写，平台会自动处理标签的关联与创建，无需提前操作；若用户明确要求不要标签可不填）")
     },
   },
   async ({ scope, url, title, description, favicon, tagNames }) => {
@@ -109,20 +128,28 @@ server.registerTool(
   {
     title: "更新书签",
     description:
-      "更新书签，可修改标题/URL/描述/图标、切换收藏(isFavorite)与可见(isVisible)状态，或用 tagNames 重设标签（传入的标签名数组会完全替换现有标签）。",
+`更新书签信息。常见使用场景：
+1. 当你调用create_bookmark后收到信息不完整的警告时，必须调用本工具补全缺失的标题、描述或标签
+2. 修正已存在书签的错误信息
+3. 调整书签的收藏状态、可见状态等
+
+### 参数说明
+- 可修改标题/URL/描述/图标、切换收藏(isFavorite)与可见(isVisible)状态
+- 传入 tagNames 数组会完全替换该书签的现有标签，平台会自动处理标签的关联与创建
+- 标签处理规则同create_bookmark：已存在的标签自动关联，不存在的标签自动创建，无需提前调用create_tag`,
     inputSchema: {
       scope: scopeSchema,
       id: z.string().describe("书签 ID（必填）"),
-      title: z.string().optional().describe("新标题"),
+      title: z.string().optional().describe("新标题，禁止直接使用URL作为标题"),
       url: z.string().optional().describe("新网址"),
-      description: z.string().optional().describe("新描述"),
+      description: z.string().optional().describe("新描述，概括核心价值，100字以内"),
       favicon: z.string().optional().describe("新图标 URL"),
       isFavorite: z.boolean().optional().describe("是否收藏"),
       isVisible: z.boolean().optional().describe("是否可见"),
       tagNames: z
         .array(z.string())
         .optional()
-        .describe("标签名数组，会完全重设该书签的标签"),
+        .describe("标签名数组（建议1-3个），会完全重设该书签的标签，不存在的标签会自动创建；若用户明确要求不要标签可传空数组"),
     },
   },
   async ({ scope, id, ...rest }) => {
@@ -268,9 +295,21 @@ server.registerTool(
 server.registerTool(
   "fetch_url_metadata",
   {
-    title: "抓取 URL 元数据",
+    title: "抓取 URL 元数据（兜底工具）",
     description:
-      "从 URL 抓取标题/描述/图标。注意：AI 应优先依靠自身能力分析 URL 获取元数据，仅当自身无法获取时才调用此兜底工具。",
+`【兜底工具！仅允许在以下场景调用】
+1. 你自身完全无法分析该URL的内容与元数据
+2. 调用create_bookmark前自身分析失败，需要获取基础元数据补充
+3. 禁止优先调用本工具，必须先尝试自身分析能力
+
+### 调用后要求
+调用本工具获取到元数据后，**不能直接使用返回的原始数据调用create_bookmark**，你必须：
+1. 对返回的标题进行优化和修正，确保准确反映网页内容
+2. 结合你自身的知识补充完善内容描述，确保描述清晰准确
+3. 基于网页内容生成1-3个高质量的分类标签（用户有明确要求的除外），禁止直接使用返回的关键词作为标签
+4. 补全所有必填信息后，再调用create_bookmark工具
+
+从URL抓取标题/描述/图标，返回基础元数据用于补充书签信息。`,
     inputSchema: {
       url: z.string().describe("要抓取元数据的网址（必填）"),
     },
