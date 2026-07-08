@@ -4,6 +4,7 @@ import { hashPassword } from "@/server/auth/password";
 import { passwordResetService } from "@/server/services/password-reset.service";
 import { isAppError } from "@/server/types/errors";
 import { prisma } from "@/server/db/prisma";
+import { getSiteBaseUrl } from "@/lib/site-url";
 import { z } from "zod";
 
 const registerSchema = z
@@ -101,7 +102,7 @@ export async function requestPasswordResetAction(
     return { ok: false, message };
   }
 
-  const resetBaseUrl = resolveResetBaseUrl();
+  const resetBaseUrl = getSiteBaseUrl();
 
   try {
     await passwordResetService.requestReset(parsed.data.email, resetBaseUrl);
@@ -187,15 +188,4 @@ export async function resetPasswordAction(
   return { ok: true, message: "密码已重置，请使用新密码登录。" };
 }
 
-const RESET_BASE_URL_BY_NODE_ENV = {
-  production: "https://bookmark-lite.contextlab.top",
-  development: "http://localhost:3000",
-} as const;
 
-function resolveResetBaseUrl(): string {
-  const nodeEnv = process.env.NODE_ENV;
-  const baseUrl =
-    (nodeEnv && RESET_BASE_URL_BY_NODE_ENV[nodeEnv as keyof typeof RESET_BASE_URL_BY_NODE_ENV]) ??
-    RESET_BASE_URL_BY_NODE_ENV.development;
-  return baseUrl.replace(/\/+$/, "");
-}

@@ -175,6 +175,6 @@ export const passwordResetService = {
 };
 
 function buildResetUrl(baseUrl: string, token: string): string {
-  const normalizedBase = baseUrl.replace(/\/$/, "");
+  const normalizedBase = baseUrl.replace(/\/+$/, "");
   return `${normalizedBase}/reset-password?token=${token}`;
 }
