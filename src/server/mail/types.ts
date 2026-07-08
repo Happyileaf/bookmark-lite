@@ -23,6 +23,8 @@ export type MailMessage = {
 export type MailSendResult = {
   success: boolean;
   messageId?: string;
+  /** 失败原因，用于上层决策与日志 */
+  error?: string;
 };
 
 /**

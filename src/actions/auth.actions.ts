@@ -106,7 +106,11 @@ export async function requestPasswordResetAction(
   try {
     await passwordResetService.requestReset(parsed.data.email, resetBaseUrl);
   } catch (error) {
-    console.error("[password-reset] 请求重置失败:", error);
+    if (isAppError(error)) {
+      console.error("[password-reset] 请求失败 code=%s: %s", error.code, error.message);
+    } else {
+      console.error("[password-reset] 请求重置失败:", error);
+    }
     return {
       ok: false,
       message: "发送重置邮件时出错，请稍后重试",

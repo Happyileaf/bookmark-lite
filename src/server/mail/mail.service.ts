@@ -21,12 +21,15 @@ export const mailService = {
   async send(message: MailMessage): Promise<MailSendResult> {
     const client = getMailClient();
     if (!client) {
-      console.warn(
-        "[mail] RESEND_API_KEY 未配置，跳过邮件发送。收件人：%s · 主题：%s",
+      console.error(
+        "[mail] RESEND_API_KEY 未配置，邮件未发送。收件人：%s · 主题：%s",
         message.to,
         message.subject,
       );
-      return { success: true };
+      return {
+        success: false,
+        error: "邮件服务未配置（缺少 RESEND_API_KEY）",
+      };
     }
 
     const { data, error } = await client.emails.send({
@@ -39,7 +42,10 @@ export const mailService = {
 
     if (error) {
       console.error("[mail] 邮件发送失败:", error);
-      return { success: false };
+      return {
+        success: false,
+        error: error.message ?? "邮件发送失败",
+      };
     }
 
     return { success: true, messageId: data?.id };

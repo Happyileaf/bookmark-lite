@@ -56,10 +56,6 @@ export const passwordResetService = {
       { resetUrl, ttlMinutes: RESET_TOKEN_TTL_MINUTES },
     );
 
-    if (!mailResult.success) {
-      console.error("[password-reset] 邮件发送失败，用户：%s", user.email);
-    }
-
     await auditRepo.create({
       userId: user.id,
       role: "user",
@@ -67,10 +63,19 @@ export const passwordResetService = {
       targetType: "USER",
       targetId: user.id,
       scope: "USER",
-      status: "SUCCESS",
+      status: mailResult.success ? "SUCCESS" : "FAIL",
+      reason: mailResult.success ? undefined : mailResult.error,
     });
 
-    return { sent: mailResult.success };
+    if (!mailResult.success) {
+      throw new AppError(
+        "MAIL_SEND_FAILED",
+        mailResult.error ?? "邮件发送失败",
+        500,
+      );
+    }
+
+    return { sent: true };
   },
 
   /**
