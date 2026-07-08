@@ -1,7 +1,7 @@
 import { createHash, randomBytes } from "node:crypto";
 
 /** Token 明文前缀 */
-const TOKEN_PREFIX = "linkflow_";
+const TOKEN_PREFIX = "bml-";
 
 /** tokenPrefix 展示的随机字符位数（仅用于识别，泄露无害） */
 const TOKEN_DISPLAY_RANDOM = 12;

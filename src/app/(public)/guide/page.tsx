@@ -19,7 +19,7 @@ const MCP_CONFIG = `{
       "command": "npx",
       "args": ["-y", "bookmark-lite-mcp"],
       "env": {
-        "LINKFLOW_TOKEN": "linkflow_xxxxxxxx"
+        "API_TOKEN": "bml-xxxxxxxx"
       }
     }
   }

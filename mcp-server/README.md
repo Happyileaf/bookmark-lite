@@ -20,7 +20,7 @@ AI 客户端  ──(stdio / MCP 协议)──▶  bookmark-lite-mcp  ──(HTT
 
 1. 登录平台，进入 **`/api-tokens`** 页面（个人 Token）。
 2. 点击创建，为 Token 起一个便于识别的名称。
-3. 创建后会显示一次明文 Token，形如 `linkflow_xxxxxxxx`。**明文仅显示一次，请立即复制保存**，页面刷新后无法再次查看。
+3. 创建后会显示一次明文 Token，形如 `bml-xxxxxxxx`。**明文仅显示一次，请立即复制保存**，页面刷新后无法再次查看。
 
 > 权限说明：普通用户的 Token 只能操作个人库（`scope=USER`）；`super_admin` 用户的 Token 可额外操作平台公共库（`scope=APP`）。
 
@@ -35,8 +35,8 @@ AI 客户端  ──(stdio / MCP 协议)──▶  bookmark-lite-mcp  ──(HTT
       "command": "npx",
       "args": ["-y", "bookmark-lite-mcp"],
       "env": {
-        "LINKFLOW_TOKEN": "linkflow_xxxxxxxx"
-      }
+         "API_TOKEN": "bml-xxxxxxxx"
+        }
     }
   }
 }
@@ -50,8 +50,8 @@ AI 客户端  ──(stdio / MCP 协议)──▶  bookmark-lite-mcp  ──(HTT
 
 | 变量名 | 是否必填 | 说明 |
 | --- | --- | --- |
-| `LINKFLOW_TOKEN` | 必填 | 步骤 1 生成的 API Token，形如 `linkflow_xxx` |
-| `LINKFLOW_BASE_URL` | 可选 | 平台基址。缺省时使用构建期内置的默认域名（见下），仅当需要连其它实例时才覆盖 |
+| `API_TOKEN` | 必填 | 步骤 1 生成的 API Token，形如 `bml-xxx` |
+| `API_BASE_URL` | 可选 | 平台基址。缺省时使用构建期内置的默认域名（见下），仅当需要连其它实例时才覆盖 |
 
 缺少必填变量时，Server 启动时会在 stderr 打印中文错误并退出。
 
@@ -85,8 +85,8 @@ pnpm --filter bookmark-lite-mcp build:local    # 开发构建，默认连 localh
       "command": "node",
       "args": ["/absolute/path/to/mcp-server/dist/index.js"],
       "env": {
-        "LINKFLOW_TOKEN": "linkflow_xxxxxxxx"
-      }
+         "API_TOKEN": "bml-xxxxxxxx"
+        }
     }
   }
 }

@@ -150,7 +150,7 @@
 ### 步骤 1：生成 API Token
 1. 登录平台，进入 **API Tokens** 页（`/api-tokens`，管理端为 `/admin/api-tokens`）。
 2. 点击「创建 Token」，输入名称（如 `my-ai-agent`），提交。
-3. 复制生成的明文 Token（形如 `linkflow_xxxxxxxx...`）。**明文仅展示一次**，请妥善保存。
+3. 复制生成的明文 Token（形如 `bml-xxxxxxxx...`）。**明文仅展示一次**，请妥善保存。
 4. Token 权限等同于账号本人（全量权限）；super_admin 的 Token 可操作 APP 公共库。
 
 ### 步骤 2：获取 / 构建 MCP Server
@@ -166,8 +166,8 @@ MCP Server 启动时读取以下环境变量：
 
 | 变量 | 必填 | 说明 | 示例 |
 |---|---|---|---|
-| `LINKFLOW_TOKEN` | 是 | 步骤 1 生成的 Bearer Token | `linkflow_xxxx...` |
-| `LINKFLOW_BASE_URL` | 是 | 平台基础地址（不含尾部 `/api`） | `https://your-host.com` |
+| `API_TOKEN` | 是 | 步骤 1 生成的 Bearer Token | `bml-xxxx...` |
+| `API_BASE_URL` | 是 | 平台基础地址（不含尾部 `/api`） | `https://your-host.com` |
 
 缺少任一必填变量时，MCP Server 启动即报错并给出明确提示。
 
@@ -181,9 +181,9 @@ MCP Server 启动时读取以下环境变量：
       "command": "node",
       "args": ["/absolute/path/to/mcp-server/dist/index.js"],
       "env": {
-        "LINKFLOW_TOKEN": "linkflow_xxxxxxxxxxxx",
-        "LINKFLOW_BASE_URL": "https://your-host.com"
-      }
+           "API_TOKEN": "bml-xxxxxxxxxxxx",
+           "API_BASE_URL": "https://your-host.com"
+          }
     }
   }
 }
