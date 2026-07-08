@@ -24,7 +24,6 @@ const state: PopupState = {
 
 /** SVG 图标集合（统一描边风格） */
 const ICONS = {
-  bookmark: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>`,
   plus: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>`,
   loader: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>`,
   check: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>`,
@@ -183,7 +182,7 @@ function render(): void {
   root.innerHTML = `
     <div class="wrap">
       <div class="header">
-        <div class="logo">${ICONS.bookmark}</div>
+        <div class="logo"><img src="icons/logo-48.png" alt="Bookmark Lite" /></div>
         <h1>Bookmark Lite</h1>
         <span id="conn-badge" class="conn ${connClass}" title="点击打开设置">
           <span class="dot"></span>${connLabel}

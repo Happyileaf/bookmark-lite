@@ -26,7 +26,6 @@ const state: OptionsState = {
 
 /** SVG 图标集合 */
 const ICONS = {
-  bookmark: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>`,
   loader: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>`,
   check: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>`,
   alert: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4M12 17h.01"/></svg>`,
@@ -194,7 +193,7 @@ function render(): void {
     <div class="container">
       <div class="card">
         <div class="card-header">
-          <div class="logo">${ICONS.bookmark}</div>
+          <div class="logo"><img src="icons/logo-48.png" alt="Bookmark Lite" /></div>
           <h1>Bookmark Lite 设置</h1>
           <span class="conn ${connClass}">
             <span class="dot"></span>${connLabel}
