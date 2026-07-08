@@ -4,7 +4,7 @@ declare const process: {
   };
 };
 
-const SITE_BASE_URL_BY_NODE_ENV = {
+const API_BASE_URL = {
   production: "https://bookmark-lite.contextlab.top",
   development: "http://localhost:3000",
 } as const;
@@ -13,7 +13,7 @@ const SITE_BASE_URL_BY_NODE_ENV = {
 const NODE_ENV = process.env.NODE_ENV;
 
 /** 平台基址 */
-const API_BASE_URL = (SITE_BASE_URL_BY_NODE_ENV[NODE_ENV] ?? SITE_BASE_URL_BY_NODE_ENV.development).replace(/\/+$/, "");
+const API_BASE_URL_VALUE = (API_BASE_URL[NODE_ENV] ?? API_BASE_URL.development).replace(/\/+$/, "");
 
 /** 同步开关默认值 */
 const DEFAULT_SYNC_ENABLED = true;
@@ -73,7 +73,7 @@ export const storage = {
    * @returns 平台基址
    */
   async getApiBaseUrl(): Promise<string> {
-    return API_BASE_URL;
+    return API_BASE_URL_VALUE;
   },
 
   /**

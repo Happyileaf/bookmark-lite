@@ -1,4 +1,4 @@
-const SITE_BASE_URL_BY_NODE_ENV: Record<string, string> = {
+const API_BASE_URL: Record<string, string> = {
   production: "https://bookmark-lite.contextlab.top",
   development: "http://localhost:3000",
 };
@@ -6,7 +6,7 @@ const SITE_BASE_URL_BY_NODE_ENV: Record<string, string> = {
 const NODE_ENV = process.env.NODE_ENV === "production" ? "production" : "development";
 
 const BUILD_TIME_BASE_URL =
-  SITE_BASE_URL_BY_NODE_ENV[NODE_ENV] ?? SITE_BASE_URL_BY_NODE_ENV.development;
+  API_BASE_URL[NODE_ENV] ?? API_BASE_URL.development;
 
 interface AppConfig {
   token: string;
