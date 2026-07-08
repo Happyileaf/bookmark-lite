@@ -16,6 +16,7 @@ const buildOptions = {
   entryPoints: {
     background: "src/background.ts",
     popup: "src/popup.ts",
+    options: "src/options.ts",
   },
   bundle: true,
   outdir: "dist",
@@ -31,11 +32,12 @@ const buildOptions = {
 /**
  * 复制静态资源到 dist
  *
- * description popup.html / icons 直接拷贝；manifest.json 注入 package.json 的版本号后写入
+ * description popup.html / options.html / icons 直接拷贝；manifest.json 注入 package.json 的版本号后写入
  */
 function copyStaticAssets() {
   mkdirSync(resolve(__dirname, "dist"), { recursive: true });
   cpSync(resolve(__dirname, "popup.html"), resolve(__dirname, "dist", "popup.html"));
+  cpSync(resolve(__dirname, "options.html"), resolve(__dirname, "dist", "options.html"));
   const manifest = JSON.parse(readFileSync(resolve(__dirname, "manifest.json"), "utf8"));
   manifest.version = version;
   writeFileSync(resolve(__dirname, "dist", "manifest.json"), JSON.stringify(manifest, null, 2));

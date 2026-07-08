@@ -1,14 +1,11 @@
 import { storage } from "./lib/storage";
 import { queue } from "./lib/queue";
 import { AuthError, verifyToken } from "./lib/api";
-import type { BookmarkPayload } from "./lib/storage";
 
 /** 弹窗状态 */
 type PopupState = {
   token: string;
   syncEnabled: boolean;
-  tokenVisible: boolean;
-  verifyingToken: boolean;
   /** Token 有效性：null 未校验，true 有效，false 无效 */
   tokenValid: boolean | null;
   queueCount: number;
@@ -19,8 +16,6 @@ type PopupState = {
 const state: PopupState = {
   token: "",
   syncEnabled: true,
-  tokenVisible: false,
-  verifyingToken: false,
   tokenValid: null,
   queueCount: 0,
   status: "idle",
@@ -35,9 +30,8 @@ const ICONS = {
   check: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>`,
   info: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>`,
   alert: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><path d="M12 9v4M12 17h.01"/></svg>`,
-  eye: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>`,
-  eyeOff: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-10-7-10-7a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 10 7 10 7a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><path d="M1 1l22 22"/></svg>`,
   refresh: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>`,
+  settings: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>`,
 };
 
 /**
@@ -81,7 +75,7 @@ async function getActiveTab(): Promise<chrome.tabs.Tab | null> {
  */
 async function handleSaveCurrent(): Promise<void> {
   if (!state.token) {
-    setStatus("noToken", "请先填写 API Token");
+    setStatus("noToken", "请先在设置中配置 API Token");
     return;
   }
 
@@ -95,7 +89,7 @@ async function handleSaveCurrent(): Promise<void> {
   state.message = "";
   render();
 
-  const payload: BookmarkPayload = {
+  const payload = {
     url: tab.url,
     title: tab.title || tab.url,
     favicon: tab.favIconUrl,
@@ -121,49 +115,6 @@ async function handleSaveCurrent(): Promise<void> {
 }
 
 /**
- * 保存 Token
- *
- * @description 先写入存储，不因校验失败拦截保存；保存后自动校验并更新连接状态
- */
-async function handleSaveToken(): Promise<void> {
-  const token = state.token.trim();
-  if (!token) {
-    setStatus("noToken", "请先填写 API Token");
-    return;
-  }
-
-  await storage.setToken(token);
-  state.token = token;
-  state.verifyingToken = true;
-  state.status = "success";
-  state.message = "Token 已保存，正在校验";
-  render();
-
-  try {
-    await verifyToken(token);
-    state.tokenValid = true;
-    setStatusAfterVerify("success", "Token 有效，已保存");
-  } catch (error) {
-    state.tokenValid = error instanceof AuthError ? false : null;
-    setStatusAfterVerify(
-      error instanceof AuthError ? "authError" : "error",
-      error instanceof AuthError ? "Token 已保存，但校验无效" : "Token 已保存，校验失败，请检查网络",
-    );
-  }
-}
-
-/**
- * 校验结束后更新状态并取消校验中标记
- *
- * @param status - 状态类型
- * @param message - 提示文案
- */
-function setStatusAfterVerify(status: PopupState["status"], message: string): void {
-  state.verifyingToken = false;
-  setStatus(status, message);
-}
-
-/**
  * 切换同步开关
  *
  * @description 写入存储并更新开关显示
@@ -172,6 +123,18 @@ async function handleToggleSync(): Promise<void> {
   state.syncEnabled = !state.syncEnabled;
   await storage.setSyncEnabled(state.syncEnabled);
   render();
+}
+
+/**
+ * 打开配置页
+ *
+ * @description 在新标签页打开 options.html；可传入 hash 定位到队列区
+ */
+function openOptions(hash?: string): void {
+  const url = hash
+    ? chrome.runtime.getURL(`options.html${hash}`)
+    : chrome.runtime.getURL("options.html");
+  void chrome.tabs.create({ url });
 }
 
 /**
@@ -201,47 +164,30 @@ function statusIcon(status: PopupState["status"]): string {
 /**
  * 渲染弹窗 UI
  *
- * @description 根据状态渲染头部、收藏按钮、Token 配置、同步开关、队列提示
+ * @description 根据状态渲染头部、收藏按钮、同步开关、队列提示、设置入口
  */
 function render(): void {
   const root = document.getElementById("root");
   if (!root) return;
 
   const isSaving = state.status === "saving";
-  const verifying = state.verifyingToken;
   const hasToken = state.token.trim().length > 0;
   // 连接状态三态：未配置 / 已连接(Token 有效) / Token 无效
   const connClass = !hasToken ? "" : state.tokenValid === false ? "invalid" : "on";
   const connLabel = !hasToken ? "未配置" : state.tokenValid === false ? "Token 无效" : "已连接";
-  const showStatus = verifying || (!!state.message && state.status !== "idle" && state.status !== "saving");
-  const statusCls = verifying ? "verifying" : state.status;
-  const statusMsg = verifying ? "校验中…" : state.message;
-  const statusIco = verifying ? ICONS.loader : (showStatus ? statusIcon(state.status) : "");
+  const showStatus = !!state.message && state.status !== "idle" && state.status !== "saving";
+  const statusCls = state.status;
+  const statusMsg = state.message;
+  const statusIco = showStatus ? statusIcon(state.status) : "";
 
   root.innerHTML = `
     <div class="wrap">
       <div class="header">
         <div class="logo">${ICONS.bookmark}</div>
         <h1>Bookmark Lite</h1>
-        <span class="conn ${connClass}">
+        <span id="conn-badge" class="conn ${connClass}" title="点击打开设置">
           <span class="dot"></span>${connLabel}
         </span>
-      </div>
-
-      <div class="field no-divider">
-        <span class="label">API Token</span>
-        <div class="token-row">
-          <div class="input-wrap">
-            <input id="token-input" type="${state.tokenVisible ? "text" : "password"}"
-              value="${escapeHtml(state.token)}" placeholder="粘贴 Token 明文" class="token-input" />
-            <button id="toggle-eye" class="eye" title="显示/隐藏">
-              ${state.tokenVisible ? ICONS.eyeOff : ICONS.eye}
-            </button>
-          </div>
-          <button id="save-token" class="btn-ghost" ${state.verifyingToken ? "disabled" : ""}>
-            ${state.verifyingToken ? `<span class="spin">${ICONS.loader}</span>` : "保存"}
-          </button>
-        </div>
       </div>
 
       <button id="save-current" class="save-btn" ${isSaving ? "disabled" : ""}>
@@ -250,7 +196,7 @@ function render(): void {
       </button>
 
       <div class="status ${showStatus ? statusCls : "empty"}">
-        ${showStatus ? `<span class="${verifying ? "spin" : ""}">${statusIco}</span><span>${statusMsg}</span>` : ""}
+        ${showStatus ? `<span>${statusIco}</span><span>${statusMsg}</span>` : ""}
       </div>
 
       <div class="field">
@@ -265,32 +211,22 @@ function render(): void {
         </div>
         ${
           state.queueCount > 0
-            ? `<div class="queue-note">${ICONS.refresh}<span>${state.queueCount} 条待重试，重新打开时自动重试</span></div>`
+            ? `<div id="queue-note" class="queue-note">${ICONS.refresh}<span>${state.queueCount} 条待重试，重新打开时自动重试</span></div>`
             : ""
         }
+      </div>
+
+      <div id="settings-entry" class="settings-entry">
+        ${ICONS.settings}<span>设置</span>
       </div>
     </div>
   `;
 
   document.getElementById("save-current")?.addEventListener("click", handleSaveCurrent);
-  document.getElementById("save-token")?.addEventListener("click", handleSaveToken);
-  document.getElementById("toggle-eye")?.addEventListener("click", () => {
-    state.tokenVisible = !state.tokenVisible;
-    render();
-  });
-  document.getElementById("token-input")?.addEventListener("input", (e) => {
-    state.token = (e.target as HTMLInputElement).value;
-  });
   document.getElementById("sync-toggle")?.addEventListener("click", handleToggleSync);
-}
-
-/** 转义 HTML 防止 Token 中的特殊字符破坏模板 */
-function escapeHtml(str: string): string {
-  return str
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;");
+  document.getElementById("conn-badge")?.addEventListener("click", () => openOptions());
+  document.getElementById("settings-entry")?.addEventListener("click", () => openOptions());
+  document.getElementById("queue-note")?.addEventListener("click", () => openOptions("#queue"));
 }
 
 document.addEventListener("DOMContentLoaded", init);

@@ -101,4 +101,49 @@ export const queue = {
     await storage.setFailedQueue(remaining);
     await updateBadge();
   },
+
+  /**
+   * 重试单条失败队列项
+   *
+   * @description 配置页单条重试入口；成功则从队列移除，失败则按策略保留
+   * @param payload - 需要重试的书签载荷
+   * @returns 重试是否成功
+   */
+  async retryOne(payload: BookmarkPayload): Promise<boolean> {
+    const queue = await storage.getFailedQueue();
+    const index = queue.findIndex((item) => item.payload.url === payload.url);
+    if (index === -1) return false;
+
+    const item = queue[index];
+    try {
+      await pushBookmark(item.payload);
+      queue.splice(index, 1);
+      await storage.setFailedQueue(queue);
+      await updateBadge();
+      return true;
+    } catch (error) {
+      if (error instanceof AuthError) {
+        return false;
+      }
+      const nextRetry = item.retryCount + 1;
+      if (nextRetry >= storage.MAX_RETRY_COUNT) {
+        queue.splice(index, 1);
+      } else {
+        queue[index] = { ...item, retryCount: nextRetry };
+      }
+      await storage.setFailedQueue(queue);
+      await updateBadge();
+      return false;
+    }
+  },
+
+  /**
+   * 清空失败队列
+   *
+   * @description 配置页清空入口；清空存储并清除角标
+   */
+  async clearAll(): Promise<void> {
+    await storage.setFailedQueue([]);
+    await updateBadge();
+  },
 };
