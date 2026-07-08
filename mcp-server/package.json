@@ -1,7 +1,7 @@
 {
   "name": "bookmark-lite-mcp",
-  "version": "1.0.1-beta.1",
-  "description": "MCP server exposing Bookmark Lite (LinkFlow) bookmark & tag capabilities as standard MCP tools for AI agents.",
+  "version": "1.0.1-beta.2",
+  "description": "MCP server exposing Bookmark Lite bookmark & tag capabilities as standard MCP tools for AI agents.",
   "type": "module",
   "bin": {
     "bookmark-lite-mcp": "dist/index.js"
