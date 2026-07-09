@@ -23,7 +23,7 @@
     "db:migrate:baseline": "node scripts/prisma-migrate-baseline.mjs",
     "db:export": "node scripts/db-export.mjs",
     "db:import": "node scripts/db-import.mjs",
-    "db:test:roundtrip": "node scripts/db-roundtrip-test.mjs",
+    "db:roundtrip:test": "node scripts/db-roundtrip-test.mjs",
     "db:data:seed:admin": "prisma db execute --file scripts/seed-admin-user-data.sql --schema prisma/schema.prisma",
     "db:data:seed:app": "node scripts/seed-data/seed-app-content.mjs",
     "db:data:seed:app:sql": "node scripts/seed-data/generate-seed-app-content-sql.mjs",
