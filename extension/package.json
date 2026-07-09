@@ -1,12 +1,18 @@
 {
   "name": "bookmark-lite-extension",
-  "version": "1.0.0",
+  "version": "1.0.1-beta.0",
   "private": true,
   "type": "module",
   "scripts": {
     "dev": "NODE_ENV=development node build.mjs --watch",
     "build": "NODE_ENV=production node build.mjs",
-    "build:local": "NODE_ENV=development node build.mjs"
+    "build:local": "NODE_ENV=development node build.mjs",
+    "publish": "./publish.sh",
+    "publish:patch": "./publish.sh patch",
+    "publish:minor": "./publish.sh minor",
+    "publish:major": "./publish.sh major",
+    "publish:beta": "./publish.sh beta",
+    "publish:alpha": "./publish.sh alpha"
   },
   "devDependencies": {
     "@types/chrome": "^0.2.0",
