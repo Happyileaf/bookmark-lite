@@ -2,19 +2,26 @@
 
 # 自动发布脚本，支持全场景版本升级和发布
 
-# 检查参数
+# 检查参数，默认使用beta发布
 if [ $# -eq 0 ]; then
+  TYPE="beta"
+  echo "ℹ️ 未指定发布类型，默认使用beta预发布版本"
+else
+  TYPE=$1
+fi
+
+# 显示帮助信息
+if [ "$TYPE" = "--help" ] || [ "$TYPE" = "-h" ]; then
   echo "用法: ./publish.sh <发布类型>"
   echo "支持的发布类型:"
   echo "  patch  - 正式补丁版本升级 (x.y.z → x.y.z+1, latest标签)"
   echo "  minor  - 正式次版本升级 (x.y.z → x.y+1.0, latest标签)"
   echo "  major  - 正式主版本升级 (x.y.z → x+1.0.0, latest标签)"
-  echo "  beta   - Beta预发布版本升级 (x.y.z → x.y.z-beta.n, beta标签)"
+  echo "  beta   - Beta预发布版本升级 (x.y.z → x.y.z-beta.n, beta标签，默认)"
   echo "  alpha  - Alpha内测版本升级 (x.y.z → x.y.z-alpha.n, alpha标签)"
-  exit 1
+  exit 0
 fi
 
-TYPE=$1
 REGISTRY="https://registry.npmjs.org/"
 
 echo "==================== 开始发布流程 ===================="
