@@ -109,7 +109,7 @@ export const queue = {
    * @param payload - 需要重试的书签载荷
    * @returns 重试是否成功
    */
-  async retryOne(payload: BookmarkPayload): Promise<boolean> {
+  async retryOne(payload: Pick<BookmarkPayload, "url">): Promise<boolean> {
     const queue = await storage.getFailedQueue();
     const index = queue.findIndex((item) => item.payload.url === payload.url);
     if (index === -1) return false;

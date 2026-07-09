@@ -90,7 +90,7 @@ export async function POST(request: Request) {
           title,
           url: parsed.data.url,
           favicon: parsed.data.favicon || "",
-          tagNames: [],
+          tagNames: parsed.data.tags ?? [],
         },
         user,
       );

@@ -33,6 +33,7 @@ type BookmarkPayload = {
   url: string;
   title: string;
   favicon?: string;
+  tags?: string[];
 };
 
 /** 失败队列项 */
