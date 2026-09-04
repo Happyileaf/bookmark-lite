@@ -24,10 +24,10 @@ export default async function LoginPage({ searchParams }: PageProps) {
   const nextUrl = readParam(params.next);
 
   return (
-    <div className="grid h-full w-full lg:grid-cols-2">
+    <div className="grid min-h-full w-full lg:grid-cols-2">
       <AuthBrandPanel />
 
-      <section className="relative flex h-full flex-col items-center justify-start overflow-y-auto px-6 py-10 sm:px-10 [scrollbar-gutter:stable] lg:justify-center lg:px-16">
+      <section className="relative flex min-h-full flex-col items-center justify-start px-6 py-10 sm:px-10 lg:justify-center lg:px-16">
         <div className="relative z-10 mb-8 w-full max-w-[440px] lg:hidden">
           <div className="mb-5 flex items-center gap-2.5">
             <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-[#0d9488]">
