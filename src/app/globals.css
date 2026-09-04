@@ -206,6 +206,10 @@ body {
 .bm-btn-oauth:active {
   transform: translateY(1px);
 }
+.bm-btn-oauth:disabled {
+  cursor: not-allowed;
+  pointer-events: none;
+}
 .dark .bm-btn-oauth {
   background-color: #131e1c;
   border-color: #25332f;

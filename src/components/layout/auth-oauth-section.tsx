@@ -1,7 +1,3 @@
-"use client";
-
-import { useState } from "react";
-
 function GoogleIcon() {
   return (
     <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
@@ -41,13 +37,6 @@ function GitHubIcon() {
 }
 
 export function AuthOAuthSection() {
-  const [pendingProvider, setPendingProvider] = useState<string | null>(null);
-
-  function handleOAuth(provider: "google" | "github") {
-    setPendingProvider(provider);
-    window.location.href = `/api/auth/signin/${provider}`;
-  }
-
   return (
     <>
       <div className="my-6 text-center">
@@ -57,23 +46,23 @@ export function AuthOAuthSection() {
       <div className="flex flex-col gap-3">
         <button
           type="button"
-          onClick={() => handleOAuth("google")}
-          disabled={pendingProvider !== null}
-          className="bm-btn-oauth flex w-full items-center justify-center gap-2 text-[14px] disabled:opacity-60"
+          disabled
+          title="暂未支持，敬请期待"
+          className="bm-btn-oauth flex w-full cursor-not-allowed items-center justify-center gap-2 text-[14px] opacity-60"
           style={{ height: 42 }}
         >
           <GoogleIcon />
-          <span>使用 Google 登录</span>
+          <span>使用 Google 登录（即将支持）</span>
         </button>
         <button
           type="button"
-          onClick={() => handleOAuth("github")}
-          disabled={pendingProvider !== null}
-          className="bm-btn-oauth flex w-full items-center justify-center gap-2 text-[14px] disabled:opacity-60"
+          disabled
+          title="暂未支持，敬请期待"
+          className="bm-btn-oauth flex w-full cursor-not-allowed items-center justify-center gap-2 text-[14px] opacity-60"
           style={{ height: 42 }}
         >
           <GitHubIcon />
-          <span>使用 GitHub 登录</span>
+          <span>使用 GitHub 登录（即将支持）</span>
         </button>
       </div>
     </>
