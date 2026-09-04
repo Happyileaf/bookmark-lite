@@ -10,6 +10,10 @@ type Props = {
   placeholder?: string;
   minLength?: number;
   required?: boolean;
+  /** 受控值，传入后字段即为受控组件（action 执行后不会被表单重置清空） */
+  value?: string;
+  /** 受控变更回调 */
+  onChange?: (value: string) => void;
 };
 
 function MailIcon() {
@@ -95,11 +99,15 @@ export function EmailField({
   label,
   autoComplete = "email",
   placeholder = "you@example.com",
+  value,
+  onChange,
 }: {
   id: string;
   label: string;
   autoComplete?: string;
   placeholder?: string;
+  value?: string;
+  onChange?: (value: string) => void;
 }) {
   return (
     <div>
@@ -120,6 +128,8 @@ export function EmailField({
           required
           autoComplete={autoComplete}
           placeholder={placeholder}
+          value={value}
+          onChange={onChange ? (event) => onChange(event.target.value) : undefined}
           className="bm-input h-[44px] w-full py-2.5 pl-10 pr-3 text-[15px]"
         />
       </div>
@@ -135,6 +145,8 @@ export function PasswordField({
   placeholder = "至少 8 位字符",
   minLength = 8,
   required = true,
+  value,
+  onChange,
 }: Props) {
   const [visible, setVisible] = useState(false);
 
@@ -158,6 +170,8 @@ export function PasswordField({
           autoComplete={autoComplete}
           minLength={minLength}
           placeholder={placeholder}
+          value={value}
+          onChange={onChange ? (event) => onChange(event.target.value) : undefined}
           className="bm-input h-[44px] w-full py-2.5 pl-10 pr-11 text-[15px]"
         />
         <button

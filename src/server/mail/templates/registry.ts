@@ -3,10 +3,15 @@ import {
   passwordResetTemplate,
   type PasswordResetPayload,
 } from "./password-reset";
+import {
+  registerCodeTemplate,
+  type RegisterCodePayload,
+} from "./register-code";
 
 declare module "@/server/mail/types" {
   interface MailTemplatePayloadMap {
     "password-reset": PasswordResetPayload;
+    "register-code": RegisterCodePayload;
   }
 }
 
@@ -19,6 +24,7 @@ declare module "@/server/mail/types" {
  */
 export const mailTemplates = {
   "password-reset": passwordResetTemplate,
+  "register-code": registerCodeTemplate,
 } satisfies Record<string, MailTemplate>;
 
 export type MailTemplateName = keyof typeof mailTemplates;

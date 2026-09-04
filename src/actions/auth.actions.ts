@@ -1,15 +1,68 @@
 "use server";
 
-import { hashPassword } from "@/server/auth/password";
+import { registrationService } from "@/server/services/registration.service";
 import { passwordResetService } from "@/server/services/password-reset.service";
 import { isAppError } from "@/server/types/errors";
-import { prisma } from "@/server/db/prisma";
 import { getSiteBaseUrl } from "@/lib/site-url";
 import { z } from "zod";
+
+const sendRegisterCodeSchema = z.object({
+  email: z.string().trim().email("请输入正确的邮箱"),
+});
+
+export type SendRegisterCodeActionState =
+  | {
+      ok: false;
+      message: string;
+    }
+  | {
+      ok: true;
+      message: string;
+    }
+  | undefined;
+
+/**
+ * 发送注册验证码
+ *
+ * @description 校验邮箱格式后向其发送 6 位注册验证码；服务端限流 60 秒
+ * @param _prevState - 前一次状态（useActionState 约定）
+ * @param formData - 表单数据，含 email
+ * @returns 状态对象
+ */
+export async function sendRegisterCodeAction(
+  _prevState: SendRegisterCodeActionState,
+  formData: FormData,
+): Promise<SendRegisterCodeActionState> {
+  const parsed = sendRegisterCodeSchema.safeParse({
+    email: formData.get("email"),
+  });
+
+  if (!parsed.success) {
+    return {
+      ok: false,
+      message:
+        parsed.error.flatten().fieldErrors.email?.[0] ?? "请输入正确的邮箱",
+    };
+  }
+
+  let ttlMinutes: number;
+  try {
+    ({ ttlMinutes } = await registrationService.sendCode(parsed.data.email));
+  } catch (error) {
+    if (isAppError(error)) {
+      return { ok: false, message: error.message };
+    }
+    console.error("[registration] 发送验证码失败:", error);
+    return { ok: false, message: "发送验证码时出错，请稍后重试" };
+  }
+
+  return { ok: true, message: `验证码已发送，请在 ${ttlMinutes} 分钟内完成注册` };
+}
 
 const registerSchema = z
   .object({
     email: z.string().trim().email("请输入正确的邮箱"),
+    code: z.string().trim().regex(/^\d{6}$/, "请输入 6 位邮箱验证码"),
     password: z.string().min(8, "密码至少 8 位"),
     confirmPassword: z.string().min(8, "确认密码至少 8 位"),
   })
@@ -29,12 +82,21 @@ export type RegisterActionState =
     }
   | undefined;
 
+/**
+ * 提交注册
+ *
+ * @description 校验邮箱、6 位验证码与密码后完成注册；验证码错误或过期均会拒绝注册
+ * @param _prevState - 前一次状态（useActionState 约定）
+ * @param formData - 表单数据，含 email / code / password / confirmPassword
+ * @returns 状态对象
+ */
 export async function registerAction(
   _prevState: RegisterActionState,
   formData: FormData,
 ): Promise<RegisterActionState> {
   const parsed = registerSchema.safeParse({
     email: formData.get("email"),
+    code: formData.get("code"),
     password: formData.get("password"),
     confirmPassword: formData.get("confirmPassword"),
   });
@@ -47,20 +109,19 @@ export async function registerAction(
     return { ok: false, message };
   }
 
-  const email = parsed.data.email.toLowerCase();
-  const existing = await prisma.user.findUnique({ where: { email } });
-  if (existing) {
-    return { ok: false, message: "邮箱已注册，请直接登录" };
+  try {
+    await registrationService.registerWithCode(
+      parsed.data.email,
+      parsed.data.code,
+      parsed.data.password,
+    );
+  } catch (error) {
+    if (isAppError(error)) {
+      return { ok: false, message: error.message };
+    }
+    console.error("[registration] 注册失败:", error);
+    return { ok: false, message: "注册时出错，请稍后重试" };
   }
-
-  const passwordHash = await hashPassword(parsed.data.password);
-  await prisma.user.create({
-    data: {
-      email,
-      passwordHash,
-      role: "user",
-    },
-  });
 
   return { ok: true, message: "注册成功，请登录" };
 }
