@@ -35,7 +35,7 @@ function CheckIcon() {
 
 export function AuthBrandPanel() {
   return (
-    <aside className="relative hidden flex-col justify-between overflow-hidden bg-[#f8fafb] lg:flex dark:bg-[#0c1513]">
+    <aside className="relative hidden flex-col justify-between overflow-hidden lg:flex">
       <div className="relative z-10 px-16 py-10" aria-hidden="true" />
 
       <div className="relative z-10 mx-auto max-w-lg px-16 pb-16">
