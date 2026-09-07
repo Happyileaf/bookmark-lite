@@ -9,7 +9,10 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const nodeEnv = process.env.NODE_ENV === "production" ? "production" : "development";
 
 /** 版本号单一来源：读取 package.json，注入 manifest 与 zip 文件名 */
-const { version } = JSON.parse(readFileSync(resolve(__dirname, "package.json"), "utf8"));
+const { version: pkgVersion } = JSON.parse(readFileSync(resolve(__dirname, "package.json"), "utf8"));
+
+/** Chrome 扩展版本号仅支持 1-4 段点分数字，需剥离 semver 预发布/构建标签（如 1.0.1-beta.0 -> 1.0.1） */
+const version = pkgVersion.replace(/[-+].*$/, "");
 
 /** esbuild 构建上下文配置 */
 const buildOptions = {
@@ -56,7 +59,7 @@ function copyStaticAssets() {
 function packageExtension() {
   const distDir = resolve(__dirname, "dist");
   const downloadsDir = resolve(__dirname, "..", "public", "downloads");
-  const versionedZip = resolve(downloadsDir, `bookmark-lite-extension-${version}.zip`);
+  const versionedZip = resolve(downloadsDir, `bookmark-lite-extension-${pkgVersion}.zip`);
   const latestZip = resolve(downloadsDir, "bookmark-lite-extension.zip");
   mkdirSync(downloadsDir, { recursive: true });
   rmSync(versionedZip, { force: true });
