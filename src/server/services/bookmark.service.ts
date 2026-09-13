@@ -346,6 +346,7 @@ export const bookmarkService = {
                 title: bookmark.title,
                 url: bookmark.url,
                 normalizedUrl: bookmark.normalizedUrl,
+                favicon: bookmark.favicon,
                 description: bookmark.description,
                 isFavorite: bookmark.isFavorite,
                 isVisible: bookmark.isVisible,

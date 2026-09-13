@@ -1,34 +1,68 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
-import { useEffect, useRef } from "react";
+import {
+  Bookmark,
+  Globe,
+  LayoutDashboard,
+  LogOut,
+  Settings,
+  type LucideIcon,
+} from "lucide-react";
+import { useEffect, useId, useRef, useState } from "react";
 
 type UserMenuProps = {
-  email: string;
+  name: string | null;
+  email: string | null;
   isAdmin: boolean;
   userLabel: string;
 };
 
-export function UserMenu({ email, isAdmin, userLabel }: UserMenuProps) {
-  const detailsRef = useRef<HTMLDetailsElement>(null);
+type MenuItem = {
+  label: string;
+  href: string;
+  Icon: LucideIcon;
+  adminOnly?: boolean;
+};
+
+const MENU_ITEMS: MenuItem[] = [
+  { label: "个人主页", href: "/my-bookmarks", Icon: Bookmark },
+  { label: "个人空间", href: "/settings", Icon: Settings },
+  { label: "平台主页", href: "/bookmarks", Icon: Globe },
+  { label: "平台管理", href: "/admin/manage/bookmarks", Icon: LayoutDashboard, adminOnly: true },
+];
+
+export function UserMenu({ name, email, isAdmin, userLabel }: UserMenuProps) {
+  const [isOpen, setIsOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const pathname = usePathname();
+  const menuId = useId();
+  const [previousPathname, setPreviousPathname] = useState(pathname);
+
+  if (previousPathname !== pathname) {
+    setPreviousPathname(pathname);
+    setIsOpen(false);
+  }
 
   useEffect(() => {
+    if (!isOpen) {
+      return;
+    }
+
     const handlePointerDown = (event: PointerEvent) => {
-      const details = detailsRef.current;
-      if (!details?.open) return;
+      const container = containerRef.current;
       const target = event.target;
-      if (!(target instanceof Node)) return;
-      if (!details.contains(target)) {
-        details.open = false;
+      if (!container || !(target instanceof Node) || container.contains(target)) {
+        return;
       }
+      setIsOpen(false);
     };
 
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key !== "Escape") return;
-      const details = detailsRef.current;
-      if (details?.open) {
-        details.open = false;
+      if (event.key === "Escape") {
+        setIsOpen(false);
       }
     };
 
@@ -39,80 +73,85 @@ export function UserMenu({ email, isAdmin, userLabel }: UserMenuProps) {
       document.removeEventListener("pointerdown", handlePointerDown);
       document.removeEventListener("keydown", handleKeyDown);
     };
-  }, []);
-
-  const closeMenu = () => {
-    if (detailsRef.current?.open) {
-      detailsRef.current.open = false;
-    }
-  };
+  }, [isOpen]);
 
   const handleSignOut = async () => {
-    closeMenu();
+    setIsOpen(false);
     await signOut({ callbackUrl: "/" });
   };
 
+  const displayName = name?.trim() || (email ? email.split("@")[0] : "用户");
+  const visibleItems = MENU_ITEMS.filter((item) => !item.adminOnly || isAdmin);
+
   return (
-    <details ref={detailsRef} className="relative z-50">
-      <summary className="flex cursor-pointer list-none items-center p-0 text-slate-700">
-        <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-slate-900 text-xs font-semibold text-white dark:bg-slate-600">
-          {userLabel}
-        </span>
-      </summary>
+    <div ref={containerRef} className="relative">
+      <button
+        type="button"
+        className="flex h-7 w-7 items-center justify-center rounded-full bg-primary text-[10px] font-medium leading-none tracking-tight text-primary-foreground transition-opacity hover:opacity-85"
+        aria-haspopup="menu"
+        aria-expanded={isOpen}
+        aria-controls={menuId}
+        title="账户"
+        onClick={() => setIsOpen((value) => !value)}
+      >
+        {userLabel}
+      </button>
 
-      <div className="absolute right-0 z-50 mt-2 w-60 rounded border border-slate-200 bg-white p-2.5 shadow-lg dark:border-slate-700/50 dark:bg-slate-800/80">
-        <div className="space-y-2 border-b border-slate-100 px-2.5 pt-1.5 pb-4 dark:border-slate-700/40">
-          <div className="break-all text-sm leading-5 font-medium text-slate-800 dark:text-slate-200">{email}</div>
-          <div className="inline-flex rounded-full bg-slate-100 px-2 py-0.5 text-xs leading-4 text-slate-600 dark:bg-slate-700/50 dark:text-slate-400">
-            {isAdmin ? "超级管理员" : "普通用户"}
-          </div>
-        </div>
-
-        <div className="mt-2.5 text-sm">
-          <div className="grid gap-1 border-b border-slate-100 px-1 pb-2 dark:border-slate-700/40">
-            <Link
-              href="/my-bookmarks"
-              onClick={closeMenu}
-              className="rounded px-2 py-1.5 text-slate-700 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-slate-700/40"
-            >
-              个人空间
-            </Link>
-            <Link
-              href="/manage/bookmarks"
-              onClick={closeMenu}
-              className="rounded px-2 py-1.5 text-slate-700 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-slate-700/40"
-            >
-              内容管理
-            </Link>
-            <Link
-              href="/bookmarks"
-              onClick={closeMenu}
-              className="rounded px-2 py-1.5 text-slate-700 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-slate-700/40"
-            >
-              应用空间
-            </Link>
-            {isAdmin ? (
-              <Link
-                href="/admin/manage/bookmarks"
-                onClick={closeMenu}
-                className="rounded px-2 py-1.5 text-slate-700 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-slate-700/40"
-              >
-                应用内容管理
-              </Link>
-            ) : null}
+      {isOpen ? (
+        <div
+          id={menuId}
+          role="menu"
+          className="absolute right-0 top-full z-50 mt-2 w-60 overflow-hidden rounded-sm border border-border bg-popover shadow-xl"
+        >
+          <div className="flex items-center gap-3 border-b border-border px-4 py-3.5">
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-medium leading-none tracking-tight text-primary-foreground">
+              {userLabel}
+            </span>
+            <div className="min-w-0">
+              <div className="truncate text-[13.5px] font-semibold text-foreground">
+                {displayName}
+              </div>
+              {email ? (
+                <div className="truncate text-[11.5px] text-muted-foreground">{email}</div>
+              ) : null}
+            </div>
           </div>
 
-          <div className="mt-2 grid gap-1 px-1">
+          <nav className="flex flex-col gap-[5px] px-2 py-1.5">
+            {visibleItems.map(({ label, href, Icon }) => {
+              const isCurrent = pathname === href;
+              return (
+                <Link
+                  key={href}
+                  href={href}
+                  role="menuitem"
+                  aria-current={isCurrent ? "page" : undefined}
+                  className={`flex items-center gap-2.5 rounded-sm px-3 py-[7px] text-[13px] ${
+                    isCurrent
+                      ? "pointer-events-none bg-slate-100 font-medium text-foreground dark:bg-slate-800"
+                      : "text-foreground hover:bg-muted"
+                  }`}
+                >
+                  <Icon className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
+                  {label}
+                </Link>
+              );
+            })}
+          </nav>
+
+          <div className="border-t border-border px-2 py-1.5">
             <button
               type="button"
+              role="menuitem"
               onClick={handleSignOut}
-              className="rounded px-2 py-1.5 text-rose-600 hover:bg-rose-50 dark:text-rose-400 dark:hover:bg-rose-900/40"
+              className="flex w-full items-center gap-2.5 rounded-sm px-3 py-[7px] text-left text-[13px] text-rose-600 hover:bg-rose-50 dark:text-rose-400 dark:hover:bg-rose-950"
             >
+              <LogOut className="h-4 w-4" aria-hidden="true" />
               退出登录
             </button>
           </div>
         </div>
-      </div>
-    </details>
+      ) : null}
+    </div>
   );
 }

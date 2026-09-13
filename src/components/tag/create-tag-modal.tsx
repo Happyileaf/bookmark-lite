@@ -1,23 +1,83 @@
 "use client";
 
-import { Shuffle } from "lucide-react";
-import { useRef, useState, useTransition } from "react";
+import { Dices, Plus } from "lucide-react";
+import { useId, useState, useTransition } from "react";
+import { Modal } from "@/components/ui/modal";
 
 type Props = {
   action: (formData: FormData) => Promise<void>;
 };
 
-function generateRandomColor() {
+export const TAG_COLOR_PALETTE = [
+  "#2563eb",
+  "#8b5cf6",
+  "#0ea5e9",
+  "#ec4899",
+  "#f59e0b",
+  "#10b981",
+  "#6366f1",
+  "#f43f5e",
+  "#94a3b8",
+  "#14b8a6",
+  "#f97316",
+  "#a855f7",
+] as const;
+
+export function generateRandomColor() {
   const hex = Math.floor(Math.random() * 0xffffff).toString(16).padStart(6, "0");
   return `#${hex}`;
+}
+
+type TagColorPickerProps = {
+  value: string;
+  onChange: (next: string) => void;
+};
+
+export function TagColorPicker({ value, onChange }: TagColorPickerProps) {
+  const isRandom = value.length > 0 && !TAG_COLOR_PALETTE.some((item) => item === value);
+
+  return (
+    <div className="flex flex-wrap items-center gap-2 pt-0.5">
+      {TAG_COLOR_PALETTE.map((color) => {
+        const selected = value === color;
+        return (
+          <button
+            key={color}
+            type="button"
+            aria-label={`选择颜色 ${color}`}
+            title={color}
+            onClick={() => onChange(color)}
+            className={`h-6 w-6 shrink-0 rounded-full shadow-[inset_0_-2px_4px_rgba(0,0,0,0.15)] transition-transform duration-150 hover:scale-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 dark:focus-visible:ring-primary/50 ${
+              selected
+                ? "ring-2 ring-white ring-offset-0 shadow-[0_0_0_2px_#fff,0_0_0_4px_var(--bookmark-primary)] dark:shadow-[0_0_0_2px_#0f172a,0_0_0_4px_#3b82f6]"
+                : ""
+            }`}
+            style={{ backgroundColor: color }}
+          />
+        );
+      })}
+      <button
+        type="button"
+        title="随机颜色"
+        aria-label="随机颜色"
+        onClick={() => onChange(generateRandomColor())}
+        className={`inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-dashed border-slate-300 text-slate-500 transition-transform duration-150 hover:scale-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 dark:border-slate-600 dark:text-slate-400 dark:focus-visible:ring-primary/50 ${
+          isRandom
+            ? "border-0 text-white shadow-[0_0_0_2px_#fff,0_0_0_4px_var(--bookmark-primary),inset_0_-2px_4px_rgba(0,0,0,0.15)] dark:shadow-[0_0_0_2px_#0f172a,0_0_0_4px_#3b82f6,inset_0_-2px_4px_rgba(0,0,0,0.15)]"
+            : ""
+        }`}
+        style={isRandom ? { backgroundColor: value } : undefined}
+      >
+        <Dices className="h-3.5 w-3.5" />
+      </button>
+    </div>
+  );
 }
 
 export function CreateTagModal({ action }: Props) {
   const [open, setOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
-  const [colorValue, setColorValue] = useState("");
-  const colorRef = useRef<HTMLInputElement>(null);
-  const pickerRef = useRef<HTMLInputElement>(null);
+  const formId = useId();
 
   const submit = (formData: FormData) => {
     startTransition(async () => {
@@ -26,113 +86,85 @@ export function CreateTagModal({ action }: Props) {
     });
   };
 
-  const handleRandomColor = () => {
-    const randomColor = generateRandomColor();
-    setColorValue(randomColor);
-    if (colorRef.current) {
-      colorRef.current.value = randomColor;
-    }
-  };
-
   return (
     <>
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="rounded bg-slate-900 px-3 py-2 text-sm text-white hover:bg-slate-800 dark:bg-slate-600 dark:hover:bg-slate-500"
+        className="inline-flex h-8 shrink-0 items-center gap-1.5 rounded-sm bg-primary px-3.5 text-[13px] font-medium text-primary-foreground transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 dark:focus-visible:ring-primary/50"
       >
+        <Plus className="h-3.5 w-3.5" />
         新增标签
       </button>
 
-      {open ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <button
-            type="button"
-            aria-label="关闭弹窗"
-            className="absolute inset-0 bg-black/40"
-            onClick={() => setOpen(false)}
-          />
-
-          <div className="relative z-10 w-full max-w-xl rounded border border-slate-200 bg-white shadow-xl dark:border-slate-700/50 dark:bg-slate-800/80">
-            <div className="flex items-center justify-between border-b border-slate-200 px-4 py-3 dark:border-slate-700/50">
-              <h2 className="text-base font-semibold text-slate-900 dark:text-slate-200">新增标签</h2>
-              <button
-                type="button"
-                onClick={() => setOpen(false)}
-                className="rounded border border-slate-300 px-2 py-1 text-xs text-slate-700 hover:bg-slate-50 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700/40"
-              >
-                关闭
-              </button>
-            </div>
-
-            <form action={submit} className="grid gap-2 p-4">
+      <Modal
+        open={open}
+        onClose={() => setOpen(false)}
+        title="新增标签"
+        width={420}
+        footer={
+          <>
+            <button
+              type="button"
+              onClick={() => setOpen(false)}
+              className="h-9 rounded-sm border border-slate-200 px-4 text-[13px] text-slate-600 transition-colors hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800 dark:focus-visible:ring-primary/50"
+            >
+              取消
+            </button>
+            <button
+              type="submit"
+              form={formId}
+              disabled={isPending}
+              className="h-9 rounded-sm bg-primary px-4 text-[13px] font-medium text-primary-foreground transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 disabled:cursor-not-allowed disabled:opacity-60 dark:focus-visible:ring-primary/50"
+            >
+              {isPending ? "保存中..." : "保存"}
+            </button>
+          </>
+        }
+      >
+        {open ? (
+          <form
+            key="create"
+            id={formId}
+            action={submit}
+            className="space-y-3.5"
+          >
+            <label className="block">
+              <span className="form-label">标签名称</span>
               <input
                 name="name"
                 required
-                placeholder="标签名称"
-                className="rounded border border-slate-300 px-3 py-2 text-sm dark:border-slate-600 dark:bg-slate-700/50 dark:text-slate-200 dark:placeholder:text-slate-400"
+                autoFocus
+                maxLength={80}
+                placeholder="例如：AI-LLM"
+                className="ctl w-full px-3"
               />
-              <div className="flex items-center gap-2">
-                <input
-                  ref={pickerRef}
-                  type="color"
-                  className="absolute h-0 w-0 opacity-0"
-                  value={colorValue || "#cbd5e1"}
-                  onChange={(e) => {
-                    setColorValue(e.target.value);
-                    if (colorRef.current) {
-                      colorRef.current.value = e.target.value;
-                    }
-                  }}
-                />
-                <button
-                  type="button"
-                  onClick={() => pickerRef.current?.click()}
-                  className="h-5 w-5 shrink-0 rounded-full cursor-pointer"
-                  style={{ backgroundColor: colorValue || "#cbd5e1" }}
-                  title="选取颜色"
-                />
-                <input
-                  ref={colorRef}
-                  name="color"
-                  placeholder="#94a3b8"
-                  onChange={(e) => setColorValue(e.target.value)}
-                  className="min-w-0 flex-1 rounded border border-slate-300 px-3 py-2 text-sm dark:border-slate-600 dark:bg-slate-700/50 dark:text-slate-200 dark:placeholder:text-slate-400"
-                />
-                <button
-                  type="button"
-                  onClick={handleRandomColor}
-                  className="shrink-0 rounded border border-slate-300 p-2 text-slate-500 hover:bg-slate-50 hover:text-slate-700 dark:border-slate-600 dark:text-slate-400 dark:hover:bg-slate-700/40 dark:hover:text-slate-200"
-                  title="随机生成颜色"
-                >
-                  <Shuffle className="h-4 w-4" />
-                </button>
-              </div>
+            </label>
+            <label className="block">
+              <span className="form-label">描述（可选）</span>
               <input
                 name="description"
-                placeholder="标签描述（可选）"
-                className="rounded border border-slate-300 px-3 py-2 text-sm dark:border-slate-600 dark:bg-slate-700/50 dark:text-slate-200 dark:placeholder:text-slate-400"
+                maxLength={500}
+                placeholder="一句话说明这个标签"
+                className="ctl w-full px-3"
               />
-              <div className="mt-1 flex items-center justify-end gap-2">
-                <button
-                  type="button"
-                  onClick={() => setOpen(false)}
-                  className="rounded border border-slate-300 px-3 py-2 text-sm text-slate-700 hover:bg-slate-50 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700/40"
-                >
-                  取消
-                </button>
-                <button
-                  type="submit"
-                  disabled={isPending}
-                  className="rounded bg-slate-900 px-3 py-2 text-sm text-white hover:bg-slate-800 disabled:opacity-60 dark:bg-slate-600 dark:hover:bg-slate-500"
-                >
-                  {isPending ? "保存中..." : "保存"}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      ) : null}
+            </label>
+            <CreateTagColorField />
+          </form>
+        ) : null}
+      </Modal>
     </>
+  );
+}
+
+function CreateTagColorField() {
+  const [color, setColor] = useState<string>(TAG_COLOR_PALETTE[0]);
+
+  return (
+    <div>
+      <span className="form-label">标签颜色</span>
+      <input type="hidden" name="color" value={color} />
+      <TagColorPicker value={color} onChange={setColor} />
+    </div>
   );
 }

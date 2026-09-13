@@ -1,5 +1,15 @@
 import net from "node:net";
 import Link from "next/link";
+import {
+  Clock,
+  Eye,
+  Folder,
+  LayoutGrid,
+  Search,
+  Star,
+  ChevronDown,
+  type LucideIcon,
+} from "lucide-react";
 import { Prisma, type DataScope } from "@prisma/client";
 import { saveAppBookmarkToUserAction } from "@/actions/bookmark.actions";
 import { InfiniteBookmarksGrid } from "@/components/bookmark/infinite-bookmarks-grid";
@@ -194,118 +204,116 @@ export async function DisplayBookmarksView({ scope, user, searchParams }: Props)
   }
 
   const queryBase = q ? `&q=${encodeURIComponent(q)}` : "";
-  const aggregateItems: Array<{ key: "all" | "favorites"; label: string; count: number }> = [
-    { key: "all", label: "全部书签", count: viewCounts.all },
-    { key: "favorites", label: "收藏", count: viewCounts.favorites },
+  const currentHrefParams = new URLSearchParams();
+  if (tagId) {
+    currentHrefParams.set("tagId", tagId);
+  } else {
+    currentHrefParams.set("view", view);
+  }
+  if (q) currentHrefParams.set("q", q);
+  const currentHref = `?${currentHrefParams.toString()}`;
+  const aggregateItems: Array<{
+    key: DisplayView;
+    label: string;
+    count: number;
+    icon: LucideIcon;
+  }> = [
+    { key: "all", label: "全部书签", count: viewCounts.all, icon: LayoutGrid },
+    { key: "favorites", label: "收藏", count: viewCounts.favorites, icon: Star },
+    { key: "untagged", label: "未分类", count: viewCounts.untagged, icon: Folder },
+    { key: "recent_added", label: "最近添加", count: viewCounts.recent_added, icon: Clock },
+    { key: "recent_visited", label: "最近访问", count: viewCounts.recent_visited, icon: Eye },
   ];
-  const filterItems: Array<{ key: "all" | "untagged" | "recent_added" | "recent_visited"; label: string; count: number }> = [
-    { key: "all", label: "全部", count: viewCounts.all },
-    { key: "untagged", label: "未分类", count: viewCounts.untagged },
-    { key: "recent_added", label: "最近添加", count: viewCounts.recent_added },
-    { key: "recent_visited", label: "最近访问", count: viewCounts.recent_visited },
-  ];
-  const showViewFilters = !tagId && view !== "favorites";
 
   return (
-    <section className="grid h-full min-h-0 overflow-hidden md:grid-cols-[240px_minmax(0,1fr)]">
-      <aside className="flex h-full min-h-0 self-stretch flex-col overflow-y-auto overflow-x-hidden rounded-b border-x border-b border-slate-200 bg-white dark:border-slate-700/50 dark:bg-slate-800/70">
-        <div className="px-4 py-3">
-          <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-200">聚合视图</h2>
-        </div>
-
-        <ul className="space-y-1.5 border-t border-slate-100 px-3 py-3 text-sm dark:border-slate-700/40">
-          {aggregateItems.map((item) => {
-            const active = !tagId && (item.key === "all" ? view !== "favorites" : view === "favorites");
-            return (
-              <li key={item.key}>
+    <section className="grid h-full min-h-0 overflow-hidden lg:grid-cols-[240px_minmax(0,1fr)]">
+      <aside className="hidden h-full min-h-0 flex-col overflow-hidden border-r border-slate-200 bg-white py-4 dark:border-slate-800 dark:bg-card lg:flex">
+        <div className="mb-5 shrink-0 px-4">
+          <div className="mb-3 px-2 text-sm font-semibold text-foreground">聚合视图</div>
+          <nav className="flex flex-col gap-1.5">
+            {aggregateItems.map((item) => {
+              const active = !tagId && view === item.key;
+              const Icon = item.icon;
+              return (
                 <Link
+                  key={item.key}
                   href={`?view=${item.key}${queryBase}`}
-                  className={`flex items-center justify-between rounded px-3 py-2 ${
+                  aria-current={active ? "page" : undefined}
+                  className={`flex items-center gap-2 rounded-sm px-2 py-1.5 text-sm transition-colors ${
                     active
-                      ? "bg-slate-100 font-medium text-slate-900 dark:bg-slate-700/50 dark:text-slate-200"
-                      : "text-slate-600 hover:bg-slate-50 dark:text-slate-400 dark:hover:bg-slate-700/40"
+                      ? "bg-primary/10 font-medium text-primary"
+                      : "text-foreground hover:bg-muted"
                   }`}
                 >
-                  <span className="truncate">{item.label}</span>
-                  <span className="ml-2 shrink-0 text-xs text-slate-400 dark:text-slate-500">{item.count}</span>
+                  <Icon className="h-[18px] w-[18px] shrink-0" />
+                  <span className="flex-1 truncate">{item.label}</span>
+                  <span className={`text-xs ${active ? "text-primary" : "text-muted-foreground"}`}>
+                    {item.count}
+                  </span>
                 </Link>
-              </li>
-            );
-          })}
-        </ul>
-
-        <div className="px-4 py-3">
-          <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-200">标签</h2>
+              );
+            })}
+          </nav>
         </div>
 
-        <ul className="space-y-1.5 border-t border-slate-100 px-3 py-3 text-sm dark:border-slate-700/40">
-          {tags.map((tag) => (
-            <li key={tag.id}>
-              <Link
-                href={`?tagId=${tag.id}${queryBase}`}
-                className={`flex items-center justify-between rounded px-3 py-2 ${
-                  tagId === tag.id
-                    ? "bg-slate-100 font-medium text-slate-900 dark:bg-slate-700/50 dark:text-slate-200"
-                    : "text-slate-600 hover:bg-slate-50 dark:text-slate-400 dark:hover:bg-slate-700/40"
-                }`}
-              >
-                <span className="flex items-center gap-2 truncate">
+        <div className="mx-6 mb-5 shrink-0 border-t border-border/50" />
+
+        <div className="flex min-h-0 flex-1 flex-col px-4">
+          <div className="mb-3 shrink-0 px-2 text-sm font-semibold text-foreground">标签</div>
+          <nav className="min-h-0 flex-1 space-y-1.5 overflow-y-auto pb-2 pr-1 [scrollbar-width:thin]">
+            {tags.map((tag) => {
+              const active = tagId === tag.id;
+              return (
+                <Link
+                  key={tag.id}
+                  href={`?tagId=${tag.id}${queryBase}`}
+                  aria-current={active ? "page" : undefined}
+                  className={`flex items-center gap-2 rounded-sm px-2 py-1.5 text-sm transition-colors ${
+                    active
+                      ? "bg-primary/10 font-medium text-primary"
+                      : "text-foreground hover:bg-muted"
+                  }`}
+                >
                   <span
                     className="h-3 w-3 shrink-0 rounded-full"
                     style={{ backgroundColor: tag.color ?? "#cbd5e1" }}
                   />
-                  {tag.name}
-                </span>
-                <span className="ml-2 text-xs text-slate-400 dark:text-slate-500">{tag.bookmarkCount}</span>
-              </Link>
-            </li>
-          ))}
-        </ul>
+                  <span className="flex-1 truncate">{tag.name}</span>
+                  <span className={`text-xs ${active ? "text-primary" : "text-muted-foreground"}`}>
+                    {tag.bookmarkCount}
+                  </span>
+                </Link>
+              );
+            })}
+          </nav>
+        </div>
       </aside>
 
-      <div className="min-h-0 min-w-0 space-y-4 overflow-y-auto p-6">
-        <form className="flex items-center gap-2 rounded border border-slate-200 bg-white p-3 dark:border-slate-700/50 dark:bg-slate-800/50">
-          <input
-            name="q"
-            defaultValue={q}
-            placeholder="搜索标题 / URL / 描述 / 标签"
-            className="min-w-0 flex-1 rounded border border-slate-300 px-3 py-2 text-sm dark:border-slate-600 dark:bg-slate-700/50 dark:text-slate-200 dark:placeholder:text-slate-400"
-          />
+      <div className="min-h-0 min-w-0 overflow-y-auto p-8">
+        <form className="mb-6">
+          <div className="relative">
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <input
+              name="q"
+              defaultValue={q}
+              placeholder="搜索标题、URL、描述、标签..."
+              className="h-10 w-full rounded-sm border border-border bg-card pl-9 pr-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+            />
+          </div>
           {tagId ? <input type="hidden" name="tagId" value={tagId} /> : null}
           {!tagId ? <input type="hidden" name="view" value={view} /> : null}
-          <button
-            type="submit"
-            className="shrink-0 whitespace-nowrap rounded bg-slate-900 px-4 py-2.5 text-sm text-white hover:bg-slate-800 dark:bg-slate-600 dark:hover:bg-slate-500"
-          >
-            搜索
-          </button>
         </form>
 
-        {showViewFilters ? (
-          <div className="p-1">
-            <div className="flex flex-wrap items-center gap-2">
-              {filterItems.map((item) => {
-                const active = view === item.key;
-                return (
-                  <Link
-                    key={item.key}
-                    href={`?view=${item.key}${queryBase}`}
-                    className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm transition ${
-                      active
-                        ? "border-slate-900 bg-slate-900 text-white dark:border-slate-200 dark:bg-slate-200 dark:text-slate-900"
-                        : "border-slate-300 bg-white text-slate-700 hover:border-slate-400 hover:bg-slate-50 dark:border-slate-600 dark:bg-slate-700/40 dark:text-slate-300 dark:hover:border-slate-500 dark:hover:bg-slate-700"
-                    }`}
-                  >
-                    <span>{item.label}</span>
-                    <span className={`text-xs ${active ? "text-white/80 dark:text-slate-700" : "text-slate-500 dark:text-slate-400"}`}>
-                      {item.count}
-                    </span>
-                  </Link>
-                );
-              })}
-            </div>
-          </div>
-        ) : null}
+        <div className="mb-7 flex flex-wrap items-center justify-end gap-3">
+          <Link
+            href={currentHref}
+            aria-disabled="true"
+            className="flex cursor-default items-center gap-1.5 rounded-sm border border-border bg-card px-3 py-1.5 text-sm text-muted-foreground hover:bg-muted"
+          >
+            <span>按添加时间排序</span>
+            <ChevronDown className="h-3.5 w-3.5" />
+          </Link>
+        </div>
 
         <InfiniteBookmarksGrid
           key={`${scope}|${view}|${tagId ?? ""}|${q ?? ""}`}

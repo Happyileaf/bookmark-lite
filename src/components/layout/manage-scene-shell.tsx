@@ -37,51 +37,34 @@ export function ManageSceneShell({ scope, current, children }: Props) {
   const menu = isAppScope ? appMenu : userMenu;
 
   return (
-    <section className="grid h-full min-h-0 overflow-hidden md:grid-cols-[240px_minmax(0,1fr)]">
-      <aside className="flex h-full min-h-0 self-stretch flex-col overflow-y-auto overflow-x-hidden rounded-b border-x border-b border-slate-200 bg-white dark:border-slate-700/50 dark:bg-slate-800/70">
-        <div className="px-4 py-3">
-          <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-200">快速入口</h2>
-        </div>
-
-        <ul className="space-y-1.5 border-t border-slate-100 px-3 py-3 text-sm dark:border-slate-700/40">
+    <section className="flex min-h-0 w-full flex-1 items-stretch overflow-y-auto">
+      <aside className="sticky top-0 w-[200px] shrink-0 self-stretch border-r border-slate-200 bg-white px-3 py-4 dark:border-slate-800 dark:bg-card">
+        <p className="nav-group">快速入口</p>
+        <nav className="mb-5">
           {sceneMenu.map((item) => (
-            <li key={item.href}>
-              <Link
-                href={item.href}
-                className="block rounded px-3 py-2 text-slate-600 hover:bg-slate-50 dark:text-slate-400 dark:hover:bg-slate-700/40"
-              >
-                {item.label}
-              </Link>
-            </li>
+            <Link key={item.href} href={item.href} className="nav-item">
+              {item.label}
+            </Link>
           ))}
-        </ul>
-
-        <div className="px-4 py-3">
-          <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-200">管理菜单</h2>
-        </div>
-
-        <ul className="space-y-1.5 border-t border-slate-100 px-3 py-3 text-sm dark:border-slate-700/40">
+        </nav>
+        <p className="nav-group">{isAppScope ? "平台管理" : "管理菜单"}</p>
+        <nav>
           {menu.map((item) => {
             const active = item.key === current;
             return (
-              <li key={item.key}>
-                <Link
-                  href={item.href}
-                  className={`block rounded px-3 py-2 ${
-                    active
-                      ? "bg-slate-100 font-medium text-slate-900 dark:bg-slate-700/50 dark:text-slate-200"
-                      : "text-slate-600 hover:bg-slate-50 dark:text-slate-400 dark:hover:bg-slate-700/40"
-                  }`}
-                >
-                  {item.label}
-                </Link>
-              </li>
+              <Link
+                key={item.key}
+                href={item.href}
+                className={`nav-item${active ? " active" : ""}`}
+                aria-current={active ? "page" : undefined}
+              >
+                {item.label}
+              </Link>
             );
           })}
-        </ul>
+        </nav>
       </aside>
-
-      <div className="min-h-0 min-w-0 overflow-y-auto p-6">{children}</div>
+      <div className="min-w-0 flex-1 self-start px-8 py-6">{children}</div>
     </section>
   );
 }

@@ -1,7 +1,11 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { ResetPasswordForm } from "@/components/layout/reset-password-form";
-import { AuthBrandPanel } from "@/components/layout/auth-brand-panel";
+import {
+  AuthBrandPanel,
+  AuthMobileBrand,
+  AuthMobileCopyright,
+} from "@/components/layout/auth-brand-panel";
 import { getSessionUser } from "@/server/auth/session";
 import { passwordResetService } from "@/server/services/password-reset.service";
 import { isAppError } from "@/server/types/errors";
@@ -44,40 +48,16 @@ export default async function ResetPasswordPage({ searchParams }: PageProps) {
       <AuthBrandPanel />
 
       <section className="relative flex min-h-full flex-col items-center justify-start px-6 py-10 sm:px-10 lg:justify-center lg:px-16">
-        <div className="relative z-10 mb-8 w-full max-w-[440px] lg:hidden">
-          <div className="mb-5 flex items-center gap-2.5">
-            <span className="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-[#0d9488]">
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                aria-hidden="true"
-                stroke="#ffffff"
-                strokeWidth="1.8"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
-              </svg>
-            </span>
-            <span
-              className="text-[24px] font-extrabold text-[#0d9488]"
-              style={{ letterSpacing: "-0.02em" }}
-            >
-              Bookmark Lite
-            </span>
-          </div>
-        </div>
+        <AuthMobileBrand withIntro={false} />
 
-        <div className="bm-card relative z-10 w-full max-w-[440px] p-6 sm:p-8">
+        <div className="bm-card relative z-10 w-full max-w-[420px] p-6 sm:p-7">
           {verifyResult ? (
             <>
-              <div className="mb-6">
-                <h2 className="text-[22px] font-semibold text-[#0f1f1c] dark:text-[#e8f3ef]">
+              <div className="mb-5">
+                <h2 className="text-[20px] font-semibold text-slate-900 dark:text-slate-100">
                   设置新密码
                 </h2>
-                <p className="mt-1 text-[13px] text-[#4b5c58] dark:text-[#a9bcb6]">
+                <p className="mt-1 text-[13px] text-slate-500 dark:text-slate-400">
                   为你的账户设置一个新的登录密码
                 </p>
               </div>
@@ -85,21 +65,21 @@ export default async function ResetPasswordPage({ searchParams }: PageProps) {
             </>
           ) : (
             <>
-              <div className="mb-6">
-                <h2 className="text-[22px] font-semibold text-[#0f1f1c] dark:text-[#e8f3ef]">
+              <div className="mb-5">
+                <h2 className="text-[20px] font-semibold text-slate-900 dark:text-slate-100">
                   重置链接无效
                 </h2>
-                <p className="mt-1 text-[13px] text-[#4b5c58] dark:text-[#a9bcb6]">
+                <p className="mt-1 text-[13px] text-slate-500 dark:text-slate-400">
                   {errorMessage}
                 </p>
               </div>
               <div className="space-y-4">
-                <p className="text-[13px] leading-[1.6] text-[#4b5c58] dark:text-[#a9bcb6]">
+                <p className="text-[13px] leading-[1.6] text-slate-500 dark:text-slate-400">
                   重置链接可能已过期或已被使用。你可以重新发起一次密码重置请求。
                 </p>
                 <Link
                   href="/forgot-password"
-                  className="bm-btn-primary flex h-[44px] w-full items-center justify-center gap-2 text-[15px]"
+                  className="bm-btn-primary flex h-9 w-full items-center justify-center gap-1.5 text-[13.5px]"
                 >
                   重新申请重置链接
                 </Link>
@@ -108,11 +88,7 @@ export default async function ResetPasswordPage({ searchParams }: PageProps) {
           )}
         </div>
 
-        <div className="relative z-10 mt-8 block w-full max-w-[440px] text-center lg:hidden">
-          <p className="text-[12px] text-[#7a8a86] dark:text-[#7d9089]">
-            © 2026 Bookmark Lite · 保留所有权利
-          </p>
-        </div>
+        <AuthMobileCopyright />
       </section>
     </div>
   );

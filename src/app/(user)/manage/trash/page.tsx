@@ -4,11 +4,15 @@ import { requireSessionUser } from "@/server/auth/session";
 
 export const dynamic = "force-dynamic";
 
-export default async function UserTrashPage() {
-  const user = await requireSessionUser();
+type PageProps = {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+};
+
+export default async function UserTrashPage({ searchParams }: PageProps) {
+  const [query, user] = await Promise.all([searchParams, requireSessionUser()]);
   return (
     <ManageSceneShell scope="USER" current="trash">
-      <ManageTrashView scope="USER" user={user} />
+      <ManageTrashView scope="USER" user={user} searchParams={query} />
     </ManageSceneShell>
   );
 }

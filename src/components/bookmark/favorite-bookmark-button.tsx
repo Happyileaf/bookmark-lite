@@ -1,8 +1,12 @@
 "use client";
 
-import { Heart } from "lucide-react";
-import { useTransition } from "react";
-import { toggleFavoriteAction } from "@/actions/bookmark.actions";
+import { Star, Trash2 } from "lucide-react";
+import { useEffect, useTransition } from "react";
+import {
+  deleteBookmarkAction,
+  toggleFavoriteAction,
+} from "@/actions/bookmark.actions";
+import { useToast } from "@/components/ui";
 import type { DataScope } from "@prisma/client";
 
 type Props = {
@@ -12,15 +16,6 @@ type Props = {
   onToggle?: (bookmarkId: string, nextIsFavorite: boolean) => void;
 };
 
-/**
- * 书签收藏切换按钮
- *
- * @description 用于在书签卡片右上角切换收藏状态，仅用户级书签支持
- * @param bookmarkId - 书签ID
- * @param isFavorite - 当前是否已收藏
- * @param scope - 数据域
- * @param onToggle - 切换成功后的回调
- */
 export function FavoriteBookmarkButton({ bookmarkId, isFavorite, scope, onToggle }: Props) {
   const toggleAction = toggleFavoriteAction.bind(null, scope);
   const [isPending, startTransition] = useTransition();
@@ -46,15 +41,99 @@ export function FavoriteBookmarkButton({ bookmarkId, isFavorite, scope, onToggle
         disabled={isPending}
         aria-label={label}
         title={label}
-        className={`inline-flex h-7 w-7 items-center justify-center rounded border transition ${
+        className={`inline-flex items-center justify-center rounded-sm p-1 transition-colors disabled:opacity-60 ${
           isFavorite
-            ? "border-rose-300 bg-rose-50 text-rose-500 hover:bg-rose-100 hover:text-rose-600 dark:border-rose-700/60 dark:bg-rose-900/20 dark:text-rose-400 dark:hover:bg-rose-900/40"
-            : "border-slate-300 bg-white text-slate-600 hover:bg-slate-50 hover:text-slate-900 dark:border-slate-600/70 dark:bg-slate-700/50 dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-slate-200"
-        } ${isPending ? "opacity-60" : ""}`}
+            ? "text-amber-400 hover:text-amber-500"
+            : "text-muted-foreground hover:text-amber-400"
+        }`}
       >
-        <Heart className={`h-4 w-4 ${isFavorite ? "fill-current" : ""}`} />
+        <Star className={`h-4 w-4 ${isFavorite ? "fill-current" : ""}`} />
         <span className="sr-only">{label}</span>
       </button>
     </form>
   );
+}
+
+type DeleteProps = {
+  bookmarkId: string;
+  scope: DataScope;
+  title?: string;
+};
+
+export function DeleteBookmarkButton({ bookmarkId, scope, title }: DeleteProps) {
+  const { toast } = useToast();
+  const [isPending, startTransition] = useTransition();
+
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    startTransition(async () => {
+      const formData = new FormData();
+      formData.set("id", bookmarkId);
+      await deleteBookmarkAction.bind(null, scope)(formData);
+      toast({
+        title: `已删除「${title ?? "书签"}」`,
+        action: {
+          label: "撤销",
+          onClick: () => {
+            // TODO(ui-upgrade): 撤销删除动作尚未接线，见 spec 待补逻辑清单
+          },
+        },
+      });
+    });
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <input type="hidden" name="id" value={bookmarkId} />
+      <button
+        type="submit"
+        disabled={isPending}
+        aria-label="删除书签"
+        title="删除书签"
+        className="icon-btn danger"
+      >
+        <Trash2 className="h-4 w-4" />
+        <span className="sr-only">删除书签</span>
+      </button>
+    </form>
+  );
+}
+
+const MANAGE_SEARCH_INPUT_ID = "manage-search-q";
+
+export function ManageSearchShortcuts() {
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      const target = event.target as HTMLElement | null;
+      const tagName = target?.tagName;
+      const isEditable =
+        tagName === "INPUT" ||
+        tagName === "TEXTAREA" ||
+        tagName === "SELECT" ||
+        target?.isContentEditable === true;
+
+      if (isEditable) {
+        if (event.key === "Escape" && target?.id === MANAGE_SEARCH_INPUT_ID) {
+          (target as HTMLInputElement).blur();
+        }
+        return;
+      }
+
+      if (
+        event.key === "/" ||
+        ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k")
+      ) {
+        const input = document.getElementById(MANAGE_SEARCH_INPUT_ID);
+        if (input) {
+          event.preventDefault();
+          input.focus();
+        }
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
+  return null;
 }

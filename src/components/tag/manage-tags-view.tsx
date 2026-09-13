@@ -1,11 +1,26 @@
 import Link from "next/link";
 import type { DataScope } from "@prisma/client";
-import { Filter, Search, Tag as TagIcon } from "lucide-react";
+import {
+  FileText,
+  Archive,
+  Bookmark as BookmarkIcon,
+  Clock,
+  Flame,
+  Inbox,
+  Search,
+  Tag as TagIcon,
+  Tags,
+  X,
+} from "lucide-react";
 import { DEFAULT_PAGE_SIZE } from "@/lib/constants";
 import { deleteTagAction, reorderTagAction, upsertTagAction } from "@/actions/tag.actions";
 import { CreateTagModal } from "@/components/tag/create-tag-modal";
-import { EditTagModal } from "@/components/tag/edit-tag-modal";
+import { DeleteTagButton, EditTagModal } from "@/components/tag/edit-tag-modal";
 import { ReorderTagModal } from "@/components/tag/reorder-tag-modal";
+import { TagSortSelect } from "@/components/tag/tag-select-dropdown";
+import { EmptyState } from "@/components/ui/empty-state";
+import { Pagination } from "@/components/ui/pagination";
+import { StatChip } from "@/components/ui/stat-chip";
 import type { SessionUser } from "@/server/auth/session";
 import { tagService } from "@/server/services/tag.service";
 
@@ -15,6 +30,16 @@ type Props = {
   scope: DataScope;
   user: SessionUser | null;
   searchParams: SearchParams;
+};
+
+const SORT_SELECT_VALUE: Record<string, string> = {
+  default: "default",
+  created_desc: "default",
+  created_asc: "default",
+  name_asc: "name_asc",
+  name_desc: "name_asc",
+  bookmark_count_desc: "bookmark_count_desc",
+  bookmark_count_asc: "bookmark_count_desc",
 };
 
 function readParam(value: string | string[] | undefined): string | undefined {
@@ -31,11 +56,26 @@ function readPage(value: string | string[] | undefined): number {
   return parsed;
 }
 
+function formatRelativeTime(date: Date): string {
+  const diffMs = Date.now() - date.getTime();
+  const minutes = Math.floor(diffMs / 60000);
+  if (minutes < 1) return "刚刚";
+  if (minutes < 60) return `${minutes} 分钟前`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours} 小时前`;
+  const days = Math.floor(hours / 24);
+  if (days < 30) return `${days} 天前`;
+  const months = Math.floor(days / 30);
+  if (months < 12) return `${months} 个月前`;
+  return `${Math.floor(months / 12)} 年前`;
+}
+
 export async function ManageTagsView({ scope, user, searchParams }: Props) {
   const q = readParam(searchParams.q);
   const sort = readParam(searchParams.sort);
   const page = readPage(searchParams.page);
   const currentSort = sort ?? "default";
+  const selectSort = SORT_SELECT_VALUE[currentSort] ?? "default";
   const listPath = scope === "APP" ? "/admin/manage/tags" : "/manage/tags";
   const allTags = await tagService.list(scope, user);
   const result = await tagService.listPaged(scope, user, {
@@ -54,160 +94,166 @@ export async function ManageTagsView({ scope, user, searchParams }: Props) {
   });
   const tags = result.items;
   const safePage = Math.min(result.pagination.page, result.pagination.totalPages);
-
-  const buildPageHref = (targetPage: number) => {
-    const params = new URLSearchParams();
-    if (q) params.set("q", q);
-    if (currentSort !== "default") params.set("sort", currentSort);
-    if (targetPage > 1) params.set("page", String(targetPage));
-    const query = params.toString();
-    return query ? `${listPath}?${query}` : listPath;
-  };
+  const totalBookmarks = allTags.reduce((sum, tag) => sum + tag.bookmarkCount, 0);
+  const hasQuery = Boolean(q?.trim());
+  const sortQuery = currentSort !== "default" ? currentSort : undefined;
 
   return (
-    <section className="space-y-5">
-      <header className="flex flex-wrap items-start justify-between gap-3">
-        <div className="space-y-1">
-          <h1 className="text-lg font-semibold text-slate-900 dark:text-slate-200">标签管理</h1>
-          <p className="text-sm text-slate-600 dark:text-slate-400">维护标签结构，便于后续按主题组织书签。</p>
+    <section className="min-w-0">
+      <div className="flex flex-wrap items-start justify-between gap-4">
+        <div className="min-w-0">
+          <h1 className="text-[20px] font-bold tracking-tight text-slate-900 dark:text-slate-100">
+            标签管理
+          </h1>
+          <p className="mt-1 text-[13px] text-slate-500 dark:text-slate-400">
+            管理所有标签，让书签分类井井有条。
+          </p>
         </div>
-        <div className="flex items-center gap-2">
-          <span className="rounded border border-slate-200 bg-white px-2.5 py-1 text-xs text-slate-600 dark:border-slate-700/50 dark:bg-slate-800/50 dark:text-slate-400">
-            共 {result.pagination.total} 个标签
-          </span>
-          <ReorderTagModal action={reorderTagAction.bind(null, scope)} tags={allTags.map((t) => ({ id: t.id, name: t.name, color: t.color }))} />
+        <div className="flex shrink-0 items-center gap-2">
+          <ReorderTagModal
+            action={reorderTagAction.bind(null, scope)}
+            tags={allTags.map((tag) => ({ id: tag.id, name: tag.name, color: tag.color }))}
+          />
           <CreateTagModal action={upsertTagAction.bind(null, scope)} />
         </div>
-      </header>
-
-      <form className="space-y-3 rounded border border-slate-200 bg-white p-4 dark:border-slate-700/50 dark:bg-slate-800/50">
-        <div className="inline-flex items-center gap-1.5 rounded bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-700 dark:bg-slate-700/50 dark:text-slate-300">
-          <Filter className="h-3.5 w-3.5" />
-          查询与排序
-        </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <label className="relative min-w-64 flex-1">
-            <Search className="pointer-events-none absolute left-3 top-2.5 h-4 w-4 text-slate-400 dark:text-slate-500" />
-            <input
-              name="q"
-              defaultValue={q}
-              placeholder="搜索标签名 / 描述"
-              className="w-full rounded border border-slate-300 py-2 pl-9 pr-3 text-sm text-slate-700 dark:border-slate-600 dark:bg-slate-700/50 dark:text-slate-200 dark:placeholder:text-slate-400"
-            />
-          </label>
-          <select
-            name="sort"
-            defaultValue={currentSort}
-            className="rounded border border-slate-300 px-3 py-2 text-sm text-slate-700 dark:border-slate-600 dark:bg-slate-700/50 dark:text-slate-200"
-          >
-            <option value="default">默认排序</option>
-            <option value="name_asc">标签名 A-Z</option>
-            <option value="name_desc">标签名 Z-A</option>
-            <option value="created_desc">创建时间（新到旧）</option>
-            <option value="created_asc">创建时间（旧到新）</option>
-            <option value="bookmark_count_desc">书签数（多到少）</option>
-            <option value="bookmark_count_asc">书签数（少到多）</option>
-          </select>
-          <button
-            type="submit"
-            className="flex h-[36px] items-center justify-center rounded bg-slate-900 px-3 text-white hover:bg-slate-800 dark:bg-slate-700 dark:hover:bg-slate-600"
-          >
-            <Search className="h-4 w-4" />
-          </button>
-          <Link
-            href={listPath}
-            className="flex h-[36px] items-center justify-center rounded border border-slate-300 px-3 text-sm text-slate-700 hover:bg-slate-50 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-800"
-          >
-            清空
-          </Link>
-        </div>
-      </form>
-
-      <div className="overflow-x-auto rounded border border-slate-200 bg-white dark:border-slate-700/50 dark:bg-slate-800/50">
-        <table className="w-full border-collapse text-sm">
-          <thead>
-            <tr className="border-b border-slate-200 bg-slate-50 text-left text-slate-600 dark:border-slate-700/50 dark:bg-slate-700/40 dark:text-slate-400">
-              <th className="min-w-56 px-3 py-2 font-medium">标签名</th>
-              <th className="min-w-72 px-3 py-2 font-medium">描述</th>
-              <th className="px-3 py-2 font-medium">书签数</th>
-              <th className="min-w-40 px-3 py-2 font-medium">操作</th>
-            </tr>
-          </thead>
-          <tbody>
-            {tags.map((tag) => (
-              <tr key={tag.id} className="border-b border-slate-100 align-middle dark:border-slate-700/40">
-                <td className="px-3 py-2 font-medium text-slate-900 dark:text-slate-200">
-                  <span className="inline-flex items-center gap-2">
-                    <span
-                      className="h-4 w-4 rounded-full"
-                      style={{ backgroundColor: tag.color ?? "#cbd5e1" }}
-                    />
-                    {tag.name}
-                  </span>
-                </td>
-                <td className="px-3 py-2 text-slate-600 dark:text-slate-400">{tag.description ?? "暂无描述"}</td>
-                <td className="px-3 py-2 text-slate-600 dark:text-slate-400">
-                  <span className="rounded bg-slate-100 px-2 py-1 text-xs dark:bg-slate-700/40 dark:text-slate-300">{tag.bookmarkCount}</span>
-                </td>
-                <td className="px-3 py-2">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <EditTagModal action={upsertTagAction.bind(null, scope)} tag={tag} />
-                    <form action={deleteTagAction.bind(null, scope)}>
-                      <input type="hidden" name="id" value={tag.id} />
-                      <button
-                        type="submit"
-                        className="whitespace-nowrap rounded border border-rose-300 px-2 py-1 text-xs text-rose-600 hover:bg-rose-50 dark:border-rose-800/60 dark:text-rose-400 dark:hover:bg-rose-900/30"
-                      >
-                        删除
-                      </button>
-                    </form>
-                  </div>
-                </td>
-              </tr>
-            ))}
-            {tags.length === 0 ? (
-              <tr>
-                <td colSpan={4} className="px-3 py-10 text-center text-slate-500 dark:text-slate-400">
-                  <div className="flex flex-col items-center gap-2">
-                    <TagIcon className="h-5 w-5 text-slate-400 dark:text-slate-500" />
-                    <span>暂无标签，先创建一个用于分类书签。</span>
-                  </div>
-                </td>
-              </tr>
-            ) : null}
-          </tbody>
-        </table>
       </div>
 
-      <footer className="flex flex-wrap items-center justify-between gap-2 rounded border border-slate-200 bg-white px-3 py-2 text-sm dark:border-slate-700/50 dark:bg-slate-800/50">
-        <span className="text-slate-600 dark:text-slate-400">
-          第 {safePage} / {result.pagination.totalPages} 页
-        </span>
-        <div className="flex items-center gap-2">
-          <Link
-            href={buildPageHref(Math.max(1, safePage - 1))}
-            aria-disabled={safePage <= 1}
-            className={`rounded border px-3 py-1.5 ${
-              safePage <= 1
-                ? "pointer-events-none border-slate-200 text-slate-300 dark:border-slate-700/40 dark:text-slate-500"
-                : "border-slate-300 text-slate-700 hover:bg-slate-50 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700/40"
-            }`}
-          >
-            上一页
-          </Link>
-          <Link
-            href={buildPageHref(Math.min(result.pagination.totalPages, safePage + 1))}
-            aria-disabled={safePage >= result.pagination.totalPages}
-            className={`rounded border px-3 py-1.5 ${
-              safePage >= result.pagination.totalPages
-                ? "pointer-events-none border-slate-200 text-slate-300 dark:border-slate-700/40 dark:text-slate-500"
-                : "border-slate-300 text-slate-700 hover:bg-slate-50 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700/40"
-            }`}
-          >
-            下一页
-          </Link>
+      <section className="mt-5 grid grid-cols-2 gap-3 lg:grid-cols-4">
+        <StatChip icon={Tags} tint="#2563eb" value={allTags.length} label="全部标签" />
+        <StatChip icon={BookmarkIcon} tint="#10b981" value={totalBookmarks} label="关联书签" />
+        {/* TODO(ui-upgrade): 待补统计数据逻辑（本周活跃） */}
+        <StatChip icon={Flame} tint="#f59e0b" value={0} label="本周活跃" />
+        {/* TODO(ui-upgrade): 待补统计数据逻辑（空标签） */}
+        <StatChip icon={Archive} tint="#64748b" value={0} label="空标签" />
+      </section>
+
+      <form className="mt-4 flex flex-wrap items-center gap-2">
+        <div className="relative min-w-[180px] flex-1">
+          <TagIcon className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+          <input
+            type="text"
+            name="q"
+            defaultValue={q}
+            placeholder="搜索标签名称或描述"
+            className="ctl w-full pl-9 pr-3"
+            aria-label="搜索标签"
+          />
         </div>
-      </footer>
+        <TagSortSelect name="sort" defaultValue={selectSort} />
+        <button
+          type="submit"
+          className="inline-flex h-9 items-center gap-1.5 rounded-sm bg-primary px-4 text-[13px] font-medium text-primary-foreground transition-opacity hover:opacity-90"
+        >
+          <Search className="h-4 w-4" />
+          搜索
+        </button>
+        <Link
+          href={listPath}
+          aria-label="清空搜索条件"
+          title="清空搜索条件"
+          className="inline-flex h-9 w-9 items-center justify-center rounded-sm border border-border bg-card text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+        >
+          <X className="h-4 w-4" />
+        </Link>
+      </form>
+
+      {tags.length > 0 ? (
+        <section className="mt-4 flex flex-col gap-2">
+          {tags.map((tag) => {
+            const color = tag.color ?? "#94a3b8";
+            return (
+              <article
+                key={tag.id}
+                className="flex items-center gap-3.5 rounded-sm border border-slate-200 bg-white px-4 py-3 transition-[border-color,box-shadow] duration-150 hover:border-[#2563eb]/40 hover:shadow-[0_6px_16px_-10px_rgba(15,23,42,0.25)] dark:border-slate-700 dark:bg-card dark:hover:border-[#3b82f6]/50 sm:gap-[14px]"
+              >
+                <div className="flex w-[200px] shrink-0 items-center gap-2.5 sm:w-[268px]">
+                  <span
+                    className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-sm text-white"
+                    style={{ backgroundColor: color }}
+                  >
+                    <TagIcon className="h-3.5 w-3.5" />
+                  </span>
+                  <div className="min-w-0">
+                    <div className="flex min-w-0 items-center gap-2">
+                      <h3 className="truncate text-[13.5px] font-semibold leading-[1.3] tracking-[-0.01em] text-slate-900 dark:text-slate-100">
+                        {tag.name}
+                      </h3>
+                      <span className="inline-flex shrink-0 items-center gap-[5px] rounded-full bg-slate-100 px-[9px] py-0.5 text-[11.5px] text-slate-500 dark:bg-slate-900 dark:text-slate-400">
+                        <span
+                          className="h-[5px] w-[5px] rounded-full"
+                          style={{ backgroundColor: color }}
+                        />
+                        {tag.bookmarkCount} 条书签
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                {tag.description ? (
+                  <span className="hidden min-w-0 flex-1 items-center gap-1.5 truncate text-[12.5px] leading-snug text-slate-400 dark:text-slate-500 min-[641px]:inline-flex">
+                    <FileText className="h-3.5 w-3.5 shrink-0 opacity-80" />
+                    <span className="truncate">{tag.description}</span>
+                  </span>
+                ) : (
+                  <span className="hidden min-w-0 flex-1 items-center gap-1.5 truncate text-[12.5px] italic leading-snug text-[#c2cbd8] dark:text-[#53617a] min-[641px]:inline-flex">
+                    <FileText className="h-3.5 w-3.5 shrink-0 opacity-55" />
+                    未填写描述
+                  </span>
+                )}
+                <span
+                  className="hidden shrink-0 items-center gap-1 text-xs text-slate-400 lg:inline-flex"
+                  title={tag.createdAt.toLocaleString("zh-CN")}
+                >
+                  <Clock className="h-3 w-3" />
+                  {formatRelativeTime(tag.createdAt)}
+                </span>
+                <div className="flex shrink-0 items-center gap-0.5">
+                  <EditTagModal action={upsertTagAction.bind(null, scope)} tag={tag} />
+                  <DeleteTagButton
+                    action={deleteTagAction.bind(null, scope)}
+                    tagId={tag.id}
+                    tagName={tag.name}
+                  />
+                </div>
+              </article>
+            );
+          })}
+        </section>
+      ) : hasQuery ? (
+        <EmptyState
+          className="mt-4"
+          icon={Inbox}
+          title="没有符合条件的标签"
+          description="换个关键词试试。"
+          action={
+            <Link
+              href={listPath}
+              className="inline-flex h-8 items-center rounded-sm border border-slate-200 px-3.5 text-[13px] text-slate-600 transition-colors hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
+            >
+              清除搜索
+            </Link>
+          }
+        />
+      ) : (
+        <EmptyState
+          className="mt-4"
+          icon={Inbox}
+          title="暂无标签"
+          description="新增一个标签，让书签分类更清晰。"
+        />
+      )}
+
+      {result.pagination.total > 0 ? (
+        <Pagination
+          page={safePage}
+          pageSize={DEFAULT_PAGE_SIZE}
+          total={result.pagination.total}
+          basePath={listPath}
+          queryParams={{ q, sort: sortQuery }}
+          itemName="个标签"
+          emptyText="暂无标签"
+          className="mt-4"
+        />
+      ) : null}
     </section>
   );
 }

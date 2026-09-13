@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { AppHeader } from "@/components/layout/app-header";
+import { ToastProvider } from "@/components/ui/toast";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -19,9 +20,11 @@ export default function RootLayout({
       <head>
         <script dangerouslySetInnerHTML={{ __html: THEME_INLINE_SCRIPT }} />
       </head>
-      <body className="flex h-dvh min-h-dvh flex-col overflow-hidden bg-slate-50 text-slate-900 dark:bg-slate-900 dark:text-slate-200">
-        <AppHeader />
-        <main className="flex min-h-0 flex-1 flex-col overflow-hidden">{children}</main>
+      <body className="flex h-dvh min-h-dvh flex-col overflow-hidden bg-background text-foreground">
+        <ToastProvider>
+          <AppHeader />
+          <main className="flex min-h-0 flex-1 flex-col overflow-hidden">{children}</main>
+        </ToastProvider>
       </body>
     </html>
   );

@@ -7,6 +7,7 @@ import {
   useActionState,
   startTransition,
 } from "react";
+import { ArrowRight, ShieldCheck } from "lucide-react";
 import {
   registerAction,
   sendRegisterCodeAction,
@@ -18,25 +19,6 @@ import { AuthOAuthSection } from "@/components/layout/auth-oauth-section";
 
 /** 发送验证码的客户端冷却时间（秒），与服务端限频保持一致 */
 const RESEND_COUNTDOWN_SECONDS = 60;
-
-function ShieldIcon() {
-  return (
-    <svg
-      width="18"
-      height="18"
-      viewBox="0 0 24 24"
-      fill="none"
-      aria-hidden="true"
-      stroke="currentColor"
-      strokeWidth="1.6"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z" />
-      <path d="m9 12 2 2 4-4" />
-    </svg>
-  );
-}
 
 export function RegisterForm() {
   const [registerState, registerFormAction, registerPending] =
@@ -93,7 +75,7 @@ export function RegisterForm() {
       <form
         ref={formRef}
         action={registerFormAction}
-        className="space-y-5"
+        className="space-y-4"
       >
         <EmailField
           id="register-email"
@@ -105,14 +87,14 @@ export function RegisterForm() {
         <div>
           <label
             htmlFor="register-code"
-            className="mb-1.5 block text-[13px] font-medium text-[#4b5c58] dark:text-[#a9bcb6]"
+            className="mb-1 block text-[12.5px] font-medium text-slate-500 dark:text-slate-400"
           >
             验证码
           </label>
           <div className="flex gap-2">
             <div className="relative flex-1">
-              <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-[#7a8a86] dark:text-[#7d9089]">
-                <ShieldIcon />
+              <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+                <ShieldCheck className="h-4 w-4" />
               </span>
               <input
                 id="register-code"
@@ -129,14 +111,14 @@ export function RegisterForm() {
                 onChange={(event) =>
                   setCode(event.target.value.replace(/\D/g, "").slice(0, 6))
                 }
-                className="bm-input h-[44px] w-full py-2.5 pl-10 pr-3 text-[15px] tracking-widest"
+                className="bm-input h-9 w-full pl-9 pr-3 text-[13px] tracking-widest"
               />
             </div>
             <button
               type="button"
               onClick={handleSendCode}
               disabled={sendCodeDisabled}
-              className="h-[44px] shrink-0 rounded-lg border border-[#0d9488] px-4 text-[13px] font-medium text-[#0d9488] transition-colors hover:bg-[#f0faf8] disabled:cursor-not-allowed disabled:border-[#c8d8db] disabled:text-[#7a8a86] disabled:hover:bg-transparent dark:border-[#5eead4] dark:text-[#5eead4] dark:hover:bg-[#0f2622] dark:disabled:border-[#25332f] dark:disabled:text-[#7d9089] dark:disabled:hover:bg-transparent"
+              className="bm-btn-code h-9 shrink-0 px-3.5 text-[13px]"
             >
               {codePending
                 ? "发送中..."
@@ -147,7 +129,7 @@ export function RegisterForm() {
           </div>
           {codeState?.message ? (
             <p
-              className={`mt-1.5 text-[13px] ${
+              className={`mt-1 text-[12.5px] ${
                 codeState.ok
                   ? "text-emerald-600 dark:text-emerald-400"
                   : "text-rose-600 dark:text-rose-400"
@@ -183,10 +165,9 @@ export function RegisterForm() {
               type="checkbox"
               name="agreeTerms"
               required
-              className="mt-0.5 h-4 w-4 shrink-0 rounded-[4px]"
-              style={{ accentColor: "#0d9488" }}
+              className="mt-0.5 h-4 w-4 shrink-0 rounded-[4px] accent-blue-600"
             />
-            <span className="text-[13px] text-[#4b5c58] dark:text-[#a9bcb6]">
+            <span className="text-[13px] text-slate-500 dark:text-slate-400">
               我已阅读并同意
               <a href="/terms" className="bm-link mx-0.5 font-medium">
                 《服务条款》
@@ -201,7 +182,7 @@ export function RegisterForm() {
 
         {registerState?.message ? (
           <p
-            className={`text-[13px] ${
+            className={`text-[12.5px] ${
               registerState.ok
                 ? "text-emerald-600 dark:text-emerald-400"
                 : "text-rose-600 dark:text-rose-400"
@@ -214,24 +195,11 @@ export function RegisterForm() {
         <button
           type="submit"
           disabled={registerPending}
-          className="bm-btn-primary flex h-[44px] w-full items-center justify-center gap-2 text-[15px]"
+          className="bm-btn-primary flex h-9 w-full items-center justify-center gap-1.5 text-[13.5px]"
         >
           {registerPending ? "提交中..." : "进入 Bookmark Lite"}
           {!registerPending ? (
-            <svg
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
-              aria-hidden="true"
-              stroke="currentColor"
-              strokeWidth="1.8"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M5 12h14" />
-              <path d="m12 5 7 7-7 7" />
-            </svg>
+            <ArrowRight className="h-4 w-4" />
           ) : null}
         </button>
       </form>

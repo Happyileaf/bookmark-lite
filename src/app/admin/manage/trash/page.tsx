@@ -4,11 +4,15 @@ import { requireSuperAdmin } from "@/server/auth/session";
 
 export const dynamic = "force-dynamic";
 
-export default async function AdminTrashPage() {
-  const user = await requireSuperAdmin();
+type PageProps = {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+};
+
+export default async function AdminTrashPage({ searchParams }: PageProps) {
+  const [query, user] = await Promise.all([searchParams, requireSuperAdmin()]);
   return (
     <ManageSceneShell scope="APP" current="trash">
-      <ManageTrashView scope="APP" user={user} />
+      <ManageTrashView scope="APP" user={user} searchParams={query} />
     </ManageSceneShell>
   );
 }

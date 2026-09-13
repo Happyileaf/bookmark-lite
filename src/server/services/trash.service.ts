@@ -14,6 +14,7 @@ type TrashBookmarkPayload = {
     title: string;
     url: string;
     normalizedUrl: string;
+    favicon?: string | null;
     description?: string | null;
     isFavorite?: boolean;
     isVisible?: boolean;
@@ -34,10 +35,28 @@ function parsePayload(payload: unknown): TrashBookmarkPayload {
 }
 
 export const trashService = {
-  async list(scope: DataScope, user: SessionUser | null) {
+  async list(
+    scope: DataScope,
+    user: SessionUser | null,
+    options: { page: number; pageSize: number },
+  ) {
     assertCanManageScope(scope, user);
     const scopeCtx = resolveScopeContext(scope, user?.id);
-    return trashRepo.list(scopeCtx.scope, scopeCtx.ownerUserId);
+    const result = await trashRepo.list({
+      scope: scopeCtx.scope,
+      ownerUserId: scopeCtx.ownerUserId,
+      page: options.page,
+      pageSize: options.pageSize,
+    });
+    return {
+      items: result.items,
+      pagination: {
+        page: options.page,
+        pageSize: options.pageSize,
+        total: result.total,
+        totalPages: Math.max(1, Math.ceil(result.total / options.pageSize)),
+      },
+    };
   },
 
   async restore(ids: string[], scope: DataScope, user: SessionUser | null) {
@@ -74,6 +93,7 @@ export const trashService = {
             title: payload.bookmark.title,
             url: payload.bookmark.url,
             normalizedUrl: payload.bookmark.normalizedUrl,
+            favicon: payload.bookmark.favicon ?? null,
             description: payload.bookmark.description ?? null,
             isFavorite: payload.bookmark.isFavorite ?? false,
             isVisible: payload.bookmark.isVisible ?? true,

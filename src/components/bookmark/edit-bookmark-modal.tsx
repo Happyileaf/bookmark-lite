@@ -1,8 +1,10 @@
 "use client";
 
-import { Sparkles } from "lucide-react";
-import { useRef, useState, useTransition } from "react";
+import { Loader2, Pencil, Wand2 } from "lucide-react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { TagSelectDropdown } from "@/components/tag/tag-select-dropdown";
+import { BookmarkFavicon } from "@/components/bookmark/infinite-bookmarks-grid";
+import { Modal } from "@/components/ui";
 
 type BookmarkRow = {
   id: string;
@@ -10,6 +12,8 @@ type BookmarkRow = {
   url: string;
   favicon: string | null;
   description: string | null;
+  isFavorite: boolean;
+  isVisible: boolean;
   tags: Array<{ name: string }>;
 };
 
@@ -23,20 +27,31 @@ type Props = {
   }>;
 };
 
+type MetadataResult = {
+  title: string;
+  description: string;
+  favicon: string;
+};
+
 export function EditBookmarkModal({ action, bookmark, tags }: Props) {
   const [open, setOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
   const [isParsing, setIsParsing] = useState(false);
   const [faviconUrl, setFaviconUrl] = useState<string>(bookmark.favicon ?? "");
-  const titleRef = useRef<HTMLInputElement>(null);
+  const [title, setTitle] = useState(bookmark.title);
   const urlRef = useRef<HTMLInputElement>(null);
   const descRef = useRef<HTMLInputElement>(null);
 
-  const displayFavicon = faviconUrl || "/logo_assets/logo_export.ico";
+  useEffect(() => {
+    if (!open) return;
+    const timer = window.setTimeout(() => urlRef.current?.focus(), 30);
+    return () => window.clearTimeout(timer);
+  }, [open]);
 
   const close = () => {
     setOpen(false);
     setFaviconUrl(bookmark.favicon ?? "");
+    setTitle(bookmark.title);
   };
 
   const submit = (formData: FormData) => {
@@ -44,12 +59,6 @@ export function EditBookmarkModal({ action, bookmark, tags }: Props) {
       await action(formData);
       close();
     });
-  };
-
-  type MetadataResult = {
-    title: string;
-    description: string;
-    favicon: string;
   };
 
   const parseUrl = async () => {
@@ -66,9 +75,7 @@ export function EditBookmarkModal({ action, bookmark, tags }: Props) {
       const payload = await res.json();
       if (res.ok && payload.ok && payload.data) {
         const meta = payload.data as MetadataResult;
-        if (titleRef.current && !titleRef.current.value && meta.title) {
-          titleRef.current.value = meta.title;
-        }
+        setTitle((current) => current || meta.title);
         if (descRef.current && !descRef.current.value && meta.description) {
           descRef.current.value = meta.description;
         }
@@ -77,7 +84,7 @@ export function EditBookmarkModal({ action, bookmark, tags }: Props) {
         }
       }
     } catch {
-      // 解析失败静默忽略
+      //
     } finally {
       setIsParsing(false);
     }
@@ -88,103 +95,136 @@ export function EditBookmarkModal({ action, bookmark, tags }: Props) {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="rounded border border-slate-300 px-2 py-1 text-xs text-slate-700 hover:bg-slate-50 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700/40"
+        aria-label="编辑书签"
+        title="编辑"
+        className="icon-btn"
       >
-        编辑
+        <Pencil className="h-4 w-4" />
       </button>
 
-      {open ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <button
-            type="button"
-            aria-label="关闭弹窗"
-            className="absolute inset-0 bg-black/40"
-            onClick={close}
-          />
+      <Modal
+        open={open}
+        onClose={close}
+        title="编辑书签"
+        width={420}
+        footer={
+          <>
+            <button
+              type="button"
+              onClick={close}
+              className="inline-flex h-9 items-center rounded-sm border border-slate-200 bg-transparent px-4 text-[13px] text-foreground transition-colors hover:bg-slate-50 dark:border-slate-700 dark:hover:bg-slate-800"
+            >
+              取消
+            </button>
+            <button
+              type="submit"
+              form="edit-bookmark-form"
+              disabled={isPending}
+              className="inline-flex h-9 items-center rounded-sm bg-primary px-4 text-[13px] font-medium text-primary-foreground transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {isPending ? "保存中..." : "保存"}
+            </button>
+          </>
+        }
+      >
+        <form id="edit-bookmark-form" action={submit} className="space-y-3.5">
+          <input type="hidden" name="id" value={bookmark.id} />
 
-          <div className="relative z-10 w-full max-w-2xl rounded border border-slate-200 bg-white shadow-xl dark:border-slate-700/50 dark:bg-slate-800/80">
-            <div className="flex items-center justify-between border-b border-slate-200 px-4 py-3 dark:border-slate-700/50">
-              <h2 className="text-base font-semibold text-slate-900 dark:text-slate-200">编辑书签</h2>
+          <div>
+            <label htmlFor={`edit-bookmark-url-${bookmark.id}`} className="form-label">
+              链接地址
+            </label>
+            <div className="flex items-center gap-2">
+              <input
+                id={`edit-bookmark-url-${bookmark.id}`}
+                ref={urlRef}
+                name="url"
+                required
+                defaultValue={bookmark.url}
+                placeholder="https://"
+                className="ctl flex-1"
+              />
               <button
                 type="button"
-                onClick={close}
-                className="rounded border border-slate-300 px-2 py-1 text-xs text-slate-700 hover:bg-slate-50 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700/40"
+                disabled={isParsing}
+                onClick={parseUrl}
+                title="自动解析标题和描述"
+                aria-label="自动解析标题和描述"
+                className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-sm border border-slate-200 bg-white text-slate-600 transition-colors hover:border-primary hover:text-primary disabled:cursor-default disabled:opacity-55 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-400 dark:hover:border-primary dark:hover:text-primary"
               >
-                关闭
+                {isParsing ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Wand2 className="h-4 w-4" />
+                )}
               </button>
             </div>
-
-            <form action={submit} className="flex flex-col gap-2 p-4">
-              <input type="hidden" name="id" value={bookmark.id} />
-
-              <div className="flex items-center gap-2">
-                <input
-                  ref={urlRef}
-                  name="url"
-                  required
-                  defaultValue={bookmark.url}
-                  placeholder="https://example.com"
-                  className="flex-1 rounded border border-slate-300 px-3 py-2 text-sm dark:border-slate-600 dark:bg-slate-700/50 dark:text-slate-200 dark:placeholder:text-slate-400"
-                />
-                <button
-                  type="button"
-                  disabled={isParsing}
-                  onClick={parseUrl}
-                  title="自动解析标题和描述"
-                  className="inline-flex items-center justify-center rounded border border-slate-300 bg-white px-3 py-2 text-sm text-slate-700 hover:bg-slate-50 disabled:opacity-50 dark:border-slate-600 dark:bg-slate-700/50 dark:text-slate-300 dark:hover:bg-slate-700/40"
-                >
-                  <Sparkles className="h-4 w-4" />
-                </button>
-              </div>
-              <div className="flex items-center gap-2">
-                <img
-                  src={displayFavicon}
-                  alt=""
-                  className="h-8 w-8 shrink-0 rounded object-contain"
-                />
-                <input
-                  ref={titleRef}
-                  name="title"
-                  required
-                  defaultValue={bookmark.title}
-                  placeholder="书签标题"
-                  className="flex-1 rounded border border-slate-300 px-3 py-2 text-sm dark:border-slate-600 dark:bg-slate-700/50 dark:text-slate-200 dark:placeholder:text-slate-400"
-                />
-                {faviconUrl && <input type="hidden" name="favicon" value={faviconUrl} />}
-              </div>
-              <input
-                ref={descRef}
-                name="description"
-                defaultValue={bookmark.description ?? ""}
-                placeholder="描述（可选）"
-                className="rounded border border-slate-300 px-3 py-2 text-sm dark:border-slate-600 dark:bg-slate-700/50 dark:text-slate-200 dark:placeholder:text-slate-400"
-              />
-              <TagSelectDropdown
-                options={tags}
-                defaultValue={bookmark.tags.map((tag) => tag.name)}
-                placeholder="选择一个或多个标签"
-              />
-
-              <div className="mt-1 flex items-center justify-end gap-2">
-                <button
-                  type="button"
-                  onClick={close}
-                  className="rounded border border-slate-300 px-3 py-2 text-sm text-slate-700 hover:bg-slate-50 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700/40"
-                >
-                  取消
-                </button>
-                <button
-                  type="submit"
-                  disabled={isPending}
-                  className="rounded bg-slate-900 px-3 py-2 text-sm text-white hover:bg-slate-800 disabled:opacity-60 dark:bg-slate-600 dark:hover:bg-slate-500"
-                >
-                  {isPending ? "保存中..." : "保存修改"}
-                </button>
-              </div>
-            </form>
           </div>
-        </div>
-      ) : null}
+
+          <div>
+            <label htmlFor={`edit-bookmark-title-${bookmark.id}`} className="form-label">
+              标题
+            </label>
+            <div className="flex items-center gap-2.5">
+              <BookmarkFavicon src={faviconUrl || null} title={title} className="h-7 w-7" />
+              <input
+                id={`edit-bookmark-title-${bookmark.id}`}
+                name="title"
+                required
+                value={title}
+                onChange={(event) => setTitle(event.target.value)}
+                placeholder="例如：OpenAI"
+                className="ctl flex-1"
+              />
+              {faviconUrl ? <input type="hidden" name="favicon" value={faviconUrl} /> : null}
+            </div>
+          </div>
+
+          <div>
+            <label htmlFor={`edit-bookmark-description-${bookmark.id}`} className="form-label">
+              描述（可选）
+            </label>
+            <input
+              id={`edit-bookmark-description-${bookmark.id}`}
+              ref={descRef}
+              name="description"
+              defaultValue={bookmark.description ?? ""}
+              placeholder="一句话描述这个网站"
+              className="ctl w-full"
+            />
+          </div>
+
+          <div>
+            <span className="form-label">标签（可多选）</span>
+            <TagSelectDropdown
+              options={tags}
+              defaultValue={bookmark.tags.map((tag) => tag.name)}
+              placeholder="点击选择标签"
+            />
+          </div>
+
+          <div className="flex items-center gap-6 pt-1">
+            <label className="inline-flex cursor-pointer items-center gap-1.5 text-[13px] text-foreground">
+              <input
+                type="checkbox"
+                name="isFavorite"
+                defaultChecked={bookmark.isFavorite}
+                className="h-4 w-4 accent-[#2563eb]"
+              />
+              加入收藏
+            </label>
+            <label className="inline-flex cursor-pointer items-center gap-1.5 text-[13px] text-foreground">
+              <input
+                type="checkbox"
+                name="isVisible"
+                defaultChecked={bookmark.isVisible}
+                className="h-4 w-4 accent-[#2563eb]"
+              />
+              公开可见
+            </label>
+          </div>
+        </form>
+      </Modal>
     </>
   );
 }

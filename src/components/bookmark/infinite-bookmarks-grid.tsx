@@ -59,6 +59,66 @@ type ListResponse = {
   };
 };
 
+const FAVICON_PALETTE = [
+  "#2563eb",
+  "#7c3aed",
+  "#0891b2",
+  "#059669",
+  "#d97706",
+  "#dc2626",
+  "#db2777",
+];
+
+function pickFaviconColor(seed: string): string {
+  let hash = 0;
+  for (let index = 0; index < seed.length; index += 1) {
+    hash = (hash * 31 + seed.charCodeAt(index)) >>> 0;
+  }
+  return FAVICON_PALETTE[hash % FAVICON_PALETTE.length];
+}
+
+function readFallbackLetter(title: string): string {
+  const trimmed = title.trim();
+  return trimmed ? Array.from(trimmed)[0].toUpperCase() : "?";
+}
+
+export function BookmarkFavicon({
+  src,
+  title,
+  className,
+}: {
+  src: string | null;
+  title: string;
+  className?: string;
+}) {
+  const [imageOk, setImageOk] = useState(false);
+  const [imageFailed, setImageFailed] = useState(false);
+  const showImage = Boolean(src) && !imageFailed;
+
+  return (
+    <span
+      className={`relative inline-flex shrink-0 items-center justify-center overflow-hidden rounded-sm ${className ?? ""}`}
+      style={{ backgroundColor: pickFaviconColor(title) }}
+    >
+      {!imageOk ? (
+        <span className="text-xs font-bold text-white">{readFallbackLetter(title)}</span>
+      ) : null}
+      {showImage ? (
+        <img
+          src={src ?? undefined}
+          alt=""
+          loading="lazy"
+          onLoad={() => setImageOk(true)}
+          onError={() => setImageFailed(true)}
+          className={`absolute inset-0 m-auto h-4 w-4 rounded-[2px] object-contain ${
+            imageOk ? "" : "opacity-0"
+          }`}
+        />
+      ) : null}
+    </span>
+  );
+}
+
 function mergeUniqueById(prev: BookmarkItem[], next: BookmarkItem[]) {
   const ids = new Set(prev.map((item) => item.id));
   const merged = [...prev];
@@ -95,6 +155,9 @@ export function InfiniteBookmarksGrid({
   }, []);
 
   const handleContentClick = useCallback((e: React.MouseEvent, url: string) => {
+    const target = e.target as HTMLElement;
+    if (target.closest("button, a")) return;
+
     const selection = window.getSelection();
     if (selection && !selection.isCollapsed) return;
 
@@ -165,105 +228,104 @@ export function InfiniteBookmarksGrid({
 
   if (items.length === 0) {
     return (
-      <div className="rounded border border-dashed border-slate-300 bg-white p-10 text-center text-sm text-slate-500 dark:border-slate-600 dark:bg-slate-800/50 dark:text-slate-400">
+      <div className="rounded-sm border border-dashed border-slate-300 bg-card p-10 text-center text-sm text-muted-foreground dark:border-slate-700">
         当前视图下暂无书签
       </div>
     );
   }
 
   return (
-    <div className="space-y-4">
-      <ul className="grid auto-rows-fr grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 [@media(min-width:1920px)]:grid-cols-5">
+    <div>
+      <div className="grid gap-6 [grid-template-columns:repeat(auto-fill,minmax(260px,1fr))] max-[480px]:[grid-template-columns:1fr]">
         {items.map((bookmark) => (
-          <li
+          <article
             key={bookmark.id}
-            className="group relative h-full cursor-pointer overflow-hidden rounded border border-slate-200 bg-white p-4 hover:border-slate-300 dark:border-slate-700/50 dark:bg-slate-800/50 dark:hover:border-slate-600/70"
+            tabIndex={0}
+            role="link"
+            aria-label={`打开书签：${bookmark.title}`}
+            onClick={(e) => handleContentClick(e, bookmark.url)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                window.open(bookmark.url, "_blank", "noopener,noreferrer");
+              }
+            }}
+            className="group relative flex cursor-pointer flex-col rounded-sm border border-background bg-card p-5 outline-none transition-all hover:border-primary hover:bg-white hover:shadow-md focus-visible:border-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary dark:hover:bg-muted dark:focus-visible:outline-primary"
           >
-            <a
-              href={bookmark.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="sr-only focus-visible:not-sr-only focus-visible:absolute focus-visible:inset-0 focus-visible:z-50 focus-visible:rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-400"
-            >
-              打开书签：{bookmark.title}
-            </a>
-
-            <div className="pointer-events-auto absolute right-4 top-4 z-30 flex items-center gap-1">
-              {scope === "USER" ? (
-                <FavoriteBookmarkButton
-                  bookmarkId={bookmark.id}
-                  isFavorite={bookmark.isFavorite}
-                  scope={scope}
-                  onToggle={handleToggleFavorite}
-                />
-              ) : null}
-              <CopyBookmarkUrlButton url={bookmark.url} />
-              {canSaveToUser && saveToUserAction ? (
-                <SaveAppBookmarkModal
-                  action={saveToUserAction}
-                  bookmarkId={bookmark.id}
-                  tags={userTagsForSaving}
-                />
-              ) : null}
-            </div>
-
             <div
-              className="pointer-events-auto relative z-20 grid h-full min-w-0 cursor-pointer content-start gap-2 select-text"
-              onClick={(e) => handleContentClick(e, bookmark.url)}
+              className="relative flex min-w-0 cursor-pointer select-text flex-col"
             >
-              <div className="flex min-w-0 items-center gap-2 pr-20">
-                <img
-                  src={bookmark.favicon || "/logo_assets/logo_export.ico"}
-                  alt=""
-                  className="h-8 w-8 shrink-0 rounded object-contain"
-                />
+              <div className="pointer-events-auto mb-4 flex items-center gap-3">
+                <BookmarkFavicon src={bookmark.favicon} title={bookmark.title} className="h-7 w-7" />
                 <h3
-                  className="min-w-0 flex-1 truncate text-base font-medium leading-6 text-slate-900 group-hover:text-slate-700 dark:text-slate-200 dark:group-hover:text-slate-300"
+                  className="min-w-0 flex-1 truncate text-sm font-semibold text-foreground"
                   title={bookmark.title}
                 >
                   {bookmark.title}
                 </h3>
+                <div
+                  className="-mr-1 -mt-1 flex shrink-0 items-center gap-0.5"
+                >
+                  {scope === "USER" ? (
+                    <FavoriteBookmarkButton
+                      bookmarkId={bookmark.id}
+                      isFavorite={bookmark.isFavorite}
+                      scope={scope}
+                      onToggle={handleToggleFavorite}
+                    />
+                  ) : null}
+                  <CopyBookmarkUrlButton url={bookmark.url} />
+                  {canSaveToUser && saveToUserAction ? (
+                    <SaveAppBookmarkModal
+                      action={saveToUserAction}
+                      bookmarkId={bookmark.id}
+                      tags={userTagsForSaving}
+                    />
+                  ) : null}
+                </div>
               </div>
 
-              <p className="h-4 min-w-0 w-full truncate text-xs leading-4 text-slate-500 dark:text-slate-400" title={bookmark.url}>
+              <p
+                className="mb-3 truncate text-xs text-muted-foreground"
+                title={bookmark.url}
+              >
                 {bookmark.url}
               </p>
 
               <p
-                className="h-10 min-w-0 w-full overflow-hidden break-words text-sm leading-5 text-slate-700 dark:text-slate-300/80 [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:2]"
+                className="mb-4 min-h-0 flex-1 text-xs leading-relaxed text-card-foreground/80 line-clamp-2"
                 title={bookmark.description ?? ""}
               >
                 {bookmark.description || "\u00A0"}
               </p>
 
-              <div className="h-12 overflow-hidden" title={bookmark.tags.map((tag) => tag.name).join(" / ")}>
-                <div className="flex flex-wrap gap-1">
-                  {bookmark.tags.slice(0, 6).map((tag) => (
+              {bookmark.tags.length > 0 ? (
+                <div className="mt-auto flex flex-wrap gap-1.5">
+                  {bookmark.tags.map((tag) => (
                     <span
                       key={tag.id}
-                      className="rounded bg-slate-100 px-2 py-1 text-xs text-slate-600 dark:bg-slate-700/50 dark:text-slate-300"
+                      className="rounded-full bg-blue-50 px-3 py-1 text-xs font-medium text-blue-600 dark:bg-blue-500/15 dark:text-blue-300"
                     >
                       {tag.name}
                     </span>
                   ))}
-                  {bookmark.tags.length > 6 ? (
-                    <span className="rounded bg-slate-100 px-2 py-1 text-xs text-slate-600 dark:bg-slate-700/50 dark:text-slate-300">...</span>
-                  ) : null}
                 </div>
-              </div>
+              ) : (
+                <div className="mt-auto" />
+              )}
             </div>
-          </li>
+          </article>
         ))}
-      </ul>
+      </div>
 
-      <div className="space-y-2 rounded border border-slate-200 bg-white px-4 py-3 text-sm text-slate-600 dark:border-slate-700/50 dark:bg-slate-800/50 dark:text-slate-400">
+      <div className="mt-6 space-y-2 rounded-sm border border-slate-200 bg-card px-4 py-3 text-sm text-muted-foreground dark:border-slate-700">
         <div className="flex items-center justify-between gap-3">
           <span>
             已加载 {items.length} / {pagination.total} 条
           </span>
           <span>{hasMore ? "滚动到底自动加载" : "已全部加载完成"}</span>
         </div>
-        {isLoading ? <p className="text-slate-500 dark:text-slate-400">正在加载更多...</p> : null}
+        {isLoading ? <p className="text-muted-foreground">正在加载更多...</p> : null}
         {errorMessage ? (
           <p className="text-rose-600 dark:text-rose-400">
             {errorMessage}

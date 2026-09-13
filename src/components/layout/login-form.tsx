@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { signIn } from "next-auth/react";
+import { ArrowRight } from "lucide-react";
 import { EmailField, PasswordField } from "@/components/layout/auth-fields";
 import { AuthOAuthSection } from "@/components/layout/auth-oauth-section";
 
@@ -16,7 +17,7 @@ export function LoginForm({ nextUrl }: Props) {
   return (
     <>
       <form
-        className="space-y-5"
+        className="space-y-4"
         onSubmit={async (event) => {
           event.preventDefault();
           const formData = new FormData(event.currentTarget);
@@ -49,10 +50,9 @@ export function LoginForm({ nextUrl }: Props) {
             <input
               type="checkbox"
               name="remember"
-              className="h-4 w-4 rounded-[4px]"
-              style={{ accentColor: "#0d9488" }}
+              className="h-4 w-4 rounded-[4px] accent-blue-600"
             />
-            <span className="text-[13px] text-[#4b5c58] dark:text-[#a9bcb6]">
+            <span className="text-[13px] text-slate-500 dark:text-slate-400">
               记住我
             </span>
           </label>
@@ -62,31 +62,16 @@ export function LoginForm({ nextUrl }: Props) {
         </div>
 
         {error ? (
-          <p className="text-[13px] text-rose-600 dark:text-rose-400">{error}</p>
+          <p className="text-[12.5px] text-rose-600 dark:text-rose-400">{error}</p>
         ) : null}
 
         <button
           type="submit"
           disabled={loading}
-          className="bm-btn-primary flex h-[44px] w-full items-center justify-center gap-2 text-[15px]"
+          className="bm-btn-primary flex h-9 w-full items-center justify-center gap-1.5 text-[13.5px]"
         >
           {loading ? "登录中..." : "进入 Bookmark Lite"}
-          {!loading ? (
-            <svg
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
-              aria-hidden="true"
-              stroke="currentColor"
-              strokeWidth="1.8"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M5 12h14" />
-              <path d="m12 5 7 7-7 7" />
-            </svg>
-          ) : null}
+          {!loading ? <ArrowRight className="h-4 w-4" /> : null}
         </button>
       </form>
 

@@ -52,6 +52,7 @@ export const authOptions: NextAuthOptions = {
         return {
           id: user.id,
           email: user.email,
+          name: user.name,
           role: user.role,
         };
       },
@@ -62,6 +63,19 @@ export const authOptions: NextAuthOptions = {
       if (user) {
         token.id = user.id;
         token.role = (user.role as Role | undefined) ?? "user";
+        token.name = user.name ?? null;
+        return token;
+      }
+      // 昵称等资料可在设置页随时更新，每次解析会话时从库中刷新，避免旧 JWT 长期持有过期资料
+      if (token.id) {
+        const dbUser = await prisma.user.findUnique({
+          where: { id: token.id },
+          select: { name: true, role: true },
+        });
+        if (dbUser) {
+          token.name = dbUser.name;
+          token.role = dbUser.role;
+        }
       }
       return token;
     },
@@ -69,6 +83,7 @@ export const authOptions: NextAuthOptions = {
       if (session.user) {
         session.user.id = token.id ?? "";
         session.user.role = (token.role as Role | undefined) ?? "user";
+        session.user.name = token.name ?? null;
       }
       return session;
     },

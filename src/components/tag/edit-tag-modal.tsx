@@ -1,7 +1,10 @@
 "use client";
 
-import { Shuffle } from "lucide-react";
-import { useRef, useState, useTransition } from "react";
+import { Pencil, Trash2 } from "lucide-react";
+import { useId, useState, useTransition } from "react";
+import { Modal } from "@/components/ui/modal";
+import { useToast } from "@/components/ui/toast";
+import { TAG_COLOR_PALETTE, TagColorPicker } from "@/components/tag/create-tag-modal";
 
 type TagRow = {
   id: string;
@@ -10,22 +13,15 @@ type TagRow = {
   description: string | null;
 };
 
-function generateRandomColor() {
-  const hex = Math.floor(Math.random() * 0xffffff).toString(16).padStart(6, "0");
-  return `#${hex}`;
-}
-
-type Props = {
+type EditProps = {
   action: (formData: FormData) => Promise<void>;
   tag: TagRow;
 };
 
-export function EditTagModal({ action, tag }: Props) {
+export function EditTagModal({ action, tag }: EditProps) {
   const [open, setOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
-  const [colorValue, setColorValue] = useState(tag.color ?? "");
-  const colorRef = useRef<HTMLInputElement>(null);
-  const pickerRef = useRef<HTMLInputElement>(null);
+  const formId = useId();
 
   const submit = (formData: FormData) => {
     startTransition(async () => {
@@ -34,117 +30,133 @@ export function EditTagModal({ action, tag }: Props) {
     });
   };
 
-  const handleRandomColor = () => {
-    const randomColor = generateRandomColor();
-    setColorValue(randomColor);
-    if (colorRef.current) {
-      colorRef.current.value = randomColor;
-    }
-  };
-
   return (
     <>
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="rounded border border-slate-300 px-2 py-1 text-xs text-slate-700 hover:bg-slate-50 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700/40"
+        className="icon-btn"
+        title="编辑"
+        aria-label={`编辑标签 ${tag.name}`}
       >
-        编辑
+        <Pencil className="h-3.5 w-3.5" />
       </button>
 
-      {open ? (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          <button
-            type="button"
-            aria-label="关闭弹窗"
-            className="absolute inset-0 bg-black/40"
-            onClick={() => setOpen(false)}
-          />
-
-          <div className="relative z-10 w-full max-w-xl rounded border border-slate-200 bg-white shadow-xl dark:border-slate-700/50 dark:bg-slate-800/80">
-            <div className="flex items-center justify-between border-b border-slate-200 px-4 py-3 dark:border-slate-700/50">
-              <h2 className="text-base font-semibold text-slate-900 dark:text-slate-200">编辑标签</h2>
-              <button
-                type="button"
-                onClick={() => setOpen(false)}
-                className="rounded border border-slate-300 px-2 py-1 text-xs text-slate-700 hover:bg-slate-50 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700/40"
-              >
-                关闭
-              </button>
-            </div>
-
-            <form action={submit} className="grid gap-2 p-4">
-              <input type="hidden" name="id" value={tag.id} />
+      <Modal
+        open={open}
+        onClose={() => setOpen(false)}
+        title="编辑标签"
+        width={420}
+        footer={
+          <>
+            <button
+              type="button"
+              onClick={() => setOpen(false)}
+              className="h-9 rounded-sm border border-slate-200 px-4 text-[13px] text-slate-600 transition-colors hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800 dark:focus-visible:ring-primary/50"
+            >
+              取消
+            </button>
+            <button
+              type="submit"
+              form={formId}
+              disabled={isPending}
+              className="h-9 rounded-sm bg-primary px-4 text-[13px] font-medium text-primary-foreground transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 disabled:cursor-not-allowed disabled:opacity-60 dark:focus-visible:ring-primary/50"
+            >
+              {isPending ? "保存中..." : "保存"}
+            </button>
+          </>
+        }
+      >
+        {open ? (
+          <form
+            key={`edit-${tag.id}`}
+            id={formId}
+            action={submit}
+            className="space-y-3.5"
+          >
+            <input type="hidden" name="id" value={tag.id} />
+            <label className="block">
+              <span className="form-label">标签名称</span>
               <input
                 name="name"
                 required
+                autoFocus
+                maxLength={80}
                 defaultValue={tag.name}
-                placeholder="标签名称"
-                className="rounded border border-slate-300 px-3 py-2 text-sm dark:border-slate-600 dark:bg-slate-700/50 dark:text-slate-200 dark:placeholder:text-slate-400"
+                className="ctl w-full px-3"
               />
-              <div className="flex items-center gap-2">
-                <input
-                  ref={pickerRef}
-                  type="color"
-                  className="absolute h-0 w-0 opacity-0"
-                  value={colorValue || "#cbd5e1"}
-                  onChange={(e) => {
-                    setColorValue(e.target.value);
-                    if (colorRef.current) {
-                      colorRef.current.value = e.target.value;
-                    }
-                  }}
-                />
-                <button
-                  type="button"
-                  onClick={() => pickerRef.current?.click()}
-                  className="h-5 w-5 shrink-0 rounded-full cursor-pointer"
-                  style={{ backgroundColor: colorValue || "#cbd5e1" }}
-                  title="选取颜色"
-                />
-                <input
-                  ref={colorRef}
-                  name="color"
-                  defaultValue={tag.color ?? ""}
-                  placeholder="#94a3b8"
-                  onChange={(e) => setColorValue(e.target.value)}
-                  className="min-w-0 flex-1 rounded border border-slate-300 px-3 py-2 text-sm dark:border-slate-600 dark:bg-slate-700/50 dark:text-slate-200 dark:placeholder:text-slate-400"
-                />
-                <button
-                  type="button"
-                  onClick={handleRandomColor}
-                  className="shrink-0 rounded border border-slate-300 p-2 text-slate-500 hover:bg-slate-50 hover:text-slate-700 dark:border-slate-600 dark:text-slate-400 dark:hover:bg-slate-700/40 dark:hover:text-slate-200"
-                  title="随机生成颜色"
-                >
-                  <Shuffle className="h-4 w-4" />
-                </button>
-              </div>
+            </label>
+            <label className="block">
+              <span className="form-label">描述（可选）</span>
               <input
                 name="description"
+                maxLength={500}
                 defaultValue={tag.description ?? ""}
-                placeholder="标签描述（可选）"
-                className="rounded border border-slate-300 px-3 py-2 text-sm dark:border-slate-600 dark:bg-slate-700/50 dark:text-slate-200 dark:placeholder:text-slate-400"
+                placeholder="一句话说明这个标签"
+                className="ctl w-full px-3"
               />
-              <div className="mt-1 flex items-center justify-end gap-2">
-                <button
-                  type="button"
-                  onClick={() => setOpen(false)}
-                  className="rounded border border-slate-300 px-3 py-2 text-sm text-slate-700 hover:bg-slate-50 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700/40"
-                >
-                  取消
-                </button>
-                <button
-                  type="submit"
-                  disabled={isPending}
-                  className="rounded bg-slate-900 px-3 py-2 text-sm text-white hover:bg-slate-800 disabled:opacity-60 dark:bg-slate-600 dark:hover:bg-slate-500"
-                >
-                  {isPending ? "保存中..." : "保存修改"}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      ) : null}
+            </label>
+            <EditTagColorField initialColor={tag.color} />
+          </form>
+        ) : null}
+      </Modal>
     </>
+  );
+}
+
+function EditTagColorField({ initialColor }: { initialColor: string | null }) {
+  const [color, setColor] = useState<string>(initialColor ?? TAG_COLOR_PALETTE[0]);
+
+  return (
+    <div>
+      <span className="form-label">标签颜色</span>
+      <input type="hidden" name="color" value={color} />
+      <TagColorPicker value={color} onChange={setColor} />
+    </div>
+  );
+}
+
+type DeleteProps = {
+  action: (formData: FormData) => Promise<void>;
+  tagId: string;
+  tagName: string;
+};
+
+export function DeleteTagButton({ action, tagId, tagName }: DeleteProps) {
+  const [isPending, startTransition] = useTransition();
+  const { toast } = useToast();
+
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    startTransition(async () => {
+      try {
+        await action(formData);
+        toast({
+          title: `已删除标签「${tagName}」`,
+          variant: "success",
+        });
+      } catch {
+        toast({
+          title: "删除失败，请重试",
+          variant: "error",
+        });
+      }
+    });
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <input type="hidden" name="id" value={tagId} />
+      <button
+        type="submit"
+        disabled={isPending}
+        title="删除"
+        aria-label={`删除标签 ${tagName}`}
+        className="icon-btn danger disabled:cursor-not-allowed disabled:opacity-60"
+      >
+        <Trash2 className="h-3.5 w-3.5" />
+      </button>
+    </form>
   );
 }
