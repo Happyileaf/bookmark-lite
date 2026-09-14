@@ -49,7 +49,7 @@ export function HeaderActions({ isAuthed, name, email, isAdmin, userLabel }: Pro
         className="h-7 w-7 shrink-0 rounded-sm"
         priority
       />
-      <span className="truncate text-lg font-semibold text-foreground">
+      <span className="truncate text-lg font-semibold text-foreground max-[300px]:hidden">
         Bookmark Lite
       </span>
     </Link>
@@ -68,8 +68,8 @@ export function HeaderActions({ isAuthed, name, email, isAdmin, userLabel }: Pro
   return (
     <header className="app-header sticky top-0 z-40 shrink-0 border-b border-slate-200 bg-white px-4 dark:border-slate-800 dark:bg-slate-950">
       <div className="pt-safe flex h-full items-center justify-between gap-3">
-        {/* 左区：移动端抽屉按钮 + 桌面端品牌；移动端 flex-1 与右区对称，保证品牌视觉居中 */}
-        <div className="flex min-w-0 flex-1 items-center gap-2 lg:flex-none">
+        {/* 左区：移动端抽屉按钮 + 桌面端品牌；flex-1 与右区对称保证品牌居中；不用 min-w-0，防止极窄屏下左区塌缩导致抽屉按钮溢出与品牌重叠 */}
+        <div className="flex flex-1 items-center gap-2 lg:flex-none">
           {showDrawerButton ? (
             <button
               type="button"
@@ -85,7 +85,7 @@ export function HeaderActions({ isAuthed, name, email, isAdmin, userLabel }: Pro
 
         {renderBrand("flex min-w-0 items-center justify-center gap-2 lg:hidden")}
 
-        <div className="flex min-w-0 flex-1 items-center justify-end gap-3 lg:flex-none">
+        <div className="flex flex-1 items-center justify-end gap-3 lg:flex-none">
           {!isGuidePage ? guideLink : null}
 
           {isAuthPage && !isAuthed ? null : (
@@ -102,16 +102,16 @@ export function HeaderActions({ isAuthed, name, email, isAdmin, userLabel }: Pro
                   userLabel={userLabel}
                 />
               ) : (
-                <div className="flex items-center gap-2">
+                <div className="flex shrink-0 items-center gap-2">
                   <Link
                     href="/login"
-                    className="rounded-sm border border-primary px-3.5 py-1.5 text-sm font-medium text-primary transition-colors hover:bg-blue-50 dark:hover:bg-blue-950"
+                    className="shrink-0 whitespace-nowrap rounded-sm border border-primary px-3.5 py-1.5 text-sm font-medium text-primary transition-colors hover:bg-blue-50 dark:hover:bg-blue-950 max-[480px]:px-2.5"
                   >
                     登录
                   </Link>
                   <Link
                     href="/register"
-                    className="rounded-sm bg-primary px-3.5 py-1.5 text-sm font-medium text-white transition-opacity hover:opacity-90"
+                    className="shrink-0 whitespace-nowrap rounded-sm bg-primary px-3.5 py-1.5 text-sm font-medium text-white transition-opacity hover:opacity-90 max-[480px]:px-2.5"
                   >
                     注册
                   </Link>

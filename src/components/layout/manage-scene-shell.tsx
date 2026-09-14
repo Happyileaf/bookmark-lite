@@ -57,7 +57,7 @@ export function ManageSceneShell({ scope, current, children }: Props) {
         menuGroupLabel={menuGroupLabel}
       />
       {/* 桌面端侧边导航（移动端由抽屉替代） */}
-      <aside className="hidden lg:sticky lg:top-0 lg:block lg:w-[200px] lg:shrink-0 lg:self-stretch lg:border-r lg:border-slate-200 lg:bg-white lg:py-4 lg:dark:border-slate-800 lg:dark:bg-card">
+      <aside className="hidden lg:sticky lg:top-0 lg:block lg:w-[200px] lg:shrink-0 lg:self-stretch lg:border-r lg:border-slate-200 lg:bg-white lg:px-3 lg:py-4 lg:dark:border-slate-800 lg:dark:bg-card">
         <p className="nav-group">快速入口</p>
         <nav className="mb-5">
           {sceneMenu.map((item) => (
