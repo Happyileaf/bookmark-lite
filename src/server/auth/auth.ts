@@ -15,6 +15,8 @@ export const authOptions: NextAuthOptions = {
   secret: getNextAuthSecret(),
   session: {
     strategy: "jwt",
+    /** 长效会话：默认 30 天免登录（单位：秒）；jwt.maxAge 未单独配置时随 session.maxAge 生效，每次访问滑动续期 */
+    maxAge: 30 * 24 * 60 * 60,
   },
   pages: {
     signIn: "/login",

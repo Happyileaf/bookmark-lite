@@ -45,17 +45,7 @@ export function LoginForm({ nextUrl }: Props) {
           autoComplete="current-password"
         />
 
-        <div className="flex items-center justify-between gap-3">
-          <label className="flex cursor-pointer select-none items-center gap-2">
-            <input
-              type="checkbox"
-              name="remember"
-              className="h-4 w-4 rounded-[4px] accent-blue-600"
-            />
-            <span className="text-[13px] text-slate-500 dark:text-slate-400">
-              记住我
-            </span>
-          </label>
+        <div className="flex items-center justify-end">
           <a href="/forgot-password" className="bm-link whitespace-nowrap text-[13px]">
             忘记密码？
           </a>
