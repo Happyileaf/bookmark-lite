@@ -7,7 +7,6 @@ import {
   LayoutGrid,
   Search,
   Star,
-  ChevronDown,
   type LucideIcon,
 } from "lucide-react";
 import { Prisma, type DataScope } from "@prisma/client";
@@ -204,14 +203,6 @@ export async function DisplayBookmarksView({ scope, user, searchParams }: Props)
   }
 
   const queryBase = q ? `&q=${encodeURIComponent(q)}` : "";
-  const currentHrefParams = new URLSearchParams();
-  if (tagId) {
-    currentHrefParams.set("tagId", tagId);
-  } else {
-    currentHrefParams.set("view", view);
-  }
-  if (q) currentHrefParams.set("q", q);
-  const currentHref = `?${currentHrefParams.toString()}`;
   const aggregateItems: Array<{
     key: DisplayView;
     label: string;
@@ -303,17 +294,6 @@ export async function DisplayBookmarksView({ scope, user, searchParams }: Props)
           {tagId ? <input type="hidden" name="tagId" value={tagId} /> : null}
           {!tagId ? <input type="hidden" name="view" value={view} /> : null}
         </form>
-
-        <div className="mb-7 flex flex-wrap items-center justify-end gap-3">
-          <Link
-            href={currentHref}
-            aria-disabled="true"
-            className="flex cursor-default items-center gap-1.5 rounded-sm border border-border bg-card px-3 py-1.5 text-sm text-muted-foreground hover:bg-muted"
-          >
-            <span>按添加时间排序</span>
-            <ChevronDown className="h-3.5 w-3.5" />
-          </Link>
-        </div>
 
         <InfiniteBookmarksGrid
           key={`${scope}|${view}|${tagId ?? ""}|${q ?? ""}`}
