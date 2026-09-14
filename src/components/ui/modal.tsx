@@ -77,41 +77,45 @@ export function Modal({
   if (!isMounted || !open) return null;
 
   return createPortal(
-    <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
-      <button
-        type="button"
-        aria-label="关闭弹窗"
-        onClick={onClose}
-        className={`absolute inset-0 bg-slate-950/45 ${
-          prefersReducedMotion ? "" : "ui-modal-mask-enter"
-        }`}
-      />
-      <div
-        role="dialog"
-        aria-modal="true"
-        aria-label={title}
-        style={{ maxWidth: width }}
-        className={`relative w-full rounded-sm border border-slate-200 bg-white p-5 text-card-foreground shadow-2xl dark:border-slate-800 dark:bg-slate-900 dark:text-foreground ${
-          prefersReducedMotion ? "" : "ui-modal-panel-enter"
-        }`}
-      >
-        <div className="flex items-center justify-between">
-          <h2 className="text-[15px] font-bold">{title}</h2>
-          <button
-            type="button"
-            onClick={onClose}
-            aria-label="关闭"
-            className="flex h-8 w-8 items-center justify-center rounded-sm text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-800"
-          >
-            <X className="h-4 w-4" />
-          </button>
-        </div>
-        <div className="mt-4">{children}</div>
-        {footer ? (
-          <div className="mt-5 flex items-center justify-end gap-2.5">
-            {footer}
+    <div className="fixed inset-0 z-50 overflow-y-auto overscroll-contain">
+      <div className="flex min-h-full items-center justify-center px-4 py-4">
+        <button
+          type="button"
+          aria-label="关闭弹窗"
+          onClick={onClose}
+          className={`fixed inset-0 bg-slate-950/45 ${
+            prefersReducedMotion ? "" : "ui-modal-mask-enter"
+          }`}
+        />
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label={title}
+          style={{ maxWidth: width }}
+          className={`relative my-auto flex max-h-[calc(100dvh-2rem)] w-full flex-col rounded-sm border border-slate-200 bg-white p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] text-card-foreground shadow-2xl dark:border-slate-800 dark:bg-slate-900 dark:text-foreground ${
+            prefersReducedMotion ? "" : "ui-modal-panel-enter"
+          }`}
+        >
+          <div className="flex shrink-0 items-center justify-between">
+            <h2 className="text-[15px] font-bold">{title}</h2>
+            <button
+              type="button"
+              onClick={onClose}
+              aria-label="关闭"
+              className="flex h-8 w-8 items-center justify-center rounded-sm text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-slate-800"
+            >
+              <X className="h-4 w-4" />
+            </button>
           </div>
-        ) : null}
+          <div className="mt-4 min-h-0 flex-1 overflow-y-auto overscroll-contain">
+            {children}
+          </div>
+          {footer ? (
+            <div className="mt-5 flex shrink-0 items-center justify-end gap-2.5">
+              {footer}
+            </div>
+          ) : null}
+        </div>
       </div>
     </div>,
     document.body,

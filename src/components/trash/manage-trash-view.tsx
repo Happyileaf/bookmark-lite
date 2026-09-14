@@ -67,8 +67,8 @@ export async function ManageTrashView({ scope, user, searchParams }: Props) {
 
   return (
     <section>
-      <div className="flex items-start justify-between gap-4">
-        <div>
+      <div className="flex flex-wrap items-start justify-between gap-x-4 gap-y-3">
+        <div className="min-w-0">
           <h1 className="text-[20px] font-bold tracking-tight">回收站</h1>
           <p className="mt-1 text-[13px] text-slate-500 dark:text-slate-400">
             删除的书签将在此保留 30 天，到期后自动清除。
@@ -105,7 +105,7 @@ export async function ManageTrashView({ scope, user, searchParams }: Props) {
         />
       ) : (
         <>
-          <div className="mt-4 space-y-2">
+          <div className="mt-4 space-y-2 overflow-x-auto">
             {items.map((item) => {
               const payload = item.payload as {
                 bookmark?: Snapshot;
@@ -119,7 +119,7 @@ export async function ManageTrashView({ scope, user, searchParams }: Props) {
               return (
                 <article
                   key={item.id}
-                  className="flex items-center gap-3.5 rounded-sm border border-slate-200 bg-white px-4 py-3 transition-[border-color,box-shadow] duration-150 hover:border-slate-300 hover:shadow-[0_1px_3px_rgba(15,23,42,0.06)] dark:border-slate-700 dark:bg-slate-800 dark:hover:border-slate-600"
+                  className="flex min-w-[580px] items-center gap-3.5 rounded-sm border border-slate-200 bg-white px-4 py-3 transition-[border-color,box-shadow] duration-150 hover:border-slate-300 hover:shadow-[0_1px_3px_rgba(15,23,42,0.06)] dark:border-slate-700 dark:bg-slate-800 dark:hover:border-slate-600"
                 >
                   <BookmarkFavicon
                     src={snapshot.favicon ?? null}

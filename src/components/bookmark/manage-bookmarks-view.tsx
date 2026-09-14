@@ -189,14 +189,14 @@ export async function ManageBookmarksView({ scope, user, searchParams }: Props) 
           }
         />
       ) : (
-        <div className="mt-4 flex flex-col gap-2">
+        <div className="mt-4 flex flex-col gap-2 overflow-x-auto">
           {items.map((bookmark) => {
             const visibleTags = bookmark.tags.slice(0, 3);
             const hiddenTagCount = bookmark.tags.length - visibleTags.length;
             return (
               <div
                 key={bookmark.id}
-                className="flex items-center gap-[14px] rounded-sm border border-slate-200 bg-white px-3.5 py-2.5 transition-all hover:border-primary/40 hover:shadow-[0_4px_14px_-8px_rgba(15,23,42,0.15)] dark:border-slate-700 dark:bg-card"
+                className="flex items-center gap-[14px] rounded-sm border border-slate-200 bg-white px-3.5 py-2.5 transition-all hover:border-primary/40 hover:shadow-[0_4px_14px_-8px_rgba(15,23,42,0.15)] dark:border-slate-700 dark:bg-card md:min-w-[680px] lg:min-w-[780px]"
               >
                 <BookmarkFavicon src={bookmark.favicon} title={bookmark.title} className="h-7 w-7" />
 

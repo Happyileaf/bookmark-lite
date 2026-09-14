@@ -236,7 +236,7 @@ export function InfiniteBookmarksGrid({
 
   return (
     <div>
-      <div className="grid gap-6 [grid-template-columns:repeat(auto-fill,minmax(260px,1fr))] max-[480px]:[grid-template-columns:1fr]">
+      <div className="grid gap-6 [grid-template-columns:repeat(auto-fill,minmax(260px,1fr))] max-[480px]:[grid-template-columns:minmax(0,1fr)]">
         {items.map((bookmark) => (
           <article
             key={bookmark.id}
@@ -250,7 +250,7 @@ export function InfiniteBookmarksGrid({
                 window.open(bookmark.url, "_blank", "noopener,noreferrer");
               }
             }}
-            className="group relative flex cursor-pointer flex-col rounded-sm border border-background bg-card p-5 outline-none transition-all hover:border-primary hover:bg-white hover:shadow-md focus-visible:border-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary dark:hover:bg-muted dark:focus-visible:outline-primary"
+            className="group relative min-w-0 flex cursor-pointer flex-col rounded-sm border border-background bg-card p-5 outline-none transition-all hover:border-primary hover:bg-white hover:shadow-md focus-visible:border-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary dark:hover:bg-muted dark:focus-visible:outline-primary"
           >
             <div
               className="relative flex min-w-0 cursor-pointer select-text flex-col"
@@ -293,7 +293,7 @@ export function InfiniteBookmarksGrid({
               </p>
 
               <p
-                className="mb-4 min-h-0 flex-1 text-xs leading-relaxed text-card-foreground/80 line-clamp-2"
+                className="mb-4 min-h-0 flex-1 break-words text-xs leading-relaxed text-card-foreground/80 line-clamp-2"
                 title={bookmark.description ?? ""}
               >
                 {bookmark.description || "\u00A0"}
@@ -304,7 +304,8 @@ export function InfiniteBookmarksGrid({
                   {bookmark.tags.map((tag) => (
                     <span
                       key={tag.id}
-                      className="rounded-full bg-blue-50 px-3 py-1 text-xs font-medium text-blue-600 dark:bg-blue-500/15 dark:text-blue-300"
+                      className="max-w-full truncate rounded-full bg-blue-50 px-3 py-1 text-xs font-medium text-blue-600 dark:bg-blue-500/15 dark:text-blue-300"
+                      title={tag.name}
                     >
                       {tag.name}
                     </span>

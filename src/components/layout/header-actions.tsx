@@ -2,10 +2,11 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { BookOpen } from "lucide-react";
+import { BookOpen, Menu } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { ThemeSwitch } from "@/components/layout/theme-switch";
 import { UserMenu } from "@/components/layout/user-menu";
+import { OPEN_SIDE_DRAWER_EVENT } from "@/lib/constants";
 
 type Props = {
   isAuthed: boolean;
@@ -19,6 +20,40 @@ export function HeaderActions({ isAuthed, name, email, isAdmin, userLabel }: Pro
   const pathname = usePathname();
   const isAuthPage = pathname === "/login" || pathname === "/register";
   const isGuidePage = pathname === "/guide";
+  // 书签展示页（筛选抽屉）与管理类页面（导航抽屉）提供移动端抽屉入口
+  const showDrawerButton =
+    pathname === "/bookmarks" ||
+    pathname === "/my-bookmarks" ||
+    pathname === "/settings" ||
+    pathname === "/api-tokens" ||
+    pathname.startsWith("/manage") ||
+    pathname.startsWith("/admin");
+
+  /**
+   * 通知页面内抽屉打开（抽屉组件挂在页面内，通过全局事件解耦）。
+   */
+  const openDrawer = () => {
+    window.dispatchEvent(new CustomEvent(OPEN_SIDE_DRAWER_EVENT));
+  };
+
+  /**
+   * 渲染品牌链接：桌面端靠左，移动端居中。
+   */
+  const renderBrand = (className: string) => (
+    <Link href="/bookmarks" className={className}>
+      <Image
+        src="/logo_assets/logo_export.png"
+        alt="Bookmark Lite Logo"
+        width={28}
+        height={28}
+        className="h-7 w-7 shrink-0 rounded-sm"
+        priority
+      />
+      <span className="truncate text-lg font-semibold text-foreground">
+        Bookmark Lite
+      </span>
+    </Link>
+  );
 
   const guideLink = (
     <Link
@@ -31,28 +66,34 @@ export function HeaderActions({ isAuthed, name, email, isAdmin, userLabel }: Pro
   );
 
   return (
-    <header className="sticky top-0 z-40 h-[60px] shrink-0 border-b border-slate-200 bg-white px-4 dark:border-slate-800 dark:bg-slate-950">
-      <div className="flex h-full items-center justify-between gap-3">
-        <Link href="/bookmarks" className="flex min-w-0 items-center gap-2">
-          <Image
-            src="/logo_assets/logo_export.png"
-            alt="Bookmark Lite Logo"
-            width={28}
-            height={28}
-            className="h-7 w-7 shrink-0 rounded-sm"
-            priority
-          />
-          <span className="truncate text-lg font-semibold text-foreground">
-            Bookmark Lite
-          </span>
-        </Link>
+    <header className="app-header sticky top-0 z-40 shrink-0 border-b border-slate-200 bg-white px-4 dark:border-slate-800 dark:bg-slate-950">
+      <div className="pt-safe flex h-full items-center justify-between gap-3">
+        {/* 左区：移动端抽屉按钮 + 桌面端品牌；移动端 flex-1 与右区对称，保证品牌视觉居中 */}
+        <div className="flex min-w-0 flex-1 items-center gap-2 lg:flex-none">
+          {showDrawerButton ? (
+            <button
+              type="button"
+              className="icon-btn shrink-0 lg:hidden"
+              aria-label="打开菜单"
+              onClick={openDrawer}
+            >
+              <Menu className="h-4 w-4" />
+            </button>
+          ) : null}
+          {renderBrand("hidden min-w-0 items-center gap-2 lg:flex")}
+        </div>
 
-        <div className="flex items-center gap-3">
+        {renderBrand("flex min-w-0 items-center justify-center gap-2 lg:hidden")}
+
+        <div className="flex min-w-0 flex-1 items-center justify-end gap-3 lg:flex-none">
           {!isGuidePage ? guideLink : null}
 
           {isAuthPage && !isAuthed ? null : (
             <>
-              <ThemeSwitch />
+              {/* 移动端的主题切换入口移至筛选抽屉底部 */}
+              <div className="hidden lg:block">
+                <ThemeSwitch />
+              </div>
               {isAuthed ? (
                 <UserMenu
                   name={name}

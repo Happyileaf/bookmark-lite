@@ -54,7 +54,7 @@ export function EmailField({
           placeholder={placeholder}
           value={value}
           onChange={onChange ? (event) => onChange(event.target.value) : undefined}
-          className="bm-input h-9 w-full pl-9 pr-3 text-[13px]"
+          className="bm-input h-10 w-full pl-9 pr-3 text-[13px]"
         />
       </div>
     </div>
@@ -93,14 +93,14 @@ export function PasswordField({
           placeholder={placeholder}
           value={value}
           onChange={onChange ? (event) => onChange(event.target.value) : undefined}
-          className="bm-input h-9 w-full pl-9 pr-10 text-[13px]"
+          className="bm-input h-10 w-full pl-9 pr-10 text-[13px]"
         />
         <button
           type="button"
           onClick={() => setVisible((v) => !v)}
           aria-label={visible ? "隐藏密码" : "显示密码"}
           aria-pressed={visible}
-          className="absolute inset-y-0 right-0 flex items-center rounded-sm pr-3 text-slate-400 transition-colors hover:text-primary"
+          className="icon-btn absolute inset-y-0 right-1 my-auto text-slate-400 transition-colors hover:text-primary"
         >
           {visible ? (
             <Eye className="h-4 w-4" />

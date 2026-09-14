@@ -138,7 +138,7 @@ export default function GuidePage() {
       <FaqSection />
       <CtaSection />
       <footer className="border-t border-slate-100 dark:border-slate-800">
-        <div className="mx-auto max-w-6xl px-6 py-6">
+        <div className="mx-auto max-w-6xl px-4 py-6 sm:px-6">
           <p className="text-xs text-slate-400">© 2026 Bookmark Lite · 保留所有权利</p>
         </div>
       </footer>
@@ -148,29 +148,29 @@ export default function GuidePage() {
 
 function HeroSection() {
   return (
-    <section className="mx-auto max-w-6xl px-6 pb-16 pt-16">
-      <div className="grid grid-cols-1 items-start gap-12 lg:grid-cols-2">
+    <section className="mx-auto max-w-6xl px-4 pb-10 pt-10 sm:px-6 sm:pb-16 sm:pt-16">
+      <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-2 lg:gap-12">
         <div>
           <h1 className="mb-5 text-4xl font-bold tracking-tight">接入工作流</h1>
           <p className="mb-7 text-[15px] leading-relaxed text-slate-500 dark:text-slate-400">
             把收藏接入你的工作流。浏览器插件负责快速收藏网页，MCP 负责把 Bookmark Lite
             连接到 AI 助手和自动化流程，让灵感从保存到整理都更顺手。
           </p>
-          <div className="mb-7 flex items-center gap-3">
+          <div className="mb-7 flex flex-wrap items-center gap-3">
             <a
               href="#extension"
-              className="rounded-sm bg-primary px-4 py-2 text-sm font-medium text-white transition-opacity hover:opacity-90"
+              className="rounded-sm bg-primary px-4 py-2.5 text-sm font-medium text-white transition-opacity hover:opacity-90 sm:py-2"
             >
               接入浏览器插件
             </a>
             <a
               href="#mcp"
-              className="rounded-sm border border-slate-200 px-4 py-2 text-sm font-medium transition-colors hover:bg-slate-50 dark:border-slate-700 dark:hover:bg-slate-800"
+              className="rounded-sm border border-slate-200 px-4 py-2.5 text-sm font-medium transition-colors hover:bg-slate-50 dark:border-slate-700 dark:hover:bg-slate-800 sm:py-2"
             >
               接入 MCP
             </a>
           </div>
-          <div className="flex items-center gap-5 text-xs text-slate-400">
+          <div className="flex flex-wrap items-center gap-3 text-xs text-slate-400 sm:gap-5">
             {trustPoints.map(({ icon: Icon, label }) => (
               <span key={label} className="flex items-center gap-1.5">
                 <Icon className="h-3.5 w-3.5" aria-hidden="true" />
@@ -194,11 +194,11 @@ function HeroSection() {
               <p className="text-sm leading-relaxed text-slate-500 dark:text-slate-400">{desc}</p>
             </div>
           ))}
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-3 gap-3 sm:gap-4">
             {statCards.map(({ value, label }) => (
               <div
                 key={label}
-                className="rounded-sm border border-slate-200 bg-white p-4 text-center dark:border-slate-700 dark:bg-slate-900"
+                className="rounded-sm border border-slate-200 bg-white p-3 text-center dark:border-slate-700 dark:bg-slate-900 sm:p-4"
               >
                 <div className="mb-0.5 text-xl font-bold text-primary">{value}</div>
                 <div className="text-xs text-slate-400">{label}</div>
@@ -213,7 +213,7 @@ function HeroSection() {
 
 function QuickStartSection() {
   return (
-    <section className="mx-auto max-w-6xl px-6 pb-16">
+    <section className="mx-auto max-w-6xl px-4 pb-10 sm:px-6 sm:pb-16">
       <h2 className="mb-2 text-2xl font-bold">快速开始</h2>
       <p className="mb-8 text-sm text-slate-500 dark:text-slate-400">
         按你的使用场景选择路径：先把网页收进来，再把收藏接到 AI 与自动化流程里。
@@ -242,7 +242,7 @@ function PathCard({
   children: ReactNode;
 }) {
   return (
-    <div className="rounded-sm border border-slate-200 bg-white p-6 dark:border-slate-700 dark:bg-slate-900">
+    <div className="rounded-sm border border-slate-200 bg-white p-5 dark:border-slate-700 dark:bg-slate-900 sm:p-6">
       <div className="mb-1.5 flex items-center gap-2.5">
         <Icon className="h-5 w-5 text-primary" aria-hidden="true" />
         <h3 className="text-base font-semibold">{title}</h3>
@@ -284,9 +284,9 @@ function StepNumber({ children }: { children: number }) {
 
 function ExtensionSection() {
   return (
-    <section id="extension" className="mx-auto max-w-6xl scroll-mt-20 px-6 pb-16">
+    <section id="extension" className="mx-auto max-w-6xl scroll-mt-20 px-4 pb-10 sm:px-6 sm:pb-16">
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-        <div className="rounded-sm border border-slate-200 bg-white p-6 dark:border-slate-700 dark:bg-slate-900">
+        <div className="rounded-sm border border-slate-200 bg-white p-5 dark:border-slate-700 dark:bg-slate-900 sm:p-6">
           <h2 className="mb-2 text-xl font-bold">安装浏览器插件</h2>
           <p className="mb-6 text-sm leading-relaxed text-slate-500 dark:text-slate-400">
             下载 Bookmark Lite 浏览器插件，装好后在工具栏点击图标即可开始收藏。
@@ -306,7 +306,7 @@ function ExtensionSection() {
             </TipLine>
           </ul>
         </div>
-        <div className="rounded-sm border border-slate-200 bg-white p-6 dark:border-slate-700 dark:bg-slate-900">
+        <div className="rounded-sm border border-slate-200 bg-white p-5 dark:border-slate-700 dark:bg-slate-900 sm:p-6">
           <h3 className="mb-5 text-base font-semibold">各浏览器安装方式</h3>
           <ol className="mb-5 flex flex-col gap-3">
             {browserSteps.map((step, index) => (
@@ -374,9 +374,9 @@ function McpSection() {
   };
 
   return (
-    <section id="mcp" className="mx-auto max-w-6xl scroll-mt-20 px-6 pb-16">
+    <section id="mcp" className="mx-auto max-w-6xl scroll-mt-20 px-4 pb-10 sm:px-6 sm:pb-16">
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-        <div className="rounded-sm border border-slate-200 bg-white p-6 dark:border-slate-700 dark:bg-slate-900">
+        <div className="rounded-sm border border-slate-200 bg-white p-5 dark:border-slate-700 dark:bg-slate-900 sm:p-6">
           <h2 className="mb-2 text-xl font-bold">MCP 配置</h2>
           <p className="mb-6 text-sm leading-relaxed text-slate-500 dark:text-slate-400">
             把示例配置粘贴到客户端后，AI 就能在你的授权范围内读取、整理和检索 Bookmark Lite
@@ -390,7 +390,7 @@ function McpSection() {
             ))}
           </ul>
         </div>
-        <div className="rounded-sm border border-slate-200 bg-white p-6 dark:border-slate-700 dark:bg-slate-900">
+        <div className="rounded-sm border border-slate-200 bg-white p-5 dark:border-slate-700 dark:bg-slate-900 sm:p-6">
           <div className="mb-4 flex items-center justify-between gap-4">
             <h3 className="text-base font-semibold">配置示例</h3>
             <div className="flex items-center gap-2">
@@ -399,7 +399,7 @@ function McpSection() {
                 type="button"
                 onClick={handleCopy}
                 aria-label={copied ? "已复制" : "复制配置"}
-                className="flex items-center gap-1 rounded-sm text-xs text-slate-400 transition-colors hover:text-slate-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring dark:hover:text-slate-200"
+                className="flex min-h-10 items-center gap-1 rounded-sm text-xs text-slate-400 transition-colors hover:text-slate-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring dark:hover:text-slate-200 sm:min-h-0"
               >
                 {copied ? (
                   <Check className="h-3.5 w-3.5" aria-hidden="true" />
@@ -424,7 +424,7 @@ function McpSection() {
 
 function FaqSection() {
   return (
-    <section className="mx-auto max-w-3xl px-6 pb-16">
+    <section className="mx-auto max-w-3xl px-4 pb-10 sm:px-6 sm:pb-16">
       <h2 className="mb-8 text-2xl font-bold">常见问题</h2>
       <div className="flex flex-col divide-y divide-slate-100 dark:divide-slate-800">
         {faqItems.map(({ question, answer }) => (
@@ -448,8 +448,8 @@ function FaqSection() {
 
 function CtaSection() {
   return (
-    <section className="mx-auto max-w-6xl px-6 pb-16">
-      <div className="flex flex-col gap-5 rounded-sm bg-blue-50 p-8 dark:bg-blue-950 sm:flex-row sm:items-center sm:justify-between">
+    <section className="mx-auto max-w-6xl px-4 pb-10 sm:px-6 sm:pb-16">
+      <div className="flex flex-col gap-5 rounded-sm bg-blue-50 p-5 dark:bg-blue-950 sm:flex-row sm:items-center sm:justify-between sm:p-8">
         <div>
           <h2 className="mb-1.5 text-xl font-bold">准备就绪</h2>
           <p className="text-sm text-slate-500 dark:text-slate-400">

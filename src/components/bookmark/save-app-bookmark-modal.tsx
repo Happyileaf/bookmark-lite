@@ -36,7 +36,7 @@ export function SaveAppBookmarkModal({ action, bookmarkId, triggerClassName, tag
         title="保存到个人库"
         className={
           triggerClassName ??
-          "inline-flex items-center justify-center rounded-sm p-1 text-muted-foreground transition-colors hover:text-foreground"
+          "icon-btn text-muted-foreground hover:text-foreground"
         }
       >
         <BookmarkPlus className="h-4 w-4" />

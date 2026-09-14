@@ -29,7 +29,7 @@ export function CopyBookmarkUrlButton({ url }: Props) {
       onClick={onCopy}
       aria-label={copied ? "已复制" : "复制URL"}
       title={copied ? "已复制" : "复制URL"}
-      className={`inline-flex items-center justify-center rounded-sm p-1 transition-colors ${
+      className={`icon-btn ${
         copied
           ? "text-emerald-500"
           : "text-muted-foreground hover:text-foreground"

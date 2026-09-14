@@ -92,7 +92,7 @@ export function Pagination({
   const isLastPage = currentPage >= totalPages;
 
   const arrowClass = (isDisabled: boolean) =>
-    `inline-flex h-8 w-8 items-center justify-center rounded-[4px] border ${
+    `page-btn inline-flex h-8 w-8 items-center justify-center rounded-[4px] border ${
       isDisabled
         ? "cursor-not-allowed border-slate-200 text-slate-300 opacity-40 dark:border-slate-700 dark:text-slate-600"
         : "border-slate-200 bg-white text-slate-600 transition-colors hover:border-primary hover:text-primary dark:border-slate-700 dark:bg-card dark:text-slate-300 dark:hover:border-primary dark:hover:text-primary"
@@ -135,7 +135,7 @@ export function Pagination({
               key={item}
               href={buildPageHref(basePath, params, item)}
               aria-current={item === currentPage ? "page" : undefined}
-              className={`inline-flex h-8 min-w-8 items-center justify-center rounded-[4px] border px-1.5 text-[12.5px] transition-colors ${
+              className={`page-btn inline-flex h-8 min-w-8 items-center justify-center rounded-[4px] border px-1.5 text-[12.5px] transition-colors ${
                 item === currentPage
                   ? "border-primary bg-primary font-semibold text-white"
                   : "border-slate-200 bg-white text-slate-600 hover:border-primary hover:text-primary dark:border-slate-700 dark:bg-card dark:text-slate-300 dark:hover:border-primary dark:hover:text-primary"

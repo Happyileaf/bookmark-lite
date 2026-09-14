@@ -41,7 +41,7 @@ export function FavoriteBookmarkButton({ bookmarkId, isFavorite, scope, onToggle
         disabled={isPending}
         aria-label={label}
         title={label}
-        className={`inline-flex items-center justify-center rounded-sm p-1 transition-colors disabled:opacity-60 ${
+        className={`icon-btn disabled:opacity-60 ${
           isFavorite
             ? "text-amber-400 hover:text-amber-500"
             : "text-muted-foreground hover:text-amber-400"

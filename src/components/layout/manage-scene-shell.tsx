@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { DataScope } from "@prisma/client";
+import { ManageNavDrawer } from "@/components/layout/manage-nav-drawer";
 
 type ManageKey = "bookmarks" | "tags" | "import-export" | "trash" | "settings" | "extension";
 
@@ -35,19 +36,37 @@ const appMenu: Array<{ key: ManageKey; label: string; href: string }> = [
 export function ManageSceneShell({ scope, current, children }: Props) {
   const isAppScope = scope === "APP";
   const menu = isAppScope ? appMenu : userMenu;
+  const menuGroupLabel = isAppScope ? "平台管理" : "管理菜单";
 
   return (
-    <section className="flex min-h-0 w-full flex-1 items-stretch overflow-y-auto">
-      <aside className="sticky top-0 w-[200px] shrink-0 self-stretch border-r border-slate-200 bg-white px-3 py-4 dark:border-slate-800 dark:bg-card">
+    <section className="flex min-h-0 w-full flex-1 flex-col overflow-y-auto overflow-x-clip lg:flex-row lg:items-stretch lg:overflow-x-visible">
+      {/* 移动端导航抽屉：由顶部栏汉堡按钮触发 */}
+      <ManageNavDrawer
+        sceneItems={sceneMenu.map((item) => ({
+          key: item.href,
+          label: item.label,
+          href: item.href,
+          active: false,
+        }))}
+        menuItems={menu.map((item) => ({
+          key: item.key,
+          label: item.label,
+          href: item.href,
+          active: item.key === current,
+        }))}
+        menuGroupLabel={menuGroupLabel}
+      />
+      {/* 桌面端侧边导航（移动端由抽屉替代） */}
+      <aside className="hidden lg:sticky lg:top-0 lg:block lg:w-[200px] lg:shrink-0 lg:self-stretch lg:border-r lg:border-slate-200 lg:bg-white lg:py-4 lg:dark:border-slate-800 lg:dark:bg-card">
         <p className="nav-group">快速入口</p>
         <nav className="mb-5">
           {sceneMenu.map((item) => (
-            <Link key={item.href} href={item.href} className="nav-item">
+            <Link key={item.href} href={item.href} className="nav-item mb-[5px]">
               {item.label}
             </Link>
           ))}
         </nav>
-        <p className="nav-group">{isAppScope ? "平台管理" : "管理菜单"}</p>
+        <p className="nav-group">{menuGroupLabel}</p>
         <nav>
           {menu.map((item) => {
             const active = item.key === current;
@@ -55,7 +74,7 @@ export function ManageSceneShell({ scope, current, children }: Props) {
               <Link
                 key={item.key}
                 href={item.href}
-                className={`nav-item${active ? " active" : ""}`}
+                className={`nav-item mb-[5px]${active ? " active" : ""}`}
                 aria-current={active ? "page" : undefined}
               >
                 {item.label}
@@ -64,7 +83,7 @@ export function ManageSceneShell({ scope, current, children }: Props) {
           })}
         </nav>
       </aside>
-      <div className="min-w-0 flex-1 self-start px-8 py-6">{children}</div>
+      <div className="min-w-0 flex-1 self-stretch px-4 py-4 lg:self-start lg:px-8 lg:py-6">{children}</div>
     </section>
   );
 }

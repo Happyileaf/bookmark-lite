@@ -7,10 +7,12 @@ import {
   LayoutGrid,
   Search,
   Star,
+  X,
   type LucideIcon,
 } from "lucide-react";
 import { Prisma, type DataScope } from "@prisma/client";
 import { saveAppBookmarkToUserAction } from "@/actions/bookmark.actions";
+import { BookmarksFilterDrawer } from "@/components/bookmark/bookmarks-filter-drawer";
 import { InfiniteBookmarksGrid } from "@/components/bookmark/infinite-bookmarks-grid";
 import { DEFAULT_PAGE_SIZE } from "@/lib/constants";
 import type { SessionUser } from "@/server/auth/session";
@@ -215,9 +217,10 @@ export async function DisplayBookmarksView({ scope, user, searchParams }: Props)
     { key: "recent_added", label: "最近添加", count: viewCounts.recent_added, icon: Clock },
     { key: "recent_visited", label: "最近访问", count: viewCounts.recent_visited, icon: Eye },
   ];
+  const activeTag = tagId ? tags.find((tag) => tag.id === tagId) : undefined;
 
   return (
-    <section className="grid h-full min-h-0 overflow-hidden lg:grid-cols-[240px_minmax(0,1fr)]">
+    <section className="grid h-full min-h-0 grid-rows-[auto_minmax(0,1fr)] overflow-hidden lg:grid-cols-[240px_minmax(0,1fr)] lg:grid-rows-[minmax(0,1fr)]">
       <aside className="hidden h-full min-h-0 flex-col overflow-hidden border-r border-slate-200 bg-white py-4 dark:border-slate-800 dark:bg-card lg:flex">
         <div className="mb-5 shrink-0 px-4">
           <div className="mb-3 px-2 text-sm font-semibold text-foreground">聚合视图</div>
@@ -280,8 +283,58 @@ export async function DisplayBookmarksView({ scope, user, searchParams }: Props)
         </div>
       </aside>
 
-      <div className="min-h-0 min-w-0 overflow-y-auto p-8">
-        <form className="mb-6">
+      {/* 移动端筛选抽屉：由顶部栏汉堡按钮通过全局事件触发；key 保证导航后重挂载、抽屉自动收起 */}
+      <BookmarksFilterDrawer
+        key={`${view}|${tagId ?? ""}|${q ?? ""}`}
+        aggregateItems={aggregateItems.map((item) => ({
+          key: item.key,
+          href: `?view=${item.key}${queryBase}`,
+          label: item.label,
+          count: item.count,
+          active: !tagId && view === item.key,
+          icon: <item.icon className="h-[18px] w-[18px] shrink-0" />,
+        }))}
+        tagItems={tags.map((tag) => ({
+          key: tag.id,
+          href: `?tagId=${tag.id}${queryBase}`,
+          label: tag.name,
+          count: tag.bookmarkCount,
+          active: tagId === tag.id,
+          color: tag.color,
+        }))}
+      />
+
+      {/* 移动端当前筛选状态（仅在存在激活筛选时显示） */}
+      {activeTag || (!tagId && view !== "all") ? (
+        <div className="flex min-w-0 shrink-0 flex-wrap items-center gap-2 border-b border-slate-200 bg-white px-4 py-2.5 dark:border-slate-800 dark:bg-card lg:hidden">
+          {activeTag ? (
+            <span className="inline-flex min-w-0 max-w-full items-center gap-1 rounded-full border border-primary/30 bg-primary/10 py-1 pl-3 pr-1 text-xs font-medium text-primary">
+              <span className="truncate">{activeTag.name}</span>
+              <Link
+                href={`?view=${view}${queryBase}`}
+                aria-label="清除标签筛选"
+                className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full transition-colors hover:bg-primary/15"
+              >
+                <X className="h-3 w-3" />
+              </Link>
+            </span>
+          ) : null}
+          {!tagId && view !== "all" ? (
+            <Link
+              href={`?view=all${queryBase}`}
+              className="inline-flex min-w-0 max-w-full items-center gap-1 rounded-full border border-primary/30 bg-primary/10 py-1 pl-3 pr-1 text-xs font-medium text-primary transition-colors"
+            >
+              <span className="truncate">{aggregateItems.find((item) => item.key === view)?.label}</span>
+              <span className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full transition-colors hover:bg-primary/15">
+                <X className="h-3 w-3" />
+              </span>
+            </Link>
+          ) : null}
+        </div>
+      ) : null}
+
+      <div className="min-h-0 min-w-0 overflow-y-auto p-4 sm:p-6 lg:p-8">
+        <form className="mb-4 sm:mb-6">
           <div className="relative">
             <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <input

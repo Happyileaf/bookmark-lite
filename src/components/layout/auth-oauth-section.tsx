@@ -48,7 +48,7 @@ export function AuthOAuthSection() {
           type="button"
           disabled
           title="暂未支持，敬请期待"
-          className="bm-btn-oauth flex h-9 w-full cursor-not-allowed items-center justify-center gap-2 text-[13px] opacity-60"
+          className="bm-btn-oauth flex h-10 w-full cursor-not-allowed items-center justify-center gap-2 text-[13px] opacity-60"
         >
           <GoogleIcon />
           <span>使用 Google 登录（即将支持）</span>
@@ -57,7 +57,7 @@ export function AuthOAuthSection() {
           type="button"
           disabled
           title="暂未支持，敬请期待"
-          className="bm-btn-oauth flex h-9 w-full cursor-not-allowed items-center justify-center gap-2 text-[13px] opacity-60"
+          className="bm-btn-oauth flex h-10 w-full cursor-not-allowed items-center justify-center gap-2 text-[13px] opacity-60"
         >
           <GitHubIcon />
           <span>使用 GitHub 登录（即将支持）</span>

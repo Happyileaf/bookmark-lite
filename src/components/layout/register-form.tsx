@@ -92,7 +92,7 @@ export function RegisterForm() {
             验证码
           </label>
           <div className="flex gap-2">
-            <div className="relative flex-1">
+            <div className="relative min-w-0 flex-1">
               <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
                 <ShieldCheck className="h-4 w-4" />
               </span>
@@ -111,14 +111,14 @@ export function RegisterForm() {
                 onChange={(event) =>
                   setCode(event.target.value.replace(/\D/g, "").slice(0, 6))
                 }
-                className="bm-input h-9 w-full pl-9 pr-3 text-[13px] tracking-widest"
+                className="bm-input h-10 w-full pl-9 pr-3 text-[13px] tracking-widest"
               />
             </div>
             <button
               type="button"
               onClick={handleSendCode}
               disabled={sendCodeDisabled}
-              className="bm-btn-code h-9 shrink-0 px-3.5 text-[13px]"
+              className="bm-btn-code h-10 shrink-0 px-3.5 text-[13px]"
             >
               {codePending
                 ? "发送中..."
@@ -195,7 +195,7 @@ export function RegisterForm() {
         <button
           type="submit"
           disabled={registerPending}
-          className="bm-btn-primary flex h-9 w-full items-center justify-center gap-1.5 text-[13.5px]"
+          className="bm-btn-primary flex h-10 w-full items-center justify-center gap-1.5 text-[13.5px]"
         >
           {registerPending ? "提交中..." : "进入 Bookmark Lite"}
           {!registerPending ? (

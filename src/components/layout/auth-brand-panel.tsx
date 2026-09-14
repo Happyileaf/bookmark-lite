@@ -80,8 +80,8 @@ type MobileBrandProps = {
 
 export function AuthMobileBrand({ withIntro = true }: MobileBrandProps) {
   return (
-    <div className="relative z-10 mb-8 w-full max-w-[420px] lg:hidden">
-      <div className="mb-5 flex items-center gap-2.5">
+    <div className="relative z-10 mb-6 w-full max-w-[420px] lg:hidden">
+      <div className="mb-4 flex items-center gap-2.5">
         <Image
           src="/logo_assets/logo_export.png"
           alt="Bookmark Lite"
@@ -111,11 +111,11 @@ const TRUST_ITEMS = ["免费使用", "无需信用卡", "数据仅属于你"];
 
 export function AuthTrustMarks() {
   return (
-    <div className="mt-5 flex items-center justify-center gap-4">
+    <div className="mt-5 flex flex-wrap items-center justify-center gap-x-4 gap-y-1">
       {TRUST_ITEMS.map((label) => (
         <span
           key={label}
-          className="flex items-center gap-1 text-[12px] text-slate-400 dark:text-slate-500"
+          className="flex items-center gap-1 whitespace-nowrap text-[12px] text-slate-400 dark:text-slate-500"
         >
           <Check className="h-[13px] w-[13px]" strokeWidth={2.5} />
           {label}

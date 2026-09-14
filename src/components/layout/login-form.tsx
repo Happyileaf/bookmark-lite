@@ -68,7 +68,7 @@ export function LoginForm({ nextUrl }: Props) {
         <button
           type="submit"
           disabled={loading}
-          className="bm-btn-primary flex h-9 w-full items-center justify-center gap-1.5 text-[13.5px]"
+          className="bm-btn-primary flex h-10 w-full items-center justify-center gap-1.5 text-[13.5px]"
         >
           {loading ? "登录中..." : "进入 Bookmark Lite"}
           {!loading ? <ArrowRight className="h-4 w-4" /> : null}

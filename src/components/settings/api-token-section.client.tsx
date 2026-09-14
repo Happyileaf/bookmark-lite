@@ -240,7 +240,7 @@ export function ApiTokenSection({ tokens: initialTokens, apiBaseUrl }: Props) {
 
   return (
     <>
-      <div className="mt-4 flex items-center justify-end gap-2.5">
+      <div className="mt-4 flex flex-col items-stretch gap-2 sm:flex-row sm:items-center sm:justify-end">
         <input
           ref={nameInputRef}
           type="text"
@@ -252,7 +252,7 @@ export function ApiTokenSection({ tokens: initialTokens, apiBaseUrl }: Props) {
           placeholder="Token 名称，如 MCP 本地开发"
           maxLength={100}
           aria-invalid={nameInvalid}
-          className={`ctl ctl-sm w-[220px] px-3 text-slate-600 dark:text-slate-300 ${
+          className={`ctl ctl-sm w-full px-3 text-slate-600 dark:text-slate-300 sm:w-[220px] ${
             nameInvalid ? "border-rose-400 focus:border-rose-400" : ""
           }`}
         />
@@ -267,7 +267,7 @@ export function ApiTokenSection({ tokens: initialTokens, apiBaseUrl }: Props) {
         </button>
       </div>
 
-      <section className="mt-4 overflow-hidden rounded-sm border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
+      <section className="mt-4 overflow-x-auto rounded-sm border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
         {tokens.length === 0 ? (
           <EmptyState
             icon={Inbox}
@@ -275,7 +275,7 @@ export function ApiTokenSection({ tokens: initialTokens, apiBaseUrl }: Props) {
             description="生成一个 Token，即可通过 REST API 或 MCP 服务管理书签。"
           />
         ) : (
-          <table className="token-table w-full">
+          <table className="token-table min-w-[620px] w-full">
             <thead>
               <tr className="border-b border-slate-200 dark:border-slate-800">
                 <th className="whitespace-nowrap px-4 py-2.5 text-left text-[12px] font-medium text-slate-400 dark:text-slate-500">

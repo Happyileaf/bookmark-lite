@@ -166,7 +166,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
       {children}
       {isMounted
         ? createPortal(
-            <div className="pointer-events-none fixed bottom-6 left-1/2 z-[60] flex w-full max-w-sm -translate-x-1/2 flex-col items-center gap-2 px-4">
+            <div className="toast-host pointer-events-none fixed left-1/2 z-[60] flex w-full max-w-sm -translate-x-1/2 flex-col items-center gap-2 px-4">
               {toasts.map((item) => (
                 <ToastRow
                   key={item.id}

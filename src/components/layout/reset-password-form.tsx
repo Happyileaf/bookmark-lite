@@ -30,7 +30,7 @@ export function ResetPasswordForm({ token, email }: Props) {
         </div>
         <Link
           href="/login"
-          className="bm-btn-primary flex h-9 w-full items-center justify-center gap-1.5 text-[13.5px]"
+          className="bm-btn-primary flex h-10 w-full items-center justify-center gap-1.5 text-[13.5px]"
         >
           前往登录
         </Link>
@@ -75,7 +75,7 @@ export function ResetPasswordForm({ token, email }: Props) {
       <button
         type="submit"
         disabled={pending}
-        className="bm-btn-primary flex h-9 w-full items-center justify-center gap-1.5 text-[13.5px]"
+        className="bm-btn-primary flex h-10 w-full items-center justify-center gap-1.5 text-[13.5px]"
       >
         {pending ? "重置中..." : "重置密码"}
         {!pending ? <ArrowRight className="h-4 w-4" /> : null}
