@@ -10,7 +10,12 @@ type Props = {
 
 export async function SettingsView({ scope, user }: Props) {
   const settings = await settingsService.get(scope, user);
-  const scopeLabel = scope === "APP" ? "全局设置" : "个人设置";
+  const scopeLabel = scope === "APP" ? "平台设置" : "个人设置";
+  /** 页面描述文案：平台设置仅管理全站数据偏好，不包含账号信息。 */
+  const scopeDescription =
+    scope === "APP"
+      ? "管理全站数据的偏好与策略。"
+      : "管理你的账号信息与使用偏好。";
 
   return (
     <div className="max-w-3xl">
@@ -19,7 +24,7 @@ export async function SettingsView({ scope, user }: Props) {
           {scopeLabel}
         </h1>
         <p className="mt-1 text-[13px] text-slate-500 dark:text-slate-400">
-          管理你的账号信息与使用偏好。
+          {scopeDescription}
         </p>
       </header>
 

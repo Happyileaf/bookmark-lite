@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   Check,
@@ -160,6 +159,9 @@ export function SettingsFormClient({
 
   const initials = getUserAvatarLabel(displayName, userEmail);
 
+  /** 是否为用户域：个人资料与危险区仅归属账号维度，平台设置不展示。 */
+  const isUserScope = scope === "USER";
+
   const handleThemeSelect = useCallback((next: ThemeValue) => {
     applyTheme(next);
   }, []);
@@ -202,9 +204,6 @@ export function SettingsFormClient({
     });
   };
 
-  const importExportPath =
-    scope === "APP" ? "/admin/manage/import-export" : "/manage/import-export";
-
   const handleClearHistory = () => {
     toast({ title: "浏览记录已清除", variant: "success" });
   };
@@ -217,6 +216,7 @@ export function SettingsFormClient({
 
   return (
     <div className="space-y-4">
+      {isUserScope && (
       <SectionCard icon={<User className="h-4 w-4" />} title="个人资料">
         <form onSubmit={handleProfileSubmit}>
           <div className="mt-4 flex items-center gap-4">
@@ -265,6 +265,7 @@ export function SettingsFormClient({
           </div>
         </form>
       </SectionCard>
+      )}
 
       <SectionCard
         icon={<SlidersHorizontal className="h-4 w-4" />}
@@ -356,17 +357,6 @@ export function SettingsFormClient({
       <SectionCard icon={<Database className="h-4 w-4" />} title="数据与隐私">
         <div className="mt-2 divide-y divide-slate-100 dark:divide-slate-800">
           <PreferenceRow
-            title="导出我的数据"
-            description="下载全部书签与标签的 JSON 备份"
-          >
-            <Link
-              href={importExportPath}
-              className="inline-flex h-8 shrink-0 items-center rounded-sm border border-slate-200 px-3 text-[13px] text-slate-600 transition-colors hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800 dark:focus-visible:ring-primary/50"
-            >
-              导出
-            </Link>
-          </PreferenceRow>
-          <PreferenceRow
             title="清除浏览记录"
             description="删除本地保存的最近访问记录"
           >
@@ -381,6 +371,7 @@ export function SettingsFormClient({
         </div>
       </SectionCard>
 
+      {isUserScope && (
       <SectionCard
         tone="danger"
         icon={<TriangleAlert className="h-4 w-4" />}
@@ -404,7 +395,9 @@ export function SettingsFormClient({
           </button>
         </div>
       </SectionCard>
+      )}
 
+      {isUserScope && (
       <Modal
         open={deleteOpen}
         onClose={() => setDeleteOpen(false)}
@@ -433,6 +426,7 @@ export function SettingsFormClient({
           永久删除账号及全部书签、标签数据，此操作不可撤销。确定要继续吗？
         </p>
       </Modal>
+      )}
     </div>
   );
 }

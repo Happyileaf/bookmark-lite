@@ -29,8 +29,7 @@ const appMenu: Array<{ key: ManageKey; label: string; href: string }> = [
   { key: "tags", label: "标签管理", href: "/admin/manage/tags" },
   { key: "import-export", label: "导入导出", href: "/admin/manage/import-export" },
   { key: "trash", label: "回收站", href: "/admin/manage/trash" },
-  { key: "settings", label: "设置", href: "/admin/settings" },
-  { key: "extension", label: "API Token", href: "/admin/api-tokens" },
+  { key: "settings", label: "平台设置", href: "/admin/settings" },
 ];
 
 export function ManageSceneShell({ scope, current, children }: Props) {
