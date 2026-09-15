@@ -9,6 +9,9 @@ export type {
   ToastVariant,
 } from "./toast";
 
+export { default as FormAlert } from "./form-alert";
+export type { FormAlertProps } from "./form-alert";
+
 export { EmptyState } from "./empty-state";
 export type { EmptyStateProps } from "./empty-state";
 

@@ -27,6 +27,10 @@ export default async function LoginPage({ searchParams }: PageProps) {
   }
   const params = await searchParams;
   const nextUrl = readParam(params.next);
+  const registered = readParam(params.registered);
+  const email = readParam(params.email);
+  /** 注册成功回跳（registered=1）时带入的邮箱，用于预填与成功提示 */
+  const registeredEmail = registered === "1" && email ? email : undefined;
 
   return (
     <div className="grid min-h-full w-full lg:grid-cols-2">
@@ -45,7 +49,7 @@ export default async function LoginPage({ searchParams }: PageProps) {
             </p>
           </div>
 
-          <LoginForm nextUrl={nextUrl} />
+          <LoginForm nextUrl={nextUrl} registeredEmail={registeredEmail} />
 
           <AuthTrustMarks />
 

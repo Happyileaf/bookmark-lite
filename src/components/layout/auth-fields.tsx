@@ -15,11 +15,22 @@ type Props = {
   value?: string;
   /** 受控变更回调 */
   onChange?: (value: string) => void;
+  /** 字段级错误信息；传入后输入框标记 aria-invalid 并在下方就近展示 */
+  error?: string;
+  /** 挂载后自动聚焦（用于流程入口的首个字段） */
+  autoFocus?: boolean;
+  /** 失焦回调（用于 blur 时校验） */
+  onBlur?: () => void;
 };
+
+/** 邮箱字段的属性（name 固定为 email，无需传入） */
+type EmailFieldProps = Omit<Props, "name">;
 
 const LABEL_CLASS =
   "mb-1 block text-[12.5px] font-medium text-slate-500 dark:text-slate-400";
 const ICON_CLASS = "pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400";
+/** 字段级错误文案的统一样式 */
+const ERROR_CLASS = "mt-1 text-[12.5px] text-rose-600 dark:text-rose-400";
 
 export function EmailField({
   id,
@@ -28,14 +39,10 @@ export function EmailField({
   placeholder = "you@example.com",
   value,
   onChange,
-}: {
-  id: string;
-  label: string;
-  autoComplete?: string;
-  placeholder?: string;
-  value?: string;
-  onChange?: (value: string) => void;
-}) {
+  error,
+  autoFocus,
+  onBlur,
+}: EmailFieldProps) {
   return (
     <div>
       <label htmlFor={id} className={LABEL_CLASS}>
@@ -54,9 +61,18 @@ export function EmailField({
           placeholder={placeholder}
           value={value}
           onChange={onChange ? (event) => onChange(event.target.value) : undefined}
+          onBlur={onBlur}
+          autoFocus={autoFocus}
+          aria-invalid={error ? true : undefined}
+          aria-describedby={error ? `${id}-error` : undefined}
           className="bm-input h-10 w-full pl-9 pr-3 text-[13px]"
         />
       </div>
+      {error ? (
+        <p id={`${id}-error`} className={ERROR_CLASS}>
+          {error}
+        </p>
+      ) : null}
     </div>
   );
 }
@@ -71,6 +87,9 @@ export function PasswordField({
   required = true,
   value,
   onChange,
+  error,
+  autoFocus,
+  onBlur,
 }: Props) {
   const [visible, setVisible] = useState(false);
 
@@ -93,6 +112,10 @@ export function PasswordField({
           placeholder={placeholder}
           value={value}
           onChange={onChange ? (event) => onChange(event.target.value) : undefined}
+          onBlur={onBlur}
+          autoFocus={autoFocus}
+          aria-invalid={error ? true : undefined}
+          aria-describedby={error ? `${id}-error` : undefined}
           className="bm-input h-10 w-full pl-9 pr-10 text-[13px]"
         />
         <button
@@ -109,6 +132,11 @@ export function PasswordField({
           )}
         </button>
       </div>
+      {error ? (
+        <p id={`${id}-error`} className={ERROR_CLASS}>
+          {error}
+        </p>
+      ) : null}
     </div>
   );
 }

@@ -2,6 +2,9 @@ export const APP_SCOPE_KEY = "APP";
 export const DEFAULT_PAGE_SIZE = 30;
 export const MAX_PAGE_SIZE = 100;
 
+/** 密码最小长度（客户端预校验与服务端 zod 校验共用的唯一来源） */
+export const PASSWORD_MIN_LENGTH = 8;
+
 export const TRASH_RETENTION_OPTIONS = [7, 30, 90, 3650] as const;
 export const AUDIT_RETENTION_OPTIONS = [30, 90, 180, 365] as const;
 

@@ -205,6 +205,24 @@
     box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
   }
 
+  /* 字段校验失败态：随 aria-invalid 自动生效，无需额外类名 */
+  .bm-input[aria-invalid="true"] {
+    border-color: var(--bookmark-state-error);
+  }
+  .bm-input[aria-invalid="true"]:focus,
+  .bm-input[aria-invalid="true"]:focus-visible {
+    border-color: var(--bookmark-state-error);
+    box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.12);
+  }
+  .dark .bm-input[aria-invalid="true"] {
+    border-color: #f87171;
+  }
+  .dark .bm-input[aria-invalid="true"]:focus,
+  .dark .bm-input[aria-invalid="true"]:focus-visible {
+    border-color: #f87171;
+    box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.18);
+  }
+
   .bm-btn-primary {
     background-color: var(--bookmark-primary);
     color: #ffffff;

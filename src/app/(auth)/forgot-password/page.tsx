@@ -10,11 +10,23 @@ import { getSessionUser } from "@/server/auth/session";
 
 export const dynamic = "force-dynamic";
 
-export default async function ForgotPasswordPage() {
+type PageProps = {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+};
+
+function readParam(value: string | string[] | undefined): string | undefined {
+  if (Array.isArray(value)) return value[0];
+  return value;
+}
+
+export default async function ForgotPasswordPage({ searchParams }: PageProps) {
   const user = await getSessionUser();
   if (user) {
     redirect("/my-bookmarks");
   }
+  const params = await searchParams;
+  /** 从登录页"忘记密码"链接带入的邮箱，用于预填 */
+  const email = readParam(params.email);
 
   return (
     <div className="grid min-h-full w-full lg:grid-cols-2">
@@ -33,7 +45,7 @@ export default async function ForgotPasswordPage() {
             </p>
           </div>
 
-          <ForgotPasswordForm />
+          <ForgotPasswordForm initialEmail={email} />
 
           <p className="mt-6 text-center text-[13px] text-slate-500 dark:text-slate-400">
             想起密码了？
