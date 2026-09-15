@@ -1,3 +1,4 @@
+import { ANALYTICS_EVENT_NAMES } from "@/lib/analytics/constants";
 import { hashPassword } from "@/server/auth/password";
 import {
   generateRegistrationCode,
@@ -5,6 +6,7 @@ import {
 } from "@/server/auth/registration-code";
 import { registrationCodeRepo } from "@/server/repositories/registration-code.repo";
 import { auditRepo } from "@/server/repositories/audit.repo";
+import { metricsService } from "@/server/services/metrics.service";
 import { mailService } from "@/server/mail/mail.service";
 import { prisma } from "@/server/db/prisma";
 import { AppError } from "@/server/types/errors";
@@ -159,18 +161,20 @@ export const registrationService = {
 
     const passwordHash = await hashPassword(password);
 
-    await prisma.$transaction(async (tx) => {
-      await tx.user.create({
+    const createdUser = await prisma.$transaction(async (tx) => {
+      const user = await tx.user.create({
         data: {
           email: normalizedEmail,
           passwordHash,
           role: "user",
         },
+        select: { id: true },
       });
       await tx.registrationCode.update({
         where: { id: record.id },
         data: { usedAt: new Date() },
       });
+      return user;
     });
 
     await auditRepo.create({
@@ -179,6 +183,14 @@ export const registrationService = {
       targetId: normalizedEmail,
       scope: "USER",
       status: "SUCCESS",
+    });
+
+    // 埋点：用户注册完成（当前仅邀请码一种注册渠道）
+    await metricsService.trackSafely({
+      eventName: ANALYTICS_EVENT_NAMES.USER_REGISTERED,
+      userId: createdUser.id,
+      scope: "USER",
+      payload: { method: "registration_code" },
     });
   },
 };

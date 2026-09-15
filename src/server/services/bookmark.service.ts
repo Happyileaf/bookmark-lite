@@ -1,3 +1,4 @@
+import { ANALYTICS_EVENT_NAMES } from "@/lib/analytics/constants";
 import { normalizeUrl } from "@/lib/url-normalize";
 import type { SessionUser } from "@/server/auth/session";
 import { prisma } from "@/server/db/prisma";
@@ -6,6 +7,7 @@ import { resolveScopeContext } from "@/server/guard/scope";
 import { auditRepo } from "@/server/repositories/audit.repo";
 import { bookmarkRepo } from "@/server/repositories/bookmark.repo";
 import { tagRepo } from "@/server/repositories/tag.repo";
+import { metricsService } from "@/server/services/metrics.service";
 import { AppError } from "@/server/types/errors";
 import {
   bookmarkCreateSchema,
@@ -195,6 +197,18 @@ export const bookmarkService = {
       targetId: created.bookmark.id,
       scope: parsed.data.scope,
       status: "SUCCESS",
+    });
+
+    // 埋点：书签创建成功（静默写入，不影响创建流程）
+    await metricsService.trackSafely({
+      eventName: ANALYTICS_EVENT_NAMES.BOOKMARK_CREATED,
+      userId: user?.id ?? null,
+      scope: parsed.data.scope,
+      payload: {
+        bookmarkId: created.bookmark.id,
+        scope: parsed.data.scope,
+        tagCount: created.tagIds.length,
+      },
     });
 
     return created.bookmark;

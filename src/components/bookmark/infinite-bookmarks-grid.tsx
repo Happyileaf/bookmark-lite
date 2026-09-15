@@ -4,6 +4,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { CopyBookmarkUrlButton } from "@/components/bookmark/copy-bookmark-url-button";
 import { FavoriteBookmarkButton } from "@/components/bookmark/favorite-bookmark-button";
 import { SaveAppBookmarkModal } from "@/components/bookmark/save-app-bookmark-modal";
+import { ANALYTICS_EVENT_NAMES } from "@/lib/analytics/constants";
+import { trackAnalyticsEvent } from "@/lib/analytics/tracker";
 import { DEFAULT_PAGE_SIZE } from "@/lib/constants";
 import type { DataScope } from "@prisma/client";
 
@@ -154,15 +156,24 @@ export function InfiniteBookmarksGrid({
     );
   }, []);
 
-  const handleContentClick = useCallback((e: React.MouseEvent, url: string) => {
+  // 打开书签并上报点击埋点（点击与键盘打开共用，保证统计口径一致）
+  const openBookmark = useCallback((bookmark: BookmarkItem) => {
+    trackAnalyticsEvent(ANALYTICS_EVENT_NAMES.BOOKMARK_CLICKED, {
+      bookmarkId: bookmark.id,
+      url: bookmark.url,
+    });
+    window.open(bookmark.url, "_blank", "noopener,noreferrer");
+  }, []);
+
+  const handleContentClick = useCallback((e: React.MouseEvent, bookmark: BookmarkItem) => {
     const target = e.target as HTMLElement;
     if (target.closest("button, a")) return;
 
     const selection = window.getSelection();
     if (selection && !selection.isCollapsed) return;
 
-    window.open(url, "_blank", "noopener,noreferrer");
-  }, []);
+    openBookmark(bookmark);
+  }, [openBookmark]);
 
   const hasMore = pagination.page < pagination.totalPages;
 
@@ -243,11 +254,11 @@ export function InfiniteBookmarksGrid({
             tabIndex={0}
             role="link"
             aria-label={`打开书签：${bookmark.title}`}
-            onClick={(e) => handleContentClick(e, bookmark.url)}
+            onClick={(e) => handleContentClick(e, bookmark)}
             onKeyDown={(e) => {
               if (e.key === "Enter" || e.key === " ") {
                 e.preventDefault();
-                window.open(bookmark.url, "_blank", "noopener,noreferrer");
+                openBookmark(bookmark);
               }
             }}
             className="group relative min-w-0 flex cursor-pointer flex-col rounded-sm border border-background bg-card p-5 outline-none transition-all hover:border-primary hover:bg-white hover:shadow-md focus-visible:border-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary dark:hover:bg-muted dark:focus-visible:outline-primary"

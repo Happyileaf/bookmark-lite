@@ -1,6 +1,8 @@
+import { ANALYTICS_EVENT_NAMES } from "@/lib/analytics/constants";
 import { prisma } from "@/server/db/prisma";
 import { verifyPassword } from "@/server/auth/password";
 import { getNextAuthSecret } from "@/server/auth/secret";
+import { metricsService } from "@/server/services/metrics.service";
 import type { Role } from "@prisma/client";
 import { getServerSession, type NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
@@ -96,6 +98,17 @@ export const authOptions: NextAuthOptions = {
         session.user.name = token.name ?? null;
       }
       return session;
+    },
+  },
+  events: {
+    async signIn({ user, account }) {
+      // 埋点：登录成功（每次凭证登录触发一次，静默写入不影响登录流程）
+      await metricsService.trackSafely({
+        eventName: ANALYTICS_EVENT_NAMES.USER_LOGGED_IN,
+        userId: user.id,
+        scope: "USER",
+        payload: { provider: account?.provider ?? "credentials" },
+      });
     },
   },
 };

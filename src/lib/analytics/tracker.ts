@@ -1,3 +1,4 @@
+import { ANALYTICS_EVENT_NAMES } from "@/lib/analytics/constants";
 import type {
   AnalyticsDeviceType,
   AnalyticsIdentityPayload,
@@ -23,12 +24,6 @@ const MAX_PENDING_EVENTS = 50;
 
 /** 是否尊重浏览器的 Do Not Track 设置（开启后 DNT 用户完全不上报） */
 const RESPECT_DO_NOT_TRACK = true;
-
-/** 埋点事件名常量（统一 snake_case，与服务端 event_metrics.event_name 对应） */
-export const ANALYTICS_EVENT_NAMES = {
-  /** 页面浏览事件（路由变化时 SDK 自动上报） */
-  PAGE_VIEW: "page_view",
-} as const;
 
 /**
  * 埋点会话信息（localStorage 持久化，含着陆来源与 UTM，会话内所有页面共享）

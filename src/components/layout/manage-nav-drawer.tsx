@@ -19,6 +19,16 @@ export type ManageNavDrawerItem = {
 };
 
 /**
+ * 管理导航抽屉附加分组。
+ */
+export type ManageNavDrawerGroup = {
+  /** 分组名称（如“数据分析”）。 */
+  label: string;
+  /** 分组菜单项。 */
+  items: ManageNavDrawerItem[];
+};
+
+/**
  * 管理导航抽屉入参。
  */
 type ManageNavDrawerProps = {
@@ -28,13 +38,15 @@ type ManageNavDrawerProps = {
   menuItems: ManageNavDrawerItem[];
   /** 管理菜单分组名称（如“管理菜单”/“平台管理”）。 */
   menuGroupLabel: string;
+  /** 附加分组（可选，仅平台管理域传入“数据分析”）。 */
+  analyticsGroup?: ManageNavDrawerGroup;
 };
 
 /**
  * 移动端管理导航抽屉：由顶部栏汉堡按钮通过全局事件触发，从左侧滑出，
  * 集中呈现快速入口与管理菜单，替代移动端的横向滚动导航条。
  */
-export function ManageNavDrawer({ sceneItems, menuItems, menuGroupLabel }: ManageNavDrawerProps) {
+export function ManageNavDrawer({ sceneItems, menuItems, menuGroupLabel, analyticsGroup }: ManageNavDrawerProps) {
   /**
    * 渲染单个菜单项。
    */
@@ -74,6 +86,17 @@ export function ManageNavDrawer({ sceneItems, menuItems, menuGroupLabel }: Manag
           <nav aria-label={menuGroupLabel} className="flex flex-col gap-1.5">
             {menuItems.map((item) => renderItem(item, closeDrawer))}
           </nav>
+
+          {analyticsGroup ? (
+            <>
+              <div className="mx-2 my-4 border-t border-border/50" />
+
+              <div className="mb-3 px-2 text-sm font-semibold text-foreground">{analyticsGroup.label}</div>
+              <nav aria-label={analyticsGroup.label} className="flex flex-col gap-1.5">
+                {analyticsGroup.items.map((item) => renderItem(item, closeDrawer))}
+              </nav>
+            </>
+          ) : null}
         </>
       )}
     </SideDrawer>
