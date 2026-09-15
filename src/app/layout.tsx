@@ -1,4 +1,6 @@
 import type { Metadata, Viewport } from "next";
+import { Suspense } from "react";
+import AnalyticsTracker from "@/components/analytics-tracker";
 import { AppHeader } from "@/components/layout/app-header";
 import { ToastProvider } from "@/components/ui/toast";
 import "./globals.css";
@@ -35,6 +37,10 @@ export default function RootLayout({
           <AppHeader />
           <main className="flex min-h-0 flex-1 flex-col overflow-hidden">{children}</main>
         </ToastProvider>
+        {/* 全站埋点：useSearchParams 需包裹 Suspense，避免阻塞静态渲染 */}
+        <Suspense fallback={null}>
+          <AnalyticsTracker />
+        </Suspense>
       </body>
     </html>
   );

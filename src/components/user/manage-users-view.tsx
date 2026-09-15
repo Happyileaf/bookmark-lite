@@ -199,9 +199,9 @@ export async function ManageUsersView({
                     普通用户
                   </span>
                 )}
-                <span className="hidden w-[120px] shrink-0 items-center gap-1.5 text-[12.5px] text-slate-400 dark:text-slate-500 min-[641px]:inline-flex">
+                <span className="hidden w-[120px] shrink-0 items-center gap-1.5 text-[12.5px] leading-[14px] text-slate-400 dark:text-slate-500 min-[641px]:inline-flex">
                   <BookmarkIcon className="h-3.5 w-3.5 shrink-0 opacity-80" />
-                  {item._count.bookmarks} 条书签
+                  <span className="relative top-[0.5px]">{item._count.bookmarks} 条书签</span>
                 </span>
                 <span
                   className="hidden w-[80px] shrink-0 items-center gap-1 text-xs text-slate-400 lg:inline-flex"
