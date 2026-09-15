@@ -223,7 +223,7 @@ export async function DisplayBookmarksView({ scope, user, searchParams }: Props)
     <section className="grid h-full min-h-0 grid-rows-[auto_minmax(0,1fr)] overflow-hidden lg:grid-cols-[240px_minmax(0,1fr)] lg:grid-rows-[minmax(0,1fr)]">
       <aside className="hidden h-full min-h-0 flex-col overflow-hidden border-r border-slate-200 bg-white py-4 dark:border-slate-800 dark:bg-card lg:flex">
         <div className="mb-5 shrink-0 px-4">
-          <div className="mb-3 px-2 text-sm font-semibold text-foreground">聚合视图</div>
+          <div className="mb-2 px-3 text-xs tracking-wide text-muted-foreground">快捷导航</div>
           <nav className="flex flex-col gap-1.5">
             {aggregateItems.map((item) => {
               const active = !tagId && view === item.key;
@@ -233,15 +233,15 @@ export async function DisplayBookmarksView({ scope, user, searchParams }: Props)
                   key={item.key}
                   href={`?view=${item.key}${queryBase}`}
                   aria-current={active ? "page" : undefined}
-                  className={`flex items-center gap-2 rounded-sm px-2 py-1.5 text-sm transition-colors ${
+                  className={`flex items-center gap-2.5 rounded-sm px-3 py-2 text-sm transition-colors ${
                     active
-                      ? "bg-primary/10 font-medium text-primary"
+                      ? "bg-primary font-medium text-primary-foreground"
                       : "text-foreground hover:bg-muted"
                   }`}
                 >
                   <Icon className="h-[18px] w-[18px] shrink-0" />
                   <span className="flex-1 truncate">{item.label}</span>
-                  <span className={`text-xs ${active ? "text-primary" : "text-muted-foreground"}`}>
+                  <span className={`text-xs ${active ? "text-primary-foreground/70" : "text-muted-foreground"}`}>
                     {item.count}
                   </span>
                 </Link>
@@ -253,7 +253,7 @@ export async function DisplayBookmarksView({ scope, user, searchParams }: Props)
         <div className="mx-6 mb-5 shrink-0 border-t border-border/50" />
 
         <div className="flex min-h-0 flex-1 flex-col px-4">
-          <div className="mb-3 shrink-0 px-2 text-sm font-semibold text-foreground">标签</div>
+          <div className="mb-2 shrink-0 px-2 text-xs tracking-wide text-muted-foreground">标签</div>
           <nav className="min-h-0 flex-1 space-y-1.5 overflow-y-auto pb-2 pr-1 [scrollbar-width:thin]">
             {tags.map((tag) => {
               const active = tagId === tag.id;
@@ -264,7 +264,7 @@ export async function DisplayBookmarksView({ scope, user, searchParams }: Props)
                   aria-current={active ? "page" : undefined}
                   className={`flex items-center gap-2 rounded-sm px-2 py-1.5 text-sm transition-colors ${
                     active
-                      ? "bg-primary/10 font-medium text-primary"
+                      ? "bg-primary font-medium text-primary-foreground"
                       : "text-foreground hover:bg-muted"
                   }`}
                 >
@@ -273,7 +273,7 @@ export async function DisplayBookmarksView({ scope, user, searchParams }: Props)
                     style={{ backgroundColor: tag.color ?? "#cbd5e1" }}
                   />
                   <span className="flex-1 truncate">{tag.name}</span>
-                  <span className={`text-xs ${active ? "text-primary" : "text-muted-foreground"}`}>
+                  <span className={`text-xs ${active ? "text-primary-foreground/70" : "text-muted-foreground"}`}>
                     {tag.bookmarkCount}
                   </span>
                 </Link>

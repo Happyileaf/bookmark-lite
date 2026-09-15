@@ -548,6 +548,82 @@
     padding-right: 6px;
     font-weight: 600;
   }
+  .tag-chip .dot {
+    width: 5px;
+    height: 5px;
+    flex-shrink: 0;
+    border-radius: 999px;
+  }
+
+  /* 分页按钮：基础/当前页/禁用三态；触屏热区扩张见文件底部 coarse 媒体查询 */
+  .page-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 32px;
+    min-width: 32px;
+    padding: 0 6px;
+    border: 1px solid #e2e8f0;
+    border-radius: 4px;
+    background-color: #ffffff;
+    color: #475569;
+    font-size: 12.5px;
+    transition:
+      color 150ms cubic-bezier(0.4, 0, 0.2, 1),
+      background-color 150ms cubic-bezier(0.4, 0, 0.2, 1),
+      border-color 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .page-btn:not(.is-disabled):not(.is-current):hover {
+    border-color: var(--bookmark-primary);
+    color: var(--bookmark-primary);
+  }
+  .dark .page-btn {
+    background-color: var(--bookmark-card);
+    border-color: #334155;
+    color: #cbd5e1;
+  }
+  .dark .page-btn:not(.is-disabled):not(.is-current):hover {
+    border-color: var(--bookmark-primary);
+    color: var(--bookmark-primary);
+  }
+  .page-btn.is-current {
+    border-color: var(--bookmark-primary);
+    background-color: var(--bookmark-primary);
+    color: #ffffff;
+    font-weight: 600;
+  }
+  .page-btn.is-disabled {
+    cursor: not-allowed;
+    border-color: #e2e8f0;
+    background-color: transparent;
+    color: #cbd5e1;
+    opacity: 0.4;
+  }
+  .dark .page-btn.is-disabled {
+    border-color: #334155;
+    background-color: transparent;
+    color: #475569;
+  }
+  .page-gap {
+    display: inline-flex;
+    width: 24px;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    line-height: 16px;
+    color: #94a3b8;
+  }
+  .dark .page-gap {
+    color: #64748b;
+  }
+  .page-meta {
+    font-size: 12px;
+    line-height: 16px;
+    color: #94a3b8;
+  }
+  .dark .page-meta {
+    color: #64748b;
+  }
 }
 
 .no-scrollbar::-webkit-scrollbar {
