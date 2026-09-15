@@ -22,15 +22,18 @@ export async function proxy(request: NextRequest) {
     pathname === "/settings";
   const isAdminArea = pathname.startsWith("/admin");
 
-  if (isUserArea && !token) {
+  /** 会话被服务端作废（如用户被禁用后 jwt 回调清空 id）时 JWT 仍然存在，但不再代表有效登录态 */
+  const isAuthenticated = Boolean(token?.id);
+
+  if (isUserArea && !isAuthenticated) {
     return loginRedirect(request);
   }
 
   if (isAdminArea) {
-    if (!token) {
+    if (!isAuthenticated) {
       return loginRedirect(request);
     }
-    if (token.role !== "super_admin") {
+    if (token?.role !== "super_admin") {
       return NextResponse.redirect(new URL("/my-bookmarks?forbidden=1", request.url));
     }
   }

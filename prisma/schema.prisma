@@ -35,6 +35,7 @@ model User {
   role         Role        @default(user)
   createdAt    DateTime    @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt    DateTime    @updatedAt @map("updated_at") @db.Timestamptz(6)
+  disabledAt   DateTime?   @map("disabled_at") @db.Timestamptz(6)
   bookmarks    Bookmark[]
   tags         Tag[]
   userSetting  UserSetting?

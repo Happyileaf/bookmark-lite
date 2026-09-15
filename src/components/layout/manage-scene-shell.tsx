@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { DataScope } from "@prisma/client";
 import { ManageNavDrawer } from "@/components/layout/manage-nav-drawer";
 
-type ManageKey = "bookmarks" | "tags" | "import-export" | "trash" | "settings" | "extension";
+type ManageKey = "users" | "bookmarks" | "tags" | "import-export" | "trash" | "settings" | "extension";
 
 type Props = {
   scope: DataScope;
@@ -25,6 +25,7 @@ const userMenu: Array<{ key: ManageKey; label: string; href: string }> = [
 ];
 
 const appMenu: Array<{ key: ManageKey; label: string; href: string }> = [
+  { key: "users", label: "用户管理", href: "/admin/manage/users" },
   { key: "bookmarks", label: "书签管理", href: "/admin/manage/bookmarks" },
   { key: "tags", label: "标签管理", href: "/admin/manage/tags" },
   { key: "import-export", label: "导入导出", href: "/admin/manage/import-export" },

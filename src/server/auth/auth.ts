@@ -42,6 +42,10 @@ export const authOptions: NextAuthOptions = {
           return null;
         }
 
+        if (user.disabledAt) {
+          return null;
+        }
+
         const matched = await verifyPassword(
           parsed.data.password,
           user.passwordHash,
@@ -72,11 +76,15 @@ export const authOptions: NextAuthOptions = {
       if (token.id) {
         const dbUser = await prisma.user.findUnique({
           where: { id: token.id },
-          select: { name: true, role: true },
+          select: { name: true, role: true, disabledAt: true },
         });
         if (dbUser) {
-          token.name = dbUser.name;
-          token.role = dbUser.role;
+          if (dbUser.disabledAt) {
+            token.id = "";
+          } else {
+            token.name = dbUser.name;
+            token.role = dbUser.role;
+          }
         }
       }
       return token;

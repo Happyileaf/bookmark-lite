@@ -92,7 +92,7 @@ export function DeleteBookmarkButton({ bookmarkId, scope, title }: DeleteProps) 
         title="删除书签"
         className="icon-btn danger"
       >
-        <Trash2 className="h-4 w-4" />
+        <Trash2 className="h-3.5 w-3.5" />
         <span className="sr-only">删除书签</span>
       </button>
     </form>

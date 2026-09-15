@@ -1,6 +1,7 @@
 import { auth } from "@/server/auth/auth";
 import { AppError } from "@/server/types/errors";
 import type { Role } from "@prisma/client";
+import { redirect } from "next/navigation";
 
 export type SessionUser = {
   id: string;
@@ -22,10 +23,16 @@ export async function getSessionUser(): Promise<SessionUser | null> {
   };
 }
 
+/**
+ * 获取当前登录用户，未登录时重定向至登录页
+ *
+ * @description 供页面组件使用；proxy 未拦截的失效会话（如用户被禁用后 JWT 尚未更新的窗口期）在此兜底跳回登录页
+ * @returns 当前登录用户信息
+ */
 export async function requireSessionUser(): Promise<SessionUser> {
   const user = await getSessionUser();
   if (!user) {
-    throw new AppError("AUTH_REQUIRED", "请先登录", 401);
+    redirect("/login");
   }
   return user;
 }

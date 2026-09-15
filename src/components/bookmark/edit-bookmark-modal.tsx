@@ -99,7 +99,7 @@ export function EditBookmarkModal({ action, bookmark, tags }: Props) {
         title="编辑"
         className="icon-btn"
       >
-        <Pencil className="h-4 w-4" />
+        <Pencil className="h-3.5 w-3.5" />
       </button>
 
       <Modal

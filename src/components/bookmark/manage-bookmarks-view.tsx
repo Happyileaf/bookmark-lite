@@ -248,7 +248,7 @@ export async function ManageBookmarksView({ scope, user, searchParams }: Props) 
                       title={bookmark.isFavorite ? "取消收藏" : "收藏"}
                       className={`icon-btn star ${bookmark.isFavorite ? "on" : ""}`}
                     >
-                      <Star className="h-4 w-4" />
+                      <Star className="h-3.5 w-3.5" />
                     </button>
                   </form>
 
@@ -266,9 +266,9 @@ export async function ManageBookmarksView({ scope, user, searchParams }: Props) 
                       className="icon-btn"
                     >
                       {bookmark.isVisible ? (
-                        <Eye className="h-4 w-4" />
+                        <Eye className="h-3.5 w-3.5" />
                       ) : (
-                        <EyeOff className="h-4 w-4" />
+                        <EyeOff className="h-3.5 w-3.5" />
                       )}
                     </button>
                   </form>
