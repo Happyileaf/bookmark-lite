@@ -119,7 +119,7 @@ export async function ManageTagsView({ scope, user, searchParams }: Props) {
       </div>
 
       <section className="mt-5 grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <StatChip icon={Tags} tint="#2563eb" value={allTags.length} label="全部标签" />
+        <StatChip icon={Tags} tint="#1e80ff" value={allTags.length} label="全部标签" />
         <StatChip icon={BookmarkIcon} tint="#10b981" value={totalBookmarks} label="关联书签" />
         {/* TODO(ui-upgrade): 待补统计数据逻辑（本周活跃） */}
         <StatChip icon={Flame} tint="#f59e0b" value={0} label="本周活跃" />
@@ -164,7 +164,7 @@ export async function ManageTagsView({ scope, user, searchParams }: Props) {
             return (
               <article
                 key={tag.id}
-                className="flex min-w-[420px] items-center gap-3.5 rounded-sm border border-slate-200 bg-white px-4 py-3 transition-[border-color,box-shadow] duration-150 hover:border-[#2563eb]/40 hover:shadow-[0_6px_16px_-10px_rgba(15,23,42,0.25)] dark:border-slate-700 dark:bg-card dark:hover:border-[#3b82f6]/50 min-[641px]:min-w-[560px] sm:gap-[14px] lg:min-w-[640px]"
+                className="flex min-w-[420px] items-center gap-3.5 rounded-sm border border-slate-200 bg-white px-4 py-3 transition-[border-color,box-shadow] duration-150 hover:border-[#1e80ff]/40 hover:shadow-[0_6px_16px_-10px_rgba(15,23,42,0.25)] dark:border-slate-700 dark:bg-card dark:hover:border-[#338bff]/50 min-[641px]:min-w-[560px] sm:gap-[14px] lg:min-w-[640px]"
               >
                 <div className="flex w-[200px] shrink-0 items-center gap-2.5 sm:w-[268px]">
                   <span

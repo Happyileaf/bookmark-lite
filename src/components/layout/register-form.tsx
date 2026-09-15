@@ -359,7 +359,7 @@ export function RegisterForm() {
               name="agreeTerms"
               required
               onChange={() => setTermsError(null)}
-              className="mt-0.5 h-4 w-4 shrink-0 rounded-[4px] accent-blue-600"
+              className="mt-0.5 h-4 w-4 shrink-0 rounded-[4px] accent-primary"
             />
             <span className="text-[13px] text-slate-500 dark:text-slate-400">
               我已阅读并同意

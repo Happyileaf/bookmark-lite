@@ -186,7 +186,7 @@ export function CreateBookmarkModal({ action, tags }: Props) {
 
           <div className="flex items-center gap-6 pt-1">
             <label className="inline-flex cursor-pointer items-center gap-1.5 text-[13px] text-foreground">
-              <input type="checkbox" name="isFavorite" className="h-4 w-4 accent-[#2563eb]" />
+              <input type="checkbox" name="isFavorite" className="h-4 w-4 accent-[#1e80ff]" />
               加入收藏
             </label>
             <label className="inline-flex cursor-pointer items-center gap-1.5 text-[13px] text-foreground">
@@ -194,7 +194,7 @@ export function CreateBookmarkModal({ action, tags }: Props) {
                 type="checkbox"
                 name="isVisible"
                 defaultChecked
-                className="h-4 w-4 accent-[#2563eb]"
+                className="h-4 w-4 accent-[#1e80ff]"
               />
               公开可见
             </label>

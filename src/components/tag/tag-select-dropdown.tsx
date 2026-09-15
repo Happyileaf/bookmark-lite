@@ -96,7 +96,7 @@ export function TagSelectDropdown({
         onClick={() => setOpen((prev) => !prev)}
         className={`ctl flex w-full items-center justify-between gap-2 px-2.5 hover:border-slate-300 dark:hover:border-slate-600 ${
           open
-            ? "border-primary shadow-[0_0_0_3px_rgba(37,99,235,0.12)] dark:border-primary dark:shadow-[0_0_0_3px_rgba(59,130,246,0.15)]"
+            ? "border-primary shadow-[0_0_0_3px_rgba(30,128,255,0.12)] dark:border-primary dark:shadow-[0_0_0_3px_rgba(51,139,255,0.15)]"
             : ""
         }`}
       >

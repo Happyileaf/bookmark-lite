@@ -22,7 +22,7 @@ type DistributionListProps = {
 
 /** 分布条调色板（按条目顺序循环取色） */
 const DISTRIBUTION_PALETTE = [
-  "#2563eb",
+  "#1e80ff",
   "#7c3aed",
   "#0891b2",
   "#059669",

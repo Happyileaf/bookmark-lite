@@ -117,7 +117,7 @@ export async function ManageBookmarksView({ scope, user, searchParams }: Props) 
       </header>
 
       <div className="mt-5 grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <StatChip icon={Bookmark} tint="#2563eb" value={pagination.total} label="全部书签" />
+        <StatChip icon={Bookmark} tint="#1e80ff" value={pagination.total} label="全部书签" />
         {/* TODO(ui-upgrade): 收藏数统计待接入真实聚合，见 spec 待补逻辑清单 */}
         <StatChip icon={Star} tint="#f59e0b" value={0} label="已收藏" />
         {/* TODO(ui-upgrade): 公开书签数统计待接入真实聚合，见 spec 待补逻辑清单 */}

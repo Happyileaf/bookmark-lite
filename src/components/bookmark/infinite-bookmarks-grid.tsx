@@ -62,7 +62,7 @@ type ListResponse = {
 };
 
 const FAVICON_PALETTE = [
-  "#2563eb",
+  "#1e80ff",
   "#7c3aed",
   "#0891b2",
   "#059669",
@@ -315,7 +315,7 @@ export function InfiniteBookmarksGrid({
                   {bookmark.tags.map((tag) => (
                     <span
                       key={tag.id}
-                      className="max-w-full truncate rounded-full bg-blue-50 px-3 py-1 text-xs font-medium text-blue-600 dark:bg-blue-500/15 dark:text-blue-300"
+                      className="max-w-full truncate rounded-full bg-blue-50 px-3 py-1 text-xs font-medium text-primary dark:bg-blue-500/15 dark:text-blue-300"
                       title={tag.name}
                     >
                       {tag.name}

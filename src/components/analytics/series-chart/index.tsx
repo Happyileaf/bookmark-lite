@@ -57,7 +57,7 @@ function formatAxisValue(value: number): string {
  * @param props - 图表入参
  * @returns 趋势图组件
  * @example
- * <SeriesChart labels={dates} series={[{ name: "PV", color: "#2563eb", values }]} variant="line" />
+ * <SeriesChart labels={dates} series={[{ name: "PV", color: "#1e80ff", values }]} variant="line" />
  */
 export default function SeriesChart({
   labels,

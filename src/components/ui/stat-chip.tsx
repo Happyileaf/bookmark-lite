@@ -11,7 +11,7 @@ export type StatChipProps = {
 
 export function StatChip({
   icon: Icon,
-  tint = "#2563eb",
+  tint = "#1e80ff",
   value,
   label,
   className,

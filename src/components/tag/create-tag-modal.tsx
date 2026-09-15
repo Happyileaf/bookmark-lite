@@ -9,7 +9,7 @@ type Props = {
 };
 
 export const TAG_COLOR_PALETTE = [
-  "#2563eb",
+  "#1e80ff",
   "#8b5cf6",
   "#0ea5e9",
   "#ec4899",
@@ -49,7 +49,7 @@ export function TagColorPicker({ value, onChange }: TagColorPickerProps) {
             onClick={() => onChange(color)}
             className={`h-6 w-6 shrink-0 rounded-full shadow-[inset_0_-2px_4px_rgba(0,0,0,0.15)] transition-transform duration-150 hover:scale-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 dark:focus-visible:ring-primary/50 ${
               selected
-                ? "ring-2 ring-white ring-offset-0 shadow-[0_0_0_2px_#fff,0_0_0_4px_var(--bookmark-primary)] dark:shadow-[0_0_0_2px_#0f172a,0_0_0_4px_#3b82f6]"
+                ? "ring-2 ring-white ring-offset-0 shadow-[0_0_0_2px_#fff,0_0_0_4px_var(--bookmark-primary)] dark:shadow-[0_0_0_2px_#0f172a,0_0_0_4px_#338bff]"
                 : ""
             }`}
             style={{ backgroundColor: color }}
@@ -63,7 +63,7 @@ export function TagColorPicker({ value, onChange }: TagColorPickerProps) {
         onClick={() => onChange(generateRandomColor())}
         className={`inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-dashed border-slate-300 text-slate-500 transition-transform duration-150 hover:scale-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 dark:border-slate-600 dark:text-slate-400 dark:focus-visible:ring-primary/50 ${
           isRandom
-            ? "border-0 text-white shadow-[0_0_0_2px_#fff,0_0_0_4px_var(--bookmark-primary),inset_0_-2px_4px_rgba(0,0,0,0.15)] dark:shadow-[0_0_0_2px_#0f172a,0_0_0_4px_#3b82f6,inset_0_-2px_4px_rgba(0,0,0,0.15)]"
+            ? "border-0 text-white shadow-[0_0_0_2px_#fff,0_0_0_4px_var(--bookmark-primary),inset_0_-2px_4px_rgba(0,0,0,0.15)] dark:shadow-[0_0_0_2px_#0f172a,0_0_0_4px_#338bff,inset_0_-2px_4px_rgba(0,0,0,0.15)]"
             : ""
         }`}
         style={isRandom ? { backgroundColor: value } : undefined}

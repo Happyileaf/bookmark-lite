@@ -112,7 +112,7 @@ export default function OverviewView({ overview }: OverviewViewProps) {
       <section className="mt-5 grid grid-cols-2 gap-3 lg:grid-cols-4">
         <StatChip
           icon={Users}
-          tint="#2563eb"
+          tint="#1e80ff"
           value={cards.totalUsers.toLocaleString("zh-CN")}
           label="总用户"
         />
@@ -161,7 +161,7 @@ export default function OverviewView({ overview }: OverviewViewProps) {
             series={[
               {
                 name: "浏览量（PV）",
-                color: "#2563eb",
+                color: "#1e80ff",
                 values: overview.trafficTrend.map((point) => point.pageViews),
               },
               {

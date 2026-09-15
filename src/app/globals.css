@@ -21,12 +21,12 @@
   --color-error: var(--bookmark-state-error);
   --color-info: var(--bookmark-state-info);
 
-  --color-brand: #2563eb;
-  --color-brand-hover: #1d4ed8;
-  --color-brand-active: #1e40af;
-  --color-brand-soft: #dbeafe;
-  --color-brand-softer: #eff6ff;
-  --color-brand-border: #93c5fd;
+  --color-brand: #1e80ff;
+  --color-brand-hover: #0a69e6;
+  --color-brand-active: #0a55bd;
+  --color-brand-soft: #dbebff;
+  --color-brand-softer: #f0f6ff;
+  --color-brand-border: #60a3fb;
   --color-brand-tint-bg: #f8fafc;
 
   --radius-sm: 4px;
@@ -42,17 +42,17 @@
   --bookmark-card-foreground: #111827;
   --bookmark-popover: #ffffff;
   --bookmark-popover-foreground: #111827;
-  --bookmark-primary: #2563eb;
+  --bookmark-primary: #1e80ff;
   --bookmark-primary-foreground: #ffffff;
   --bookmark-muted: #f1f5f9;
   --bookmark-muted-foreground: #64748b;
   --bookmark-border: #e2e8f0;
   --bookmark-input: #e2e8f0;
-  --bookmark-ring: #2563eb;
+  --bookmark-ring: #1e80ff;
   --bookmark-state-success: #10b981;
   --bookmark-state-warning: #f59e0b;
   --bookmark-state-error: #ef4444;
-  --bookmark-state-info: #3b82f6;
+  --bookmark-state-info: #3d91ff;
 
   --scrollbar-size: 10px;
   --scrollbar-thumb: rgba(15, 23, 42, 0.04);
@@ -66,13 +66,13 @@
   --bookmark-card-foreground: #f8fafc;
   --bookmark-popover: #1e293b;
   --bookmark-popover-foreground: #f8fafc;
-  --bookmark-primary: #3b82f6;
+  --bookmark-primary: #338bff;
   --bookmark-primary-foreground: #ffffff;
   --bookmark-muted: #334155;
   --bookmark-muted-foreground: #94a3b8;
   --bookmark-border: #334155;
   --bookmark-input: #334155;
-  --bookmark-ring: #3b82f6;
+  --bookmark-ring: #338bff;
 
   --scrollbar-thumb: rgba(226, 232, 240, 0.08);
   --scrollbar-thumb-hover: rgba(226, 232, 240, 0.34);
@@ -149,7 +149,7 @@
     border: 1px solid #e2e8f0;
     border-radius: 4px;
     box-shadow:
-      0 4px 24px rgba(37, 99, 235, 0.06),
+      0 4px 24px rgba(30, 128, 255, 0.06),
       0 1px 2px rgba(15, 23, 42, 0.03);
   }
   .dark .bm-card {
@@ -182,7 +182,7 @@
     outline: none;
     border-color: var(--bookmark-primary);
     background-color: #ffffff;
-    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+    box-shadow: 0 0 0 4px rgba(30, 128, 255, 0.12);
   }
   .dark .bm-input {
     background-color: #0f172a;
@@ -200,9 +200,9 @@
   }
   .dark .bm-input:focus,
   .dark .bm-input:focus-visible {
-    border-color: #60a5fa;
+    border-color: #529dff;
     background-color: #1e293b;
-    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
+    box-shadow: 0 0 0 4px rgba(51, 139, 255, 0.15);
   }
 
   /* 字段校验失败态：随 aria-invalid 自动生效，无需额外类名 */
@@ -228,7 +228,7 @@
     color: #ffffff;
     border-radius: 4px;
     font-weight: 600;
-    box-shadow: 0 4px 16px rgba(37, 99, 235, 0.25);
+    box-shadow: 0 4px 16px rgba(30, 128, 255, 0.25);
     transition:
       background-color 0.2s ease,
       box-shadow 0.25s ease,
@@ -237,7 +237,7 @@
   @media (hover: hover) {
     .bm-btn-primary:hover {
       filter: brightness(0.92);
-      box-shadow: 0 6px 20px rgba(37, 99, 235, 0.35);
+      box-shadow: 0 6px 20px rgba(30, 128, 255, 0.35);
     }
   }
   .bm-btn-primary:active {
@@ -288,7 +288,7 @@
   }
   @media (hover: hover) {
     .bm-btn-code:hover {
-      background-color: rgba(37, 99, 235, 0.06);
+      background-color: rgba(30, 128, 255, 0.06);
     }
   }
   .bm-btn-code:disabled {
@@ -320,7 +320,7 @@
   }
   .ctl:focus {
     border-color: var(--bookmark-primary);
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+    box-shadow: 0 0 0 3px rgba(30, 128, 255, 0.12);
   }
   .dark .ctl {
     background-color: #0f172a;
@@ -331,8 +331,8 @@
     color: #64748b;
   }
   .dark .ctl:focus {
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+    border-color: #338bff;
+    box-shadow: 0 0 0 3px rgba(51, 139, 255, 0.15);
   }
 
   .ctl-sm {
@@ -421,7 +421,7 @@
       background: #1e293b;
     }
     .row-act.primary:hover {
-      background: rgba(37, 99, 235, 0.08);
+      background: rgba(30, 128, 255, 0.08);
       color: var(--bookmark-primary);
     }
     .row-act.danger:hover {
@@ -484,13 +484,13 @@
     color: #94a3b8;
   }
   .nav-item.active {
-    background-color: #eff6ff;
+    background-color: #f0f6ff;
     color: var(--bookmark-primary);
     font-weight: 500;
   }
   .dark .nav-item.active {
-    background-color: rgba(37, 99, 235, 0.15);
-    color: #60a5fa;
+    background-color: rgba(30, 128, 255, 0.15);
+    color: #529dff;
   }
 
   .vis-badge {

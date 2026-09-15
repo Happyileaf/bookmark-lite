@@ -116,7 +116,7 @@ function ToastRow({ item, prefersReducedMotion, onDismiss }: ToastRowProps) {
             item.action?.onClick();
             onDismiss(item.id);
           }}
-          className="h-6 shrink-0 rounded-full px-2.5 text-[12px] font-medium text-blue-400 transition-colors hover:bg-white/10 dark:text-blue-600 dark:hover:bg-slate-900/10"
+          className="h-6 shrink-0 rounded-full px-2.5 text-[12px] font-medium text-blue-400 transition-colors hover:bg-white/10 dark:text-primary dark:hover:bg-slate-900/10"
         >
           {item.action.label}
         </button>

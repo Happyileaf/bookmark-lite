@@ -99,7 +99,7 @@ export async function ManageUsersView({
       </div>
 
       <section className="mt-5 grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <StatChip icon={Users} tint="#2563eb" value={stats.total} label="总用户数" />
+        <StatChip icon={Users} tint="#1e80ff" value={stats.total} label="总用户数" />
         <StatChip icon={ShieldCheck} tint="#8b5cf6" value={stats.admins} label="超级管理员" />
         <StatChip icon={UserPlus} tint="#10b981" value={stats.newThisWeek} label="本周新增" />
         <StatChip icon={UserX} tint="#f43f5e" value={stats.disabled} label="已禁用" />
@@ -166,7 +166,7 @@ export async function ManageUsersView({
             return (
               <article
                 key={item.id}
-                className="flex min-w-[640px] items-center gap-3.5 rounded-sm border border-slate-200 bg-white px-4 py-3 transition-[border-color,box-shadow] duration-150 hover:border-[#2563eb]/40 hover:shadow-[0_6px_16px_-10px_rgba(15,23,42,0.25)] dark:border-slate-700 dark:bg-card dark:hover:border-[#3b82f6]/50 min-[641px]:min-w-[720px] sm:gap-[14px] lg:min-w-[860px]"
+                className="flex min-w-[640px] items-center gap-3.5 rounded-sm border border-slate-200 bg-white px-4 py-3 transition-[border-color,box-shadow] duration-150 hover:border-[#1e80ff]/40 hover:shadow-[0_6px_16px_-10px_rgba(15,23,42,0.25)] dark:border-slate-700 dark:bg-card dark:hover:border-[#338bff]/50 min-[641px]:min-w-[720px] sm:gap-[14px] lg:min-w-[860px]"
               >
                 <div className="flex min-w-0 flex-1 items-center gap-2.5">
                   <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-slate-100 text-[12px] font-semibold text-slate-600 dark:bg-slate-800 dark:text-slate-300">
@@ -178,7 +178,7 @@ export async function ManageUsersView({
                         {item.email ?? "未设置邮箱"}
                       </h3>
                       {isSelf ? (
-                        <span className="inline-flex shrink-0 items-center rounded-full bg-blue-50 px-[9px] py-0.5 text-[11.5px] text-blue-600 dark:bg-blue-500/10 dark:text-blue-300">
+                        <span className="inline-flex shrink-0 items-center rounded-full bg-blue-50 px-[9px] py-0.5 text-[11.5px] text-primary dark:bg-blue-500/10 dark:text-blue-300">
                           当前用户
                         </span>
                       ) : null}

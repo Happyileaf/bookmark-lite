@@ -204,8 +204,8 @@ export function ManageImportExportView({ scope }: Props) {
               }}
               className={`cursor-pointer rounded border-[1.5px] border-dashed p-3.5 transition-colors ${
                 isDragging
-                  ? "border-blue-600 bg-blue-600/5 dark:border-blue-500 dark:bg-blue-500/10"
-                  : "border-slate-300 hover:border-blue-600 hover:bg-blue-600/5 dark:border-slate-600 dark:hover:border-blue-500 dark:hover:bg-blue-500/10"
+                  ? "border-primary bg-primary/5 dark:border-primary dark:bg-primary/10"
+                  : "border-slate-300 hover:border-primary hover:bg-primary/5 dark:border-slate-600 dark:hover:border-primary dark:hover:bg-primary/10"
               }`}
             >
               <div className="flex items-center gap-3">

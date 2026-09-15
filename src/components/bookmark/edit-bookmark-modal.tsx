@@ -209,7 +209,7 @@ export function EditBookmarkModal({ action, bookmark, tags }: Props) {
                 type="checkbox"
                 name="isFavorite"
                 defaultChecked={bookmark.isFavorite}
-                className="h-4 w-4 accent-[#2563eb]"
+                className="h-4 w-4 accent-[#1e80ff]"
               />
               加入收藏
             </label>
@@ -218,7 +218,7 @@ export function EditBookmarkModal({ action, bookmark, tags }: Props) {
                 type="checkbox"
                 name="isVisible"
                 defaultChecked={bookmark.isVisible}
-                className="h-4 w-4 accent-[#2563eb]"
+                className="h-4 w-4 accent-[#1e80ff]"
               />
               公开可见
             </label>
