@@ -220,7 +220,11 @@ export async function ManageBookmarksView({ scope, user, searchParams }: Props) 
                 {bookmark.tags.length > 0 ? (
                   <div className="hidden max-w-[300px] items-center gap-[5px] overflow-hidden md:flex">
                     {visibleTags.map((tag) => (
-                      <TagChip key={tag.id} color={tag.color ?? undefined}>
+                      <TagChip
+                        key={tag.id}
+                        color={tag.color ?? "#94a3b8"}
+                        title={tag.name}
+                      >
                         {tag.name}
                       </TagChip>
                     ))}

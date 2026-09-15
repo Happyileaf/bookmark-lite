@@ -3,6 +3,7 @@
 import { ArrowDown, ArrowUp, ArrowUpDown } from "lucide-react";
 import { useState, useTransition } from "react";
 import { Modal } from "@/components/ui/modal";
+import { TagChip } from "@/components/ui/tag-chip";
 
 type TagItem = {
   id: string;
@@ -67,15 +68,13 @@ export function ReorderTagModal({ action, tags }: Props) {
                   key={tag.id}
                   className="flex items-center justify-between gap-3 rounded-sm border border-slate-200 px-3 py-2 transition-colors hover:border-slate-300 dark:border-slate-700 dark:hover:border-slate-600"
                 >
-                  <span className="inline-flex min-w-0 items-center gap-2.5">
-                    <span
-                      className="h-2.5 w-2.5 shrink-0 rounded-full"
-                      style={{ backgroundColor: tag.color ?? "#94a3b8" }}
-                    />
-                    <span className="truncate text-[13px] font-medium text-slate-800 dark:text-slate-200">
-                      {tag.name}
-                    </span>
-                  </span>
+                  <TagChip
+                    color={tag.color ?? "#94a3b8"}
+                    className="min-w-0"
+                    title={tag.name}
+                  >
+                    {tag.name}
+                  </TagChip>
                   <span className="inline-flex shrink-0 items-center gap-0.5">
                     <form action={handleMove}>
                       <input type="hidden" name="id" value={tag.id} />

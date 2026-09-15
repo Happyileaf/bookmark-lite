@@ -528,11 +528,13 @@
     display: inline-flex;
     align-items: center;
     gap: 5px;
-    padding: 2.5px 8px;
+    height: 24px;
+    max-width: 100%;
+    padding: 0 8px;
     white-space: nowrap;
-    font-size: 11.5px;
-    line-height: 1.5;
-    border-radius: 4px;
+    font-size: 11px;
+    line-height: 16px;
+    border-radius: 6px;
     background: #f1f5f9;
     color: #475569;
     transition:
@@ -540,19 +542,13 @@
       opacity 0.15s ease;
   }
   .dark .tag-chip {
-    background: #0f172a;
-    color: #94a3b8;
+    background: #334155;
+    color: #e2e8f0;
   }
   .tag-chip.tag-more {
     padding-left: 6px;
     padding-right: 6px;
     font-weight: 600;
-  }
-  .tag-chip .dot {
-    width: 5px;
-    height: 5px;
-    flex-shrink: 0;
-    border-radius: 999px;
   }
 
   /* 分页按钮：基础/当前页/禁用三态；触屏热区扩张见文件底部 coarse 媒体查询 */

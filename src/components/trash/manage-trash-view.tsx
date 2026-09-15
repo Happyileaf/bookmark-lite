@@ -8,6 +8,7 @@ import {
 import { BookmarkFavicon } from "@/components/bookmark/infinite-bookmarks-grid";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Pagination } from "@/components/ui/pagination";
+import { TagChip } from "@/components/ui/tag-chip";
 import type { SessionUser } from "@/server/auth/session";
 import { tagService } from "@/server/services/tag.service";
 import { trashService } from "@/server/services/trash.service";
@@ -59,7 +60,9 @@ export async function ManageTrashView({ scope, user, searchParams }: Props) {
     tagService.list(scope, user),
   ]);
 
-  const tagNameById = new Map(tags.map((tag) => [tag.id, tag.name]));
+  const tagById = new Map(
+    tags.map((tag) => [tag.id, { name: tag.name, color: tag.color }]),
+  );
   const { items, pagination } = listResult;
   const total = pagination.total;
   const safePage = Math.min(pagination.page, pagination.totalPages);
@@ -112,8 +115,8 @@ export async function ManageTrashView({ scope, user, searchParams }: Props) {
                 tagIds?: string[];
               };
               const snapshot = payload.bookmark ?? {};
-              const tagName = payload.tagIds?.[0]
-                ? tagNameById.get(payload.tagIds[0])
+              const tag = payload.tagIds?.[0]
+                ? tagById.get(payload.tagIds[0])
                 : undefined;
 
               return (
@@ -137,10 +140,14 @@ export async function ManageTrashView({ scope, user, searchParams }: Props) {
                       {snapshot.url ? getHost(snapshot.url) : "-"}
                     </p>
                   </div>
-                  {tagName ? (
-                    <span className="shrink-0 rounded-sm bg-slate-100 px-2 py-0.5 text-[12px] text-slate-500 dark:bg-slate-900 dark:text-slate-400">
-                      {tagName}
-                    </span>
+                  {tag ? (
+                    <TagChip
+                      color={tag.color ?? "#94a3b8"}
+                      className="shrink-0"
+                      title={tag.name}
+                    >
+                      {tag.name}
+                    </TagChip>
                   ) : null}
                   <span className="inline-flex shrink-0 items-center gap-1 text-[12px] text-slate-400 dark:text-slate-500">
                     <Clock className="h-3 w-3" />

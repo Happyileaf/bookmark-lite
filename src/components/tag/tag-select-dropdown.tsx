@@ -172,7 +172,7 @@ export function TagSelectDropdown({
       {selected.length > 0 ? (
         <div className="mt-2 flex flex-wrap gap-1">
           {selected.map((item) => (
-            <TagChip key={item} color={colorByName.get(item) ?? undefined}>
+            <TagChip key={item} color={colorByName.get(item) ?? "#94a3b8"}>
               {item}
             </TagChip>
           ))}

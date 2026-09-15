@@ -21,6 +21,7 @@ import { TagSortSelect } from "@/components/tag/tag-select-dropdown";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Pagination } from "@/components/ui/pagination";
 import { StatChip } from "@/components/ui/stat-chip";
+import { TagChip } from "@/components/ui/tag-chip";
 import type { SessionUser } from "@/server/auth/session";
 import { tagService } from "@/server/services/tag.service";
 
@@ -178,13 +179,9 @@ export async function ManageTagsView({ scope, user, searchParams }: Props) {
                       <h3 className="truncate text-[13.5px] font-semibold leading-[1.3] tracking-[-0.01em] text-slate-900 dark:text-slate-100">
                         {tag.name}
                       </h3>
-                      <span className="inline-flex shrink-0 items-center gap-[5px] rounded-full bg-slate-100 px-[9px] py-0.5 text-[11.5px] text-slate-500 dark:bg-slate-900 dark:text-slate-400">
-                        <span
-                          className="h-[5px] w-[5px] rounded-full"
-                          style={{ backgroundColor: color }}
-                        />
+                      <TagChip color={color} className="shrink-0">
                         {tag.bookmarkCount} 条书签
-                      </span>
+                      </TagChip>
                     </div>
                   </div>
                 </div>
