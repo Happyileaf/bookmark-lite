@@ -45,7 +45,7 @@ export default async function LoginPage({ searchParams }: PageProps) {
               欢迎回来
             </h2>
             <p className="mt-1 text-[13px] text-slate-500 dark:text-slate-400">
-              继续进入你的 Bookmark Lite 空间
+              你的书签库一切如常，随时继续
             </p>
           </div>
 

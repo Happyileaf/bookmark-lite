@@ -97,9 +97,9 @@ async function handleSaveCurrent(): Promise<void> {
   try {
     const { alreadyExists } = await queue.push(payload);
     if (alreadyExists) {
-      setStatus("exists", "已在书签库中");
+      setStatus("exists", "这页已经收过了");
     } else {
-      setStatus("success", "已收藏到书签库");
+      setStatus("success", "收好了");
     }
   } catch (error) {
     if (error instanceof AuthError) {
@@ -191,7 +191,7 @@ function render(): void {
 
       <button id="save-current" class="save-btn" ${isSaving ? "disabled" : ""}>
         <span class="${isSaving ? "spin" : ""}">${isSaving ? ICONS.loader : ICONS.plus}</span>
-        ${isSaving ? "收藏中…" : "收藏当前页"}
+        ${isSaving ? "收藏中…" : "收藏这一页"}
       </button>
 
       <div class="status ${showStatus ? statusCls : "empty"}">
@@ -201,8 +201,8 @@ function render(): void {
       <div class="field">
         <div class="toggle-row">
           <div class="toggle-text">
-            <span class="t">被动同步</span>
-            <span class="d">浏览器原生收藏时自动推送</span>
+            <span class="t">自动同步</span>
+            <span class="d">浏览器原生收藏自动收进书签库</span>
           </div>
           <button id="sync-toggle" class="switch ${state.syncEnabled ? "on" : ""}">
             <span class="knob"></span>

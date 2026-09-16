@@ -74,7 +74,7 @@ export async function ManageTrashView({ scope, user, searchParams }: Props) {
         <div className="min-w-0">
           <h1 className="text-[20px] font-bold tracking-tight">回收站</h1>
           <p className="mt-1 text-[13px] text-slate-500 dark:text-slate-400">
-            删除的书签将在此保留 30 天，到期后自动清除。
+            删除的书签会在这里保留 30 天，到期自动清除。
           </p>
         </div>
         <div className="flex shrink-0 items-center gap-3 pt-0.5">

@@ -159,7 +159,7 @@ export function ManageImportExportView({ scope }: Props) {
           导入导出
         </h1>
         <p className="mt-1 text-[13px] text-slate-500 dark:text-slate-400">
-          在浏览器与 Bookmark Lite 之间迁移你的书签数据。
+          把浏览器里的书签搬进来，也可以随时整包带走。
         </p>
       </header>
 

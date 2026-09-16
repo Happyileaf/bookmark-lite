@@ -399,7 +399,7 @@ export const bookmarkService = {
     tagNames: string[] = [],
   ) {
     if (!user) {
-      throw new AppError("AUTH_REQUIRED", "请先登录后保存到个人库", 401);
+      throw new AppError("AUTH_REQUIRED", "请先登录后保存到个人空间", 401);
     }
 
     const appBookmark = await prisma.bookmark.findUnique({

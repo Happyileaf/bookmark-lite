@@ -30,7 +30,7 @@ export default async function RegisterPage() {
               创建你的账号
             </h2>
             <p className="mt-1 text-[13px] text-slate-500 dark:text-slate-400">
-              让书签收藏从这里开始
+              30 秒，给灵感安个家
             </p>
           </div>
 

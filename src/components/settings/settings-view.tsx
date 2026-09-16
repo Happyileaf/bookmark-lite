@@ -14,8 +14,8 @@ export async function SettingsView({ scope, user }: Props) {
   /** 页面描述文案：平台设置仅管理全站数据偏好，不包含账号信息。 */
   const scopeDescription =
     scope === "APP"
-      ? "管理全站数据的偏好与策略。"
-      : "管理你的账号信息与使用偏好。";
+      ? "管理全站的显示偏好与数据保留周期。"
+      : "把 Bookmark Lite 调成你顺手的样子。";
 
   return (
     <div className="max-w-3xl">

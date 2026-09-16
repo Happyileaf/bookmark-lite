@@ -287,9 +287,14 @@ export function InfiniteBookmarksGrid({
   }, [hasMore, loadNextPage]);
 
   if (items.length === 0) {
+    const emptyText = query.q
+      ? `没有找到与「${query.q}」相关的书签`
+      : scope === "APP"
+        ? "这座库还在生长，第一批优质网站正在路上。"
+        : "这里还空着。去公共书签库逛逛，把喜欢的收进来。";
     return (
       <div className="rounded-sm border border-dashed border-slate-300 bg-card p-10 text-center text-sm text-muted-foreground dark:border-slate-700">
-        当前视图下暂无书签
+        {emptyText}
       </div>
     );
   }
@@ -395,7 +400,7 @@ export function InfiniteBookmarksGrid({
           <span>
             已加载 {items.length} / {pagination.total} 条
           </span>
-          <span>{hasMore ? "滚动到底自动加载" : "已全部加载完成"}</span>
+          <span>{hasMore ? "滚动加载更多" : "已加载全部"}</span>
         </div>
         {isLoading ? <p className="text-muted-foreground">正在加载更多...</p> : null}
         {errorMessage ? (

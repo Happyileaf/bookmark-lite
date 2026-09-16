@@ -30,14 +30,14 @@ export async function ApiTokenView({ user }: Props) {
           API Token
         </h1>
         <p className="mt-1 text-[13px] text-slate-500 dark:text-slate-400">
-          用于 MCP 服务与 REST API 调用的访问凭证。
+          MCP 服务与 REST API 访问你书签库的钥匙。
         </p>
       </header>
 
       <div className="mt-5 flex items-start gap-2.5 rounded-sm border border-blue-200 bg-blue-50 px-4 py-3 dark:border-blue-900 dark:bg-blue-950/50">
         <ShieldAlert className="mt-px h-4 w-4 shrink-0 text-blue-500" />
         <p className="text-[13px] leading-relaxed text-blue-700 dark:text-blue-300">
-          Token 仅在创建时完整展示一次，请立即复制并妥善保管。如怀疑泄露，请第一时间撤销并重新生成。
+          Token 只在创建时完整显示一次，请立即复制保存。如果怀疑泄露，马上撤销并重新生成。
         </p>
       </div>
 

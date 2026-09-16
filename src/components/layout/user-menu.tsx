@@ -29,9 +29,9 @@ type MenuItem = {
 };
 
 const MENU_ITEMS: MenuItem[] = [
-  { label: "个人主页", href: "/my-bookmarks", Icon: Bookmark },
+  { label: "个人空间", href: "/my-bookmarks", Icon: Bookmark },
   { label: "内容管理", href: "/settings", Icon: Settings },
-  { label: "平台主页", href: "/bookmarks", Icon: Globe },
+  { label: "公共书签库", href: "/bookmarks", Icon: Globe },
   { label: "平台管理", href: "/admin/manage/bookmarks", Icon: LayoutDashboard, adminOnly: true },
 ];
 
@@ -92,7 +92,7 @@ export function UserMenu({ name, email, isAdmin, userLabel }: UserMenuProps) {
         aria-haspopup="menu"
         aria-expanded={isOpen}
         aria-controls={menuId}
-        title="账户"
+        title="账号"
         onClick={() => setIsOpen((value) => !value)}
       >
         <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-medium leading-none tracking-tight text-primary-foreground">

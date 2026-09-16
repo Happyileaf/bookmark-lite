@@ -202,7 +202,7 @@ function render(): void {
 
         <div class="section-title">API Token</div>
         <div class="field">
-          <span class="label">访问令牌</span>
+          <span class="label">API Token</span>
           <div class="token-row">
             <div class="input-wrap">
               <input id="token-input" type="${state.tokenVisible ? "text" : "password"}"
@@ -224,7 +224,7 @@ function render(): void {
       <div id="queue" class="card">
         <div class="queue-header">
           <div>
-            <div class="section-title">失败队列</div>
+            <div class="section-title">同步失败</div>
             <div class="queue-count">${queueCount} 条待重试</div>
           </div>
           ${
@@ -243,7 +243,7 @@ function render(): void {
 
         ${
           queueCount === 0
-            ? `<div class="queue-empty">暂无失败书签</div>`
+            ? `<div class="queue-empty">没有待重试的收藏，一切正常</div>`
             : `<div class="queue-list">
                 ${state.queueItems
                   .map(

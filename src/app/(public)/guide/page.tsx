@@ -31,39 +31,39 @@ const MCP_CONFIG = `{
 }`;
 
 const trustPoints: { icon: LucideIcon; label: string }[] = [
-  { icon: ShieldCheck, label: "本地授权" },
-  { icon: RotateCcw, label: "随时撤销" },
-  { icon: Database, label: "数据归你" },
+  { icon: ShieldCheck, label: "授权在本地" },
+  { icon: RotateCcw, label: "随时可撤销" },
+  { icon: Database, label: "数据归你所有" },
 ];
 
 const featureCards: { icon: LucideIcon; title: string; desc: string }[] = [
   {
     icon: MousePointerClick,
     title: "快速收藏",
-    desc: "点击浏览器插件图标，当前网页会带着标题、摘要与来源一起进入 Bookmark Lite。",
+    desc: "点击插件图标，当前网页连同标题、摘要、来源一起收进 Bookmark Lite。",
   },
   {
     icon: PlugZap,
     title: "连接工具",
-    desc: "通过 MCP，让 AI 助手读取、整理与检索你的书签资料库。",
+    desc: "通过 MCP，让 AI 助手直接读取、整理和检索你的书签库。",
   },
 ];
 
 const statCards: { value: string; label: string }[] = [
-  { value: "1 点", label: "完成收藏" },
-  { value: "4 步", label: "接入路径" },
-  { value: "2 类", label: "核心入口" },
+  { value: "1 次点击", label: "收藏一个网页" },
+  { value: "4 步", label: "完成任一接入" },
+  { value: "2 种入口", label: "浏览器 + AI" },
 ];
 
 const extensionSteps: { title: string; desc: string }[] = [
-  { title: "安装浏览器插件", desc: "在浏览器扩展商店安装 Bookmark Lite 浏览器插件。" },
+  { title: "安装浏览器插件", desc: "下载 Bookmark Lite 浏览器插件，按下方指引装入浏览器。" },
   { title: "点击收藏", desc: "打开想保存的网页，点击浏览器插件按钮即可。" },
-  { title: "自动打标", desc: "Bookmark Lite 根据内容生成标签，减少手动分类。" },
+  { title: "自动归类", desc: "Bookmark Lite 会按内容生成标签，省去手动整理。" },
   { title: "多端同步", desc: "电脑、平板和手机都能找回收藏。" },
 ];
 
 const mcpSteps: { title: string; desc: string }[] = [
-  { title: "复制配置", desc: "在账号设置里复制 MCP 服务配置。" },
+  { title: "复制配置", desc: "生成 API Token，复制 MCP 服务配置。" },
   { title: "连接客户端", desc: "粘贴到支持 MCP 的 AI 助手或工具中。" },
   { title: "授权访问", desc: "按需授予读取、整理或检索权限。" },
   { title: "发起检索", desc: "让 AI 查找资料、归纳主题或生成清单。" },
@@ -120,7 +120,7 @@ const faqItems: { question: string; answer: string }[] = [
   {
     question: "MCP 连接失败如何排查？",
     answer:
-      "检查访问令牌是否过期，并确认客户端已启用 MCP；令牌可在 Bookmark Lite 账号设置中重新生成。",
+      "检查 API Token 是否过期，并确认客户端已启用 MCP；过期可在「API Token」页面重新生成。",
   },
 ];
 
@@ -151,10 +151,10 @@ function HeroSection() {
     <section className="mx-auto max-w-6xl px-4 pb-10 pt-10 sm:px-6 sm:pb-16 sm:pt-16">
       <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-2 lg:gap-12">
         <div>
-          <h1 className="mb-5 text-4xl font-bold tracking-tight">接入工作流</h1>
+          <h1 className="mb-5 text-4xl font-bold tracking-tight">两分钟，装进你的工作流</h1>
           <p className="mb-7 text-[15px] leading-relaxed text-slate-500 dark:text-slate-400">
-            把收藏接入你的工作流。浏览器插件负责快速收藏网页，MCP 负责把 Bookmark Lite
-            连接到 AI 助手和自动化流程，让灵感从保存到整理都更顺手。
+            浏览器插件一键收藏网页，MCP 把书签库接进你的 AI 助手。从保存到整理，
+            一次配好，长期省心。
           </p>
           <div className="mb-7 flex flex-wrap items-center gap-3">
             <a
@@ -222,7 +222,7 @@ function QuickStartSection() {
         <PathCard icon={AppWindow} title="浏览器插件" desc="适合日常浏览、资料收集和灵感捕捉。">
           <StepList steps={extensionSteps} />
         </PathCard>
-        <PathCard icon={Bot} title="MCP 连接" desc="适合开发者、研究者和自动化工作流。">
+        <PathCard icon={Bot} title="MCP 连接" desc="适合开发者、研究者与自动化场景。">
           <StepList steps={mcpSteps} />
         </PathCard>
       </div>
@@ -302,7 +302,7 @@ function ExtensionSection() {
           <ul className="flex flex-col gap-3.5">
             <TipLine icon={MousePointerClick}>装好后点击工具栏图标，一键收藏当前页。</TipLine>
             <TipLine icon={Settings2}>
-              在浏览器插件设置里登录账号，开启自动标签与快捷键。
+              在插件设置里填入 API Token，开启自动标签与快捷键。
             </TipLine>
           </ul>
         </div>
@@ -414,7 +414,7 @@ function McpSection() {
             <code ref={codeRef}>{MCP_CONFIG}</code>
           </pre>
           <p className="text-xs leading-relaxed text-slate-400">
-            提示：真实令牌只在登录后的账号设置中生成，请勿在公开页面分享。
+            提示：真实 Token 只在登录后的「API Token」页面生成，请勿在公开页面分享。
           </p>
         </div>
       </div>
@@ -451,9 +451,9 @@ function CtaSection() {
     <section className="mx-auto max-w-6xl px-4 pb-10 sm:px-6 sm:pb-16">
       <div className="flex flex-col gap-5 rounded-sm bg-blue-50 p-5 dark:bg-blue-950 sm:flex-row sm:items-center sm:justify-between sm:p-8">
         <div>
-          <h2 className="mb-1.5 text-xl font-bold">准备就绪</h2>
+          <h2 className="mb-1.5 text-xl font-bold">下一页灵感，有处可去</h2>
           <p className="text-sm text-slate-500 dark:text-slate-400">
-            登录后安装浏览器插件、复制 MCP 配置，让收藏从浏览器流向你的知识工作台。
+            登录后装好插件、接上 MCP，让每一次收藏都物尽其用。
           </p>
         </div>
         <a

@@ -19,8 +19,8 @@ type Props = {
 };
 
 const sceneMenu: Array<{ label: string; href: string }> = [
-  { label: "个人主页", href: "/my-bookmarks" },
-  { label: "平台主页", href: "/" },
+  { label: "个人空间", href: "/my-bookmarks" },
+  { label: "公共书签库", href: "/" },
 ];
 
 const userMenu: Array<{ key: ManageKey; label: string; href: string }> = [

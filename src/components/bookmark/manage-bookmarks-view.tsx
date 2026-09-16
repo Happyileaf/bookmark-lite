@@ -111,7 +111,7 @@ export async function ManageBookmarksView({ scope, user, searchParams }: Props) 
       <header className="flex flex-wrap items-start justify-between gap-3">
         <div className="space-y-1">
           <h1 className="text-[20px] font-bold text-foreground">书签管理</h1>
-          <p className="text-[13px] text-muted-foreground">搜索、筛选、整理你的全部书签。</p>
+          <p className="text-[13px] text-muted-foreground">搜索、筛选、整理你的整个书签库。</p>
         </div>
         <CreateBookmarkModal action={createBookmarkAction.bind(null, scope)} tags={tags} />
       </header>

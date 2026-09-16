@@ -126,7 +126,7 @@ export function LoginForm({ nextUrl, registeredEmail }: Props) {
             </>
           ) : (
             <>
-              进入 Bookmark Lite
+              回到我的书签库
               <ArrowRight className="h-4 w-4" />
             </>
           )}

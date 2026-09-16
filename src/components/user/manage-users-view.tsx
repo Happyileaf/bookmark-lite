@@ -93,7 +93,7 @@ export async function ManageUsersView({
             用户管理
           </h1>
           <p className="mt-1 text-[13px] text-slate-500 dark:text-slate-400">
-            管理平台用户，控制角色与账号状态。
+            管理平台用户的角色与账号状态。
           </p>
         </div>
       </div>

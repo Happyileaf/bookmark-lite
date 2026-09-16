@@ -58,7 +58,7 @@ export default async function ResetPasswordPage({ searchParams }: PageProps) {
                   设置新密码
                 </h2>
                 <p className="mt-1 text-[13px] text-slate-500 dark:text-slate-400">
-                  为你的账户设置一个新的登录密码
+                  为你的账号设置一个新的登录密码
                 </p>
               </div>
               <ResetPasswordForm token={token} email={verifyResult.email} />

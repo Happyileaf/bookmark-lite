@@ -79,13 +79,13 @@ type DisplayHeading = {
  * @returns 视图态副标题文案
  * @example
  * getViewSubtitle({ scope: "APP", view: "all" });
- * // "所有人都可以浏览的公共书签库"
+ * // "收纳、分享、探索优质网站，让高价值链接持续沉淀。"
  */
 function getViewSubtitle(options: { scope: DataScope; view: DisplayView }): string {
   const { scope, view } = options;
   switch (view) {
     case "favorites":
-      return scope === "APP" ? "公共库中被收藏的书签" : "你标记为收藏的书签";
+      return scope === "APP" ? "公共书签库中被收藏的书签" : "你标记为收藏的书签";
     case "untagged":
       return "还没有添加标签归类的书签";
     case "recent_added":
@@ -94,7 +94,9 @@ function getViewSubtitle(options: { scope: DataScope; view: DisplayView }): stri
       return "按最近访问的时间排列";
     case "all":
     default:
-      return scope === "APP" ? "所有人都可以浏览的公共书签库" : "你保存的书签都在这里";
+      return scope === "APP"
+        ? "收纳、分享、探索优质网站，让高价值链接持续沉淀。"
+        : "你保存的书签都在这里";
   }
 }
 
@@ -471,7 +473,7 @@ export async function DisplayBookmarksView({ scope, user, searchParams }: Props)
                   </div>
                 ) : null}
                 <span className="ml-auto inline-flex shrink-0 items-center rounded-full bg-muted px-2.5 py-0.5 text-xs font-medium tabular-nums text-muted-foreground">
-                  共 {listResult.pagination.total} 个记录
+                  共 {listResult.pagination.total} 条书签
                 </span>
               </div>
             </div>

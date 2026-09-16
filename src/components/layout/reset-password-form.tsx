@@ -92,7 +92,7 @@ export function ResetPasswordForm({ token, email }: Props) {
 
       <div>
         <label className="mb-1 block text-[12.5px] font-medium text-slate-500 dark:text-slate-400">
-          账户
+          账号
         </label>
         <p className="text-[13px] font-medium text-slate-900 dark:text-slate-100">
           {email}

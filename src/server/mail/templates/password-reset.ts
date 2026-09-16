@@ -34,7 +34,7 @@ export const passwordResetTemplate: MailTemplate<PasswordResetPayload> = {
             <tr>
               <td style="padding-bottom:24px;">
                 <p style="margin:0;font-size:14px;line-height:1.6;color:#4b5c58;">
-                  我们收到你重置 Bookmark Lite 账户密码的请求。点击下方按钮即可设置新密码，链接有效期为 ${minutes} 分钟。
+                  我们收到你重置 Bookmark Lite 账号密码的请求。点击下方按钮即可设置新密码，链接有效期为 ${minutes} 分钟。
                 </p>
               </td>
             </tr>
@@ -72,7 +72,7 @@ export const passwordResetTemplate: MailTemplate<PasswordResetPayload> = {
     return [
       "Bookmark Lite · 重置你的密码",
       "",
-      "我们收到你重置 Bookmark Lite 账户密码的请求。",
+      "我们收到你重置 Bookmark Lite 账号密码的请求。",
       `请在 ${minutes} 分钟内通过以下链接设置新密码：`,
       "",
       payload.resetUrl,

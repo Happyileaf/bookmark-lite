@@ -32,21 +32,21 @@ export function SaveAppBookmarkModal({ action, bookmarkId, triggerClassName, tag
       <button
         type="button"
         onClick={() => setOpen(true)}
-        aria-label="保存到个人库"
-        title="保存到个人库"
+        aria-label="保存到个人空间"
+        title="保存到个人空间"
         className={
           triggerClassName ??
           "icon-btn text-muted-foreground hover:text-foreground"
         }
       >
         <BookmarkPlus className="h-4 w-4" />
-        <span className="sr-only">保存到个人库</span>
+        <span className="sr-only">保存到个人空间</span>
       </button>
 
       <Modal
         open={open}
         onClose={() => setOpen(false)}
-        title="保存到个人库"
+        title="保存到个人空间"
         width={420}
         footer={
           <>

@@ -107,7 +107,7 @@ export async function ManageTagsView({ scope, user, searchParams }: Props) {
             标签管理
           </h1>
           <p className="mt-1 text-[13px] text-slate-500 dark:text-slate-400">
-            管理所有标签，让书签分类井井有条。
+            标签是书签库的索引。管好它们，找什么都快。
           </p>
         </div>
         <div className="flex shrink-0 items-center gap-2">

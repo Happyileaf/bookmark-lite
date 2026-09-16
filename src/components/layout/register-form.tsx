@@ -402,7 +402,7 @@ export function RegisterForm() {
             </>
           ) : (
             <>
-              进入 Bookmark Lite
+              开启我的书签库
               <ArrowRight className="h-4 w-4" />
             </>
           )}

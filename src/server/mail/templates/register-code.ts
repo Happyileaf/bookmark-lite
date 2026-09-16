@@ -51,7 +51,7 @@ export const registerCodeTemplate: MailTemplate<RegisterCodePayload> = {
             <tr>
               <td style="padding-bottom:16px;">
                 <p style="margin:0;font-size:13px;line-height:1.6;color:#7a8a86;">
-                  为了你的账户安全，请勿将验证码泄露给他人。
+                  为了你的账号安全，请勿将验证码泄露给他人。
                 </p>
               </td>
             </tr>
@@ -80,7 +80,7 @@ export const registerCodeTemplate: MailTemplate<RegisterCodePayload> = {
       `你的注册验证码是：${payload.code}`,
       `验证码有效期为 ${minutes} 分钟，请尽快完成注册。`,
       "",
-      "为了你的账户安全，请勿将验证码泄露给他人。",
+      "为了你的账号安全，请勿将验证码泄露给他人。",
       "如果你没有注册过 Bookmark Lite 账号，请忽略此邮件。",
       "",
       "© 2026 Bookmark Lite · 保留所有权利",

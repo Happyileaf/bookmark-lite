@@ -7,8 +7,9 @@ import { ToastProvider } from "@/components/ui/toast";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Bookmark Lite",
-  description: "标签驱动的书签管理工具",
+  title: "Bookmark Lite · 连接信息，轻点收藏",
+  description:
+    "一键收藏网页，自动整理成你的第二大脑；公共书签库持续收纳、分享优质网站，沉淀值得探索的高价值链接。",
 };
 
 export const viewport: Viewport = {
