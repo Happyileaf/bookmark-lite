@@ -54,6 +54,15 @@
   --bookmark-state-error: #ef4444;
   --bookmark-state-info: #3d91ff;
 
+  /* 细点阵图案（浅色）：1px 圆点，点径与间距约 1:10，隐喻索引卡打孔 */
+  --texture-pattern-dots: radial-gradient(rgba(15, 23, 42, 0.1) 1px, transparent 1.3px);
+  /* 细网格线图案（浅色）：横竖两组 1px 直线，隐喻档案格纸 */
+  --texture-pattern-grid:
+    linear-gradient(rgba(15, 23, 42, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(15, 23, 42, 0.05) 1px, transparent 1px);
+  /* 噪点颗粒图案（浅色）：内联 SVG feTurbulence 生成黑色细颗粒，无图片请求 */
+  --texture-pattern-noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.5 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.16'/%3E%3C/svg%3E");
+
   --scrollbar-size: 10px;
   --scrollbar-thumb: rgba(15, 23, 42, 0.04);
   --scrollbar-thumb-hover: rgba(15, 23, 42, 0.26);
@@ -74,6 +83,15 @@
   --bookmark-input: #334155;
   --bookmark-ring: #338bff;
 
+  /* 细点阵图案（深色）：浅色圆点 */
+  --texture-pattern-dots: radial-gradient(rgba(226, 232, 240, 0.12) 1px, transparent 1.3px);
+  /* 细网格线图案（深色）：浅色直线 */
+  --texture-pattern-grid:
+    linear-gradient(rgba(226, 232, 240, 0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(226, 232, 240, 0.07) 1px, transparent 1px);
+  /* 噪点颗粒图案（深色）：内联 SVG 生成白色细颗粒 */
+  --texture-pattern-noise: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.5 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.13'/%3E%3C/svg%3E");
+
   --scrollbar-thumb: rgba(226, 232, 240, 0.08);
   --scrollbar-thumb-hover: rgba(226, 232, 240, 0.34);
 }
@@ -91,7 +109,7 @@
 
   body {
     margin: 0;
-    background: var(--color-background);
+    background-color: var(--color-background);
     color: var(--color-foreground);
     font-family:
       Inter,
@@ -99,6 +117,26 @@
       "Microsoft YaHei",
       system-ui,
       sans-serif;
+  }
+
+  /*
+   * 背景纹理系统：由 html[data-texture] 驱动，纹理层置于底色之上、卡片内容之下
+   * 纹理均为全页均匀平铺图案，保证页面各区域颜色一致
+   * None 模式不命中以下任何选择器，保持纯色基线
+   */
+  html[data-texture="Dots"] body {
+    background-image: var(--texture-pattern-dots);
+    background-size: 16px 16px;
+  }
+
+  html[data-texture="Grid"] body {
+    background-image: var(--texture-pattern-grid);
+    background-size: 20px 20px;
+  }
+
+  html[data-texture="Noise"] body {
+    background-image: var(--texture-pattern-noise);
+    background-size: 160px 160px;
   }
 
   td,
@@ -619,6 +657,28 @@
   }
   .dark .page-meta {
     color: #64748b;
+  }
+
+  /* 纹理预览色板：复用全站纹理令牌，按色板尺寸缩小平铺密度，随明暗主题自动切换 */
+  .texture-swatch {
+    width: 46px;
+    height: 30px;
+    flex-shrink: 0;
+    border: 1px solid var(--bookmark-border);
+    border-radius: 4px;
+    background-color: var(--bookmark-background);
+  }
+  .texture-swatch-dots {
+    background-image: var(--texture-pattern-dots);
+    background-size: 8px 8px;
+  }
+  .texture-swatch-grid {
+    background-image: var(--texture-pattern-grid);
+    background-size: 9px 9px;
+  }
+  .texture-swatch-noise {
+    background-image: var(--texture-pattern-noise);
+    background-size: 72px 72px;
   }
 }
 

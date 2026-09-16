@@ -436,7 +436,7 @@ export async function DisplayBookmarksView({ scope, user, searchParams }: Props)
       ) : null}
 
       <div className="flex min-h-0 min-w-0 flex-col">
-        <div className="shrink-0 border-b border-slate-200 px-4 py-6 dark:border-slate-800 sm:px-6 sm:py-8 lg:px-8">
+        <div className="shrink-0 border-b border-slate-200 bg-background px-4 py-6 dark:border-slate-800 sm:px-6 sm:py-8 lg:px-8">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
             <div className="min-w-0">
               <h1 className="truncate text-2xl font-bold tracking-tight text-foreground sm:text-3xl">{heading.title}</h1>
