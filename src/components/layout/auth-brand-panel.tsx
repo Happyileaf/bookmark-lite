@@ -24,7 +24,7 @@ export function AuthBrandPanel() {
       <div className="relative z-10 mx-auto w-full max-w-lg px-16 pb-16">
         <div className="mb-12 flex items-center gap-3">
           <Image
-            src="/logo_assets/logo.png"
+            src="/logo_assets/logo.svg"
             alt="Bookmark Lite"
             width={64}
             height={64}
@@ -83,7 +83,7 @@ export function AuthMobileBrand({ withIntro = true }: MobileBrandProps) {
     <div className="relative z-10 mb-6 w-full max-w-[420px] lg:hidden">
       <div className="mb-4 flex items-center gap-2.5">
         <Image
-          src="/logo_assets/logo.png"
+          src="/logo_assets/logo.svg"
           alt="Bookmark Lite"
           width={36}
           height={36}

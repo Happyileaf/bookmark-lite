@@ -42,7 +42,7 @@ export function HeaderActions({ isAuthed, name, email, isAdmin, userLabel }: Pro
   const renderBrand = (className: string) => (
     <Link href="/bookmarks" className={className}>
       <Image
-        src="/logo_assets/logo.png"
+        src="/logo_assets/logo.svg"
         alt="Bookmark Lite Logo"
         width={28}
         height={28}
