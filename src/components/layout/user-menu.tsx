@@ -30,7 +30,7 @@ type MenuItem = {
 
 const MENU_ITEMS: MenuItem[] = [
   { label: "个人主页", href: "/my-bookmarks", Icon: Bookmark },
-  { label: "个人空间", href: "/settings", Icon: Settings },
+  { label: "内容管理", href: "/settings", Icon: Settings },
   { label: "平台主页", href: "/bookmarks", Icon: Globe },
   { label: "平台管理", href: "/admin/manage/bookmarks", Icon: LayoutDashboard, adminOnly: true },
 ];

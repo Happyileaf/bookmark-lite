@@ -13,6 +13,7 @@ import { Prisma, type DataScope } from "@prisma/client";
 import { saveAppBookmarkToUserAction } from "@/actions/bookmark.actions";
 import { BookmarksFilterDrawer } from "@/components/bookmark/bookmarks-filter-drawer";
 import { InfiniteBookmarksGrid } from "@/components/bookmark/infinite-bookmarks-grid";
+import { CountBadge } from "@/components/ui";
 import { DEFAULT_PAGE_SIZE } from "@/lib/constants";
 import type { SessionUser } from "@/server/auth/session";
 import { bookmarkService } from "@/server/services/bookmark.service";
@@ -344,9 +345,7 @@ export async function DisplayBookmarksView({ scope, user, searchParams }: Props)
                 >
                   <Icon className="h-[18px] w-[18px] shrink-0" />
                   <span className="flex-1 truncate">{item.label}</span>
-                  <span className={`text-xs ${active ? "text-primary-foreground/70" : "text-muted-foreground"}`}>
-                    {item.count}
-                  </span>
+                  <CountBadge count={item.count} active={active} />
                 </Link>
               );
             })}

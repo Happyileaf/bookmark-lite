@@ -29,3 +29,6 @@ export type { VisibilityBadgeProps } from "./visibility-badge";
 
 export { TagChip } from "./tag-chip";
 export type { TagChipProps } from "./tag-chip";
+
+export { CountBadge } from "./count-badge";
+export type { CountBadgeProps } from "./count-badge";

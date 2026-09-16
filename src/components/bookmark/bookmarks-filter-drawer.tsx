@@ -5,6 +5,7 @@ import type { ReactNode } from "react";
 import { Settings } from "lucide-react";
 import { SideDrawer } from "@/components/layout/side-drawer";
 import { ThemeSwitch } from "@/components/layout/theme-switch";
+import { CountBadge } from "@/components/ui";
 
 /**
  * 抽屉筛选项（快捷导航或标签）。
@@ -64,9 +65,13 @@ export function BookmarksFilterDrawer({ aggregateItems, tagItems }: BookmarksFil
         />
       ) : null}
       <span className="flex-1 truncate">{item.label}</span>
-      <span className={`text-xs ${item.active ? "text-primary-foreground/70" : "text-muted-foreground"}`}>
-        {item.count}
-      </span>
+      {compact ? (
+        <span className={`text-xs ${item.active ? "text-primary-foreground/70" : "text-muted-foreground"}`}>
+          {item.count}
+        </span>
+      ) : (
+        <CountBadge count={item.count} active={item.active} />
+      )}
     </Link>
   );
 
