@@ -49,7 +49,7 @@ const analyticsMenu: Array<{ key: ManageKey; label: string; href: string }> = [
 export function ManageSceneShell({ scope, current, children }: Props) {
   const isAppScope = scope === "APP";
   const menu = isAppScope ? appMenu : userMenu;
-  const menuGroupLabel = isAppScope ? "平台管理" : "管理菜单";
+  const menuGroupLabel = isAppScope ? "平台管理" : "内容管理";
 
   return (
     <section className="flex min-h-0 w-full flex-1 flex-col overflow-y-auto overflow-x-clip lg:flex-row lg:items-stretch lg:overflow-x-visible">
