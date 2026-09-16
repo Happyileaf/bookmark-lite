@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import type { ReactNode } from "react";
 import DistributionList from "@/components/analytics/distribution-list";
+import PieChart from "@/components/analytics/pie-chart";
 import RankingList from "@/components/analytics/ranking-list";
 import SeriesChart from "@/components/analytics/series-chart";
 import { StatChip } from "@/components/ui/stat-chip";
@@ -195,13 +196,13 @@ export default function OverviewView({ overview }: OverviewViewProps) {
 
       <section className="mt-4 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <SectionCard title="设备分布" description="近 30 天">
-          <DistributionList items={overview.deviceDistribution} />
+          <PieChart items={overview.deviceDistribution} />
         </SectionCard>
         <SectionCard title="来源分布" description="近 30 天前 10 名">
-          <DistributionList items={overview.sourceDistribution} />
+          <PieChart items={overview.sourceDistribution} />
         </SectionCard>
         <SectionCard title="书签可见范围" description="全量存量">
-          <DistributionList items={overview.scopeDistribution} />
+          <PieChart items={overview.scopeDistribution} />
         </SectionCard>
         <SectionCard title="热门标签" description="按关联书签数前 8 名">
           <DistributionList
@@ -234,6 +235,7 @@ export default function OverviewView({ overview }: OverviewViewProps) {
               title: domain.name,
               value: domain.count,
               unit: "个书签",
+              href: `https://${domain.name}`,
             }))}
           />
         </SectionCard>
