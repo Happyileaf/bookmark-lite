@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
 import {
   Bookmark,
+  ChevronDown,
   Globe,
   LayoutDashboard,
   LogOut,
@@ -87,14 +88,25 @@ export function UserMenu({ name, email, isAdmin, userLabel }: UserMenuProps) {
     <div ref={containerRef} className="relative">
       <button
         type="button"
-        className="flex h-7 w-7 items-center justify-center rounded-full bg-primary text-[10px] font-medium leading-none tracking-tight text-primary-foreground transition-opacity hover:opacity-85"
+        className="flex items-center gap-2.5 rounded-full px-2.5 py-1 transition-colors hover:bg-muted"
         aria-haspopup="menu"
         aria-expanded={isOpen}
         aria-controls={menuId}
         title="账户"
         onClick={() => setIsOpen((value) => !value)}
       >
-        {userLabel}
+        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-medium leading-none tracking-tight text-primary-foreground">
+          {userLabel}
+        </span>
+        <span className="hidden max-w-36 truncate text-[13px] font-medium text-foreground sm:block">
+          {displayName}
+        </span>
+        <ChevronDown
+          className={`hidden h-4 w-4 shrink-0 text-muted-foreground transition-transform sm:block ${
+            isOpen ? "rotate-180" : ""
+          }`}
+          aria-hidden="true"
+        />
       </button>
 
       {isOpen ? (
