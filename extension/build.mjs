@@ -78,7 +78,12 @@ if (isWatch) {
   await esbuild.build(buildOptions);
   copyStaticAssets();
   console.log("[extension] build done");
-  const { versionedZip, latestZip } = packageExtension();
-  console.log(`[extension] packaged v${version} -> ${versionedZip}`);
-  console.log(`[extension] latest -> ${latestZip}`);
+
+  if (nodeEnv !== "production") {
+    console.warn("[extension] 非 production 构建，已跳过分发打包；发布请使用 pnpm run build");
+  } else {
+    const { versionedZip, latestZip } = packageExtension();
+    console.log(`[extension] packaged v${version} -> ${versionedZip}`);
+    console.log(`[extension] latest -> ${latestZip}`);
+  }
 }
