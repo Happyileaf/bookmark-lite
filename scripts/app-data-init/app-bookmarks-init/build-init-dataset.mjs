@@ -2,8 +2,8 @@ import { createHash } from "node:crypto";
 import { INITIAL_APP_BOOKMARKS_GROUPS, INITIAL_APP_TAGS } from "./initial-bookmarks-and-tags.mjs";
 
 export const APP_SCOPE_KEY = "APP";
-export const EXPECTED_TAG_COUNT = 12;
-export const EXPECTED_BOOKMARK_COUNT = 182;
+export const EXPECTED_TAG_COUNT = 20;
+export const EXPECTED_BOOKMARK_COUNT = 500;
 
 function uuidFromSeed(seed) {
   const hex = createHash("md5").update(seed).digest("hex");
@@ -19,11 +19,12 @@ function canonicalizeUrl(rawUrl) {
   return url.toString();
 }
 
-// 为书签生成 createdAt，数组中靠前的书签时间更晚（因为默认排序 createdAt DESC）。
-// 使用秒级偏移，避免全部相同导致排序退化到 id。
-
+/**
+ * 为书签生成 createdAt，数组中靠前的书签时间更晚（默认排序为 createdAt DESC）。
+ * 使用秒级偏移，避免全部相同导致排序退化到 id。
+ */
 function createdAt(indexFromEnd) {
-  // indexFromEnd 越大 = 数组越靠后 = 时间越早
+  /** indexFromEnd 越大代表数组越靠后，对应时间越早 */
   const base = new Date();
   base.setSeconds(base.getSeconds() + (EXPECTED_BOOKMARK_COUNT - 1 - indexFromEnd));
   return base.toISOString();
