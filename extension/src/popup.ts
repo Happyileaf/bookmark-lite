@@ -180,44 +180,45 @@ function render(): void {
   const statusIco = showStatus ? statusIcon(state.status) : "";
 
   root.innerHTML = `
-    <div class="wrap">
-      <div class="header">
+    <div class="popup-wrap ui-fade-in">
+      <div class="popup-header">
         <div class="logo"><img src="icons/logo-48.png" alt="Bookmark Lite" /></div>
         <h1>Bookmark Lite</h1>
-        <span id="conn-badge" class="conn ${connClass}" title="点击打开设置">
+        <button id="conn-badge" class="conn clickable ${connClass}" title="点击打开设置">
           <span class="dot"></span>${connLabel}
-        </span>
+        </button>
       </div>
 
-      <button id="save-current" class="save-btn" ${isSaving ? "disabled" : ""}>
+      <button id="save-current" class="btn-primary popup-save" ${isSaving ? "disabled" : ""}>
         <span class="${isSaving ? "spin" : ""}">${isSaving ? ICONS.loader : ICONS.plus}</span>
         ${isSaving ? "收藏中…" : "收藏这一页"}
       </button>
 
-      <div class="status ${showStatus ? statusCls : "empty"}">
+      <div class="status popup-status ${showStatus ? statusCls : "empty"}" role="status" aria-live="polite">
         ${showStatus ? `<span>${statusIco}</span><span>${statusMsg}</span>` : ""}
       </div>
 
-      <div class="field">
-        <div class="toggle-row">
-          <div class="toggle-text">
+      <div class="popup-field">
+        <div class="popup-toggle-row">
+          <div class="popup-toggle-text">
             <span class="t">自动同步</span>
             <span class="d">浏览器原生收藏自动收进书签库</span>
           </div>
-          <button id="sync-toggle" class="switch ${state.syncEnabled ? "on" : ""}">
+          <button id="sync-toggle" class="switch ${state.syncEnabled ? "on" : ""}"
+            role="switch" aria-checked="${state.syncEnabled}" aria-label="自动同步">
             <span class="knob"></span>
           </button>
         </div>
         ${
           state.queueCount > 0
-            ? `<div id="queue-note" class="queue-note">${ICONS.refresh}<span>${state.queueCount} 条待重试，重新打开时自动重试</span></div>`
+            ? `<button id="queue-note" class="popup-queue-note">${ICONS.refresh}<span>${state.queueCount} 条待重试，重新打开时自动重试</span></button>`
             : ""
         }
       </div>
 
-      <div id="settings-entry" class="settings-entry">
+      <button id="settings-entry" class="popup-settings-entry">
         ${ICONS.settings}<span>设置</span>
-      </div>
+      </button>
     </div>
   `;
 

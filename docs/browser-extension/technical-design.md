@@ -332,7 +332,7 @@ extension/
 ```jsonc
 {
   "manifest_version": 3,
-  "name": "Bookmark Lite Sync",
+  "name": "Bookmark Lite Extension",
   "version": "1.0.0",
   "permissions": ["bookmarks", "storage", "activeTab", "tabs"],
   "host_permissions": ["<平台域名>/*"],

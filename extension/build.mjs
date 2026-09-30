@@ -35,12 +35,13 @@ const buildOptions = {
 /**
  * 复制静态资源到 dist
  *
- * description popup.html / options.html / icons 直接拷贝；manifest.json 注入 package.json 的版本号后写入
+ * description popup.html / options.html / ui.css / icons 直接拷贝；manifest.json 注入 package.json 的版本号后写入
  */
 function copyStaticAssets() {
   mkdirSync(resolve(__dirname, "dist"), { recursive: true });
   cpSync(resolve(__dirname, "popup.html"), resolve(__dirname, "dist", "popup.html"));
   cpSync(resolve(__dirname, "options.html"), resolve(__dirname, "dist", "options.html"));
+  cpSync(resolve(__dirname, "ui.css"), resolve(__dirname, "dist", "ui.css"));
   const manifest = JSON.parse(readFileSync(resolve(__dirname, "manifest.json"), "utf8"));
   manifest.version = version;
   writeFileSync(resolve(__dirname, "dist", "manifest.json"), JSON.stringify(manifest, null, 2));

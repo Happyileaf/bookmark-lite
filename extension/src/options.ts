@@ -190,9 +190,9 @@ function render(): void {
   const queueCount = state.queueItems.length;
 
   root.innerHTML = `
-    <div class="container">
-      <div class="card">
-        <div class="card-header">
+    <div class="options-container ui-fade-in">
+      <div class="options-card">
+        <div class="options-card-header">
           <div class="logo"><img src="icons/logo-48.png" alt="Bookmark Lite" /></div>
           <h1>Bookmark Lite 设置</h1>
           <span class="conn ${connClass}">
@@ -200,36 +200,39 @@ function render(): void {
           </span>
         </div>
 
-        <div class="section-title">API Token</div>
-        <div class="field">
-          <span class="label">API Token</span>
-          <div class="token-row">
-            <div class="input-wrap">
-              <input id="token-input" type="${state.tokenVisible ? "text" : "password"}"
-                value="${escapeHtml(state.token)}" placeholder="粘贴 Token 明文" class="token-input" />
-              <button id="toggle-eye" class="eye" title="显示/隐藏">
+        <div class="options-section-title">API Token</div>
+        <div class="options-field">
+          <label class="options-label" for="token-input">API Token</label>
+          <div class="options-token-row">
+            <div class="options-input-wrap">
+              <input id="token-input" class="input"
+                type="${state.tokenVisible ? "text" : "password"}"
+                value="${escapeHtml(state.token)}" placeholder="粘贴 Token 明文"
+                autocomplete="off" spellcheck="false" />
+              <button id="toggle-eye" class="options-eye" title="显示/隐藏" aria-label="显示或隐藏 Token">
                 ${state.tokenVisible ? ICONS.eyeOff : ICONS.eye}
               </button>
             </div>
-            <button id="save-token" class="btn-primary" ${verifying ? "disabled" : ""}>
+            <button id="save-token" class="btn-primary options-save" ${verifying ? "disabled" : ""}>
               ${verifying ? `<span class="spin">${ICONS.loader}</span>校验中` : "保存"}
             </button>
           </div>
-          <div class="status ${showStatus || verifying ? statusCls : "empty"}">
+          <div class="status options-status ${showStatus || verifying ? statusCls : "empty"}"
+            role="status" aria-live="polite">
             ${showStatus || verifying ? `<span class="${verifying ? "spin" : ""}">${statusIco}</span><span>${statusMsg}</span>` : ""}
           </div>
         </div>
       </div>
 
-      <div id="queue" class="card">
-        <div class="queue-header">
+      <div id="queue" class="options-card">
+        <div class="options-queue-header">
           <div>
-            <div class="section-title">同步失败</div>
-            <div class="queue-count">${queueCount} 条待重试</div>
+            <div class="options-section-title">同步失败</div>
+            <div class="options-queue-count">${queueCount} 条待重试</div>
           </div>
           ${
             queueCount > 0
-              ? `<div class="queue-actions">
+              ? `<div class="options-queue-actions">
                   <button id="retry-all" class="btn-ghost">
                     ${ICONS.refresh}<span>全部重试</span>
                   </button>
@@ -243,16 +246,16 @@ function render(): void {
 
         ${
           queueCount === 0
-            ? `<div class="queue-empty">没有待重试的收藏，一切正常</div>`
-            : `<div class="queue-list">
+            ? `<div class="options-queue-empty">没有待重试的收藏，一切正常</div>`
+            : `<div class="options-queue-list">
                 ${state.queueItems
                   .map(
                     (item) => `
-                  <div class="queue-item">
-                    <div class="queue-item-title">${escapeHtml(item.payload.title)}</div>
-                    <div class="queue-item-url">${escapeHtml(item.payload.url)}</div>
-                    <div class="queue-item-meta">
-                      <span class="queue-item-info">重试 ${item.retryCount}/${storage.MAX_RETRY_COUNT} · ${formatTime(item.addedAt)}</span>
+                  <div class="options-queue-item">
+                    <div class="options-queue-item-title">${escapeHtml(item.payload.title)}</div>
+                    <div class="options-queue-item-url">${escapeHtml(item.payload.url)}</div>
+                    <div class="options-queue-item-meta">
+                      <span class="options-queue-item-info">重试 ${item.retryCount}/${storage.MAX_RETRY_COUNT} · ${formatTime(item.addedAt)}</span>
                       <button class="btn-ghost retry-one" data-url="${escapeHtml(item.payload.url)}">重试</button>
                     </div>
                   </div>`,
@@ -262,7 +265,7 @@ function render(): void {
         }
       </div>
 
-      <div class="footer">Bookmark Lite Extension</div>
+      <div class="options-footer">Bookmark Lite Extension</div>
     </div>
   `;
 
