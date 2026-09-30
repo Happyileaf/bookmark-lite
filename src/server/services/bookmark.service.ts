@@ -1,4 +1,5 @@
 import { ANALYTICS_EVENT_NAMES } from "@/lib/analytics/constants";
+import { BOOKMARK_VISIT_DEDUP_WINDOW_MS, DEFAULT_RANDOM_BATCH_SIZE } from "@/lib/constants";
 import { normalizeUrl } from "@/lib/url-normalize";
 import type { SessionUser } from "@/server/auth/session";
 import { prisma } from "@/server/db/prisma";
@@ -14,6 +15,7 @@ import {
   bookmarkQuerySchema,
   bookmarkUpdateSchema,
 } from "@/server/validators/bookmark.schema";
+import { randomInt } from "node:crypto";
 import type { DataScope, Prisma } from "@prisma/client";
 
 type ListArgs = {
@@ -23,7 +25,14 @@ type ListArgs = {
     includeHidden: boolean;
     q: string;
     tagId: string;
-    view: "all" | "favorites" | "untagged" | "recent_added" | "recent_visited";
+    view:
+      | "all"
+      | "favorites"
+      | "untagged"
+      | "recent_added"
+      | "recent_visited"
+      | "hot"
+      | "random";
     sort:
       | "default"
       | "created_desc"
@@ -83,6 +92,21 @@ async function findOrCreateTagsInTx(
   return tags;
 }
 
+/**
+ * 原地洗牌书签 ID 数组
+ *
+ * @description Fisher-Yates 洗牌并以 node:crypto 的 randomInt 取随机下标，
+ * 相比 Math.random 取模无模偏差，保证候选池内每个位置等概率；
+ * 仅供 getRandomList 使用，池规模为轻量级（数百至数千），全量洗牌开销可忽略
+ * @param ids - 待洗牌的 ID 数组（原地修改）
+ */
+function shuffleIds(ids: string[]) {
+  for (let i = ids.length - 1; i > 0; i -= 1) {
+    const j = randomInt(i + 1);
+    [ids[i], ids[j]] = [ids[j], ids[i]];
+  }
+}
+
 export const bookmarkService = {
   async list(args: ListArgs) {
     assertCanReadScope(args.scope, args.user);
@@ -96,13 +120,18 @@ export const bookmarkService = {
     const parsed = bookmarkQuerySchema.parse({
       ...args.query,
     });
+    /**
+     * 随机发现由专用接口（getRandom）承接，列表查询中的 random 仅作防御性放行，
+     * 归一化为 all 走普通列表，避免 repo 收到未定义语义的视图
+     */
+    const view = parsed.view === "random" ? "all" : parsed.view;
     const result = await bookmarkRepo.list({
       scope: args.scope,
       ownerUserId,
       includeHidden: canIncludeHidden,
       q: parsed.q,
       tagId: parsed.tagId,
-      view: parsed.view,
+      view,
       sort: parsed.sort,
       page: parsed.page,
       pageSize: parsed.pageSize,
@@ -128,6 +157,110 @@ export const bookmarkService = {
     return bookmarkRepo.countByView({
       scope: args.scope,
       ownerUserId,
+    });
+  },
+
+  /**
+   * 记录公共书签访问事件（fire-and-forget）
+   *
+   * @description 热门书签统计的唯一数据来源。仅当书签为公共库可见书签
+   * （scope=APP、ownerUserId=null、isVisible=true）时计入；非目标书签静默跳过，
+   * 不抛错也不提示，避免暴露书签存在性。防刷规则：同一访客（visitorKey）对同一书签
+   * 在 BOOKMARK_VISIT_DEDUP_WINDOW_MS 内最多计 1 次。刻意不更新书签 lastVisitedAt
+   * （那是「最近访问」视图的排序依据，与热门统计解耦），也不写审计日志与埋点
+   * @param input - 访问上报入参
+   * @param input.bookmarkId - 被访问的书签 ID
+   * @param input.userId - 当前登录用户 ID，匿名访问时为 null
+   * @param input.visitorKey - 匿名访客标识（HttpOnly Cookie 中的 UUID）
+   * @returns 无返回值（是否写入由调用方感知为无需关心）
+   */
+  async recordVisit(input: {
+    bookmarkId: string;
+    userId: string | null;
+    visitorKey: string;
+  }) {
+    const bookmark = await bookmarkRepo.findById(input.bookmarkId);
+    if (
+      !bookmark ||
+      bookmark.scope !== "APP" ||
+      bookmark.ownerUserId !== null ||
+      !bookmark.isVisible
+    ) {
+      return;
+    }
+
+    const hasRecentVisit = await bookmarkRepo.hasRecentVisit({
+      bookmarkId: input.bookmarkId,
+      visitorKey: input.visitorKey,
+      since: new Date(Date.now() - BOOKMARK_VISIT_DEDUP_WINDOW_MS),
+    });
+    if (hasRecentVisit) {
+      return;
+    }
+
+    await bookmarkRepo.createVisit({
+      bookmarkId: input.bookmarkId,
+      userId: input.userId,
+      visitorKey: input.visitorKey,
+    });
+  },
+
+  /**
+   * 随机抽取一批公共书签
+   *
+   * @description 随机发现视图以列表形式一次展示一批（默认 DEFAULT_RANDOM_BATCH_SIZE 条）
+   * 随机书签：候选池为公共库可见书签（scope=APP、ownerUserId=null、isVisible=true，
+   * 可按标签限定），优先从最近未展示过（不在 excludeIds 中）的候选里等概率抽取，
+   * 不足 count 时由最近展示过的候选补齐，兼顾「短时间内尽量不重复」与「批大小尽量凑满」；
+   * 批内 ID 天然不重复，返回顺序即抽取顺序，池为空时返回空数组。
+   * 洗牌使用 node:crypto 的 randomInt 而非 Math.random 取模，避免模偏差破坏等概率
+   * @param input - 随机发现入参
+   * @param input.tagId - 可选标签 ID，存在时候选池限定为挂有该标签的书签
+   * @param input.excludeIds - 最近已展示过的书签 ID，作为「再来一批」的排除条件
+   * @param input.count - 本批抽取数量，缺省为 DEFAULT_RANDOM_BATCH_SIZE
+   * @returns 与 list 条目同构的书签对象数组（含 tags），候选池为空时返回空数组
+   */
+  async getRandomList(input: { tagId?: string; excludeIds?: string[]; count?: number }) {
+    const candidates = await bookmarkRepo.listRandomCandidateIds(input.tagId);
+    if (candidates.length === 0) {
+      return [];
+    }
+
+    /**
+     * 候选池按「是否最近展示过」分为两组并各自洗牌，拼接后取前 count 个：
+     * 新面孔优先且组内等概率，不足 count 时自动由最近展示过的候选补齐，
+     * 兼顾「短时间内尽量不重复」与「批大小尽量凑满」
+     */
+    const excludedIds = new Set(input.excludeIds ?? []);
+    const freshIds: string[] = [];
+    const shownIds: string[] = [];
+    for (const candidate of candidates) {
+      if (excludedIds.has(candidate.id)) {
+        shownIds.push(candidate.id);
+      } else {
+        freshIds.push(candidate.id);
+      }
+    }
+    shuffleIds(freshIds);
+    shuffleIds(shownIds);
+
+    const count = Math.min(input.count ?? DEFAULT_RANDOM_BATCH_SIZE, candidates.length);
+    const pickedIds = [...freshIds, ...shownIds].slice(0, count);
+    const bookmarks = await bookmarkRepo.listByIdsWithTags(pickedIds);
+
+    /** findMany 不保序，按抽取顺序重排，保证列表首条即首个被抽中的书签 */
+    const bookmarkById = new Map(bookmarks.map((bookmark) => [bookmark.id, bookmark]));
+    return pickedIds.flatMap((id) => {
+      const bookmark = bookmarkById.get(id);
+      if (!bookmark) {
+        return [];
+      }
+      return [
+        {
+          ...bookmark,
+          tags: bookmark.bookmarkTags.map((item) => item.tag),
+        },
+      ];
     });
   },
 

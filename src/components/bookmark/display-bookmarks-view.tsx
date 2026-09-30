@@ -3,8 +3,10 @@ import Link from "next/link";
 import {
   Clock,
   Eye,
+  Flame,
   LayoutGrid,
   Search,
+  Shuffle,
   Star,
   X,
   type LucideIcon,
@@ -13,8 +15,9 @@ import { Prisma, type DataScope } from "@prisma/client";
 import { saveAppBookmarkToUserAction } from "@/actions/bookmark.actions";
 import { BookmarksFilterDrawer } from "@/components/bookmark/bookmarks-filter-drawer";
 import { InfiniteBookmarksGrid } from "@/components/bookmark/infinite-bookmarks-grid";
+import RandomDiscoveryView from "@/components/bookmark/random-discovery-view";
 import { CountBadge } from "@/components/ui";
-import { DEFAULT_PAGE_SIZE } from "@/lib/constants";
+import { DEFAULT_PAGE_SIZE, DEFAULT_RANDOM_BATCH_SIZE, HOT_VISIT_WINDOW_DAYS } from "@/lib/constants";
 import type { SessionUser } from "@/server/auth/session";
 import { bookmarkService } from "@/server/services/bookmark.service";
 import { tagService } from "@/server/services/tag.service";
@@ -27,22 +30,29 @@ type Props = {
   searchParams: SearchParams;
 };
 
-type DisplayView = "all" | "favorites" | "untagged" | "recent_added" | "recent_visited";
+type DisplayView = "all" | "favorites" | "untagged" | "recent_added" | "recent_visited" | "hot" | "random";
 type RuntimeTarget = "local" | "vercel";
 
-/** 展示视图的默认中文名称映射（untagged 无导航入口，仅兼容直达链接；all 与 favorites 由 getDisplayViewLabel 按数据范围覆盖） */
+/**
+ * 展示视图的默认中文名称映射（untagged/recent_visited 无导航入口，仅兼容直达链接；
+ * all/favorites/recent_added 由 getDisplayViewLabel 按数据范围覆盖）
+ */
 const DISPLAY_VIEW_LABELS: Record<DisplayView, string> = {
   all: "全部书签",
   favorites: "收藏",
   untagged: "未分类",
   recent_added: "最近添加",
   recent_visited: "最近访问",
+  hot: "热门",
+  random: "随机发现",
 };
 
 /**
  * 生成展示视图在快捷导航与主标题中的名称
  *
- * @description 部分视图按数据范围归属命名：「全部书签」在个人库为「个人空间」、在公共库为品牌名「Bookmark Lite」；「收藏」在个人库为「我的收藏」，公共库收藏是全库级标记、不属于个人，保持「收藏」；其余视图使用默认名称
+ * @description 部分视图按数据范围归属命名：「全部书签」在个人库为「个人空间」、在公共库为品牌名「Bookmark Lite」；
+ * 「收藏」在个人库为「我的收藏」，公共库收藏是全库级标记，产品上作为精选入口展示为「推荐」；
+ * 「最近添加」在公共库缩短为「最新」以适配快捷导航的信息密度；其余视图使用默认名称
  * @param scope - 数据范围（APP 公共库 / USER 个人库）
  * @param view - 展示视图
  * @returns 视图的显示名称
@@ -50,13 +60,16 @@ const DISPLAY_VIEW_LABELS: Record<DisplayView, string> = {
  * getDisplayViewLabel("USER", "all"); // "个人空间"
  * getDisplayViewLabel("APP", "all"); // "Bookmark Lite"
  * getDisplayViewLabel("USER", "favorites"); // "我的收藏"
+ * getDisplayViewLabel("APP", "favorites"); // "推荐"
  */
 function getDisplayViewLabel(scope: DataScope, view: DisplayView): string {
   switch (view) {
     case "all":
       return scope === "USER" ? "个人空间" : "Bookmark Lite";
     case "favorites":
-      return scope === "USER" ? "我的收藏" : "收藏";
+      return scope === "USER" ? "我的收藏" : "推荐";
+    case "recent_added":
+      return scope === "USER" ? "最近添加" : "最新";
     default:
       return DISPLAY_VIEW_LABELS[view];
   }
@@ -72,26 +85,31 @@ type DisplayHeading = {
 /**
  * 生成视图态（未搜索、未按标签筛选）的副标题
  *
- * @description 解释该视图展示的内容范围与排序方式，不含数量信息（数量由搜索框下方的计数徽标独立展示）
+ * @description 解释该视图展示的内容范围与排序方式，不含数量信息（数量由搜索框下方的计数徽标独立展示）；
+ * 热门视图的窗口天数与后端统计口径共用 HOT_VISIT_WINDOW_DAYS，避免文案与数据脱节
  * @param options - 副标题生成参数
  * @param options.scope - 数据范围（APP 公共库 / USER 个人库）
  * @param options.view - 当前展示视图
  * @returns 视图态副标题文案
  * @example
- * getViewSubtitle({ scope: "APP", view: "all" });
- * // "收纳、分享、探索优质网站，让高价值链接持续沉淀。"
+ * getViewSubtitle({ scope: "APP", view: "hot" });
+ * // "最近 7 天被访问最多的公共书签"
  */
 function getViewSubtitle(options: { scope: DataScope; view: DisplayView }): string {
   const { scope, view } = options;
   switch (view) {
     case "favorites":
-      return scope === "APP" ? "公共书签库中被收藏的书签" : "你标记为收藏的书签";
+      return scope === "APP" ? "被标记为推荐的优质公共书签" : "你标记为收藏的书签";
     case "untagged":
       return "还没有添加标签归类的书签";
     case "recent_added":
       return "按添加时间从新到旧排列";
     case "recent_visited":
       return "按最近访问的时间排列";
+    case "hot":
+      return `最近 ${HOT_VISIT_WINDOW_DAYS} 天被访问最多的公共书签`;
+    case "random":
+      return "随手一抽，说不定就遇到下一个常去的网站";
     case "all":
     default:
       return scope === "APP"
@@ -103,7 +121,8 @@ function getViewSubtitle(options: { scope: DataScope; view: DisplayView }): stri
 /**
  * 生成内容区顶部的主标题与副标题
  *
- * @description 主标题跟随当前筛选上下文（标签优先，其次视图）；副标题只解释主标题代表的内容范围——视图态说明视图含义，标签态优先展示标签自身的描述。标题区只承载「这是什么」的恒定语义，与搜索状态无关；搜索关键词、命中数量等结果信息统一展示在搜索框下方
+ * @description 主标题跟随当前筛选上下文（标签优先，其次视图）；副标题只解释主标题代表的内容范围——视图态说明视图含义，标签态优先展示标签自身的描述。标题区只承载「这是什么」的恒定语义，与搜索状态无关；搜索关键词、命中数量等结果信息统一展示在搜索框下方。
+ * 例外：随机发现视图的主标题恒为「随机发现」——标签在该视图里只是随机候选池的过滤条件而非内容主体，不套用「激活标签名作为主标题」的规则，改由副标题提示当前随机范围
  * @param options - 标题生成参数
  * @param options.scope - 数据范围（APP 公共库 / USER 个人库）
  * @param options.view - 当前展示视图
@@ -113,6 +132,8 @@ function getViewSubtitle(options: { scope: DataScope; view: DisplayView }): stri
  * @example
  * getDisplayHeading({ scope: "USER", view: "all", activeTagName: undefined, activeTagDescription: undefined });
  * // { title: "个人空间", subtitle: "你保存的书签都在这里" }
+ * getDisplayHeading({ scope: "APP", view: "random", activeTagName: "AI", activeTagDescription: null });
+ * // { title: "随机发现", subtitle: "正在从「AI」标签的书签中随机发现" }
  */
 function getDisplayHeading(options: {
   scope: DataScope;
@@ -121,6 +142,14 @@ function getDisplayHeading(options: {
   activeTagDescription: string | null | undefined;
 }): DisplayHeading {
   const { scope, view, activeTagName, activeTagDescription } = options;
+  if (view === "random") {
+    return {
+      title: getDisplayViewLabel(scope, "random"),
+      subtitle: activeTagName
+        ? `正在从「${activeTagName}」标签的书签中随机发现`
+        : getViewSubtitle({ scope, view }),
+    };
+  }
   const title = activeTagName ?? getDisplayViewLabel(scope, view);
   if (activeTagName) {
     return { title, subtitle: activeTagDescription || "归入该标签的书签" };
@@ -255,33 +284,65 @@ export async function DisplayBookmarksView({ scope, user, searchParams }: Props)
 
   let tags: Awaited<ReturnType<typeof tagService.list>> = [];
   let userTagsForSaving: Awaited<ReturnType<typeof tagService.list>> = [];
-  let listResult: Awaited<ReturnType<typeof bookmarkService.list>>;
+  /**
+   * 列表查询结果：随机发现视图不消费列表数据（改由 getRandomList 提供一批随机书签），
+   * 预置空结果保证两种视图分支下页头计数都有稳定初始值
+   */
+  let listResult: Awaited<ReturnType<typeof bookmarkService.list>> = {
+    items: [],
+    pagination: {
+      page: 1,
+      pageSize: DEFAULT_PAGE_SIZE,
+      total: 0,
+      totalPages: 1,
+    },
+  };
+  /** 随机发现视图的初始随机书签列表（非随机视图恒为空数组，公共库或标签候选池为空时也为空数组） */
+  let randomItems: Awaited<ReturnType<typeof bookmarkService.getRandomList>> = [];
   let viewCounts: Awaited<ReturnType<typeof bookmarkService.countByView>> = {
     all: 0,
     favorites: 0,
     untagged: 0,
     recent_added: 0,
     recent_visited: 0,
+    hot: 0,
   };
   let dbUnavailableReason: string | null = null;
 
   try {
-    [tags, listResult, userTagsForSaving, viewCounts] = await Promise.all([
-      tagService.list(scope, user),
-      bookmarkService.list({
-        scope,
-        user,
-        query: {
-          q,
-          tagId,
-          view,
-          page: 1,
-          pageSize: DEFAULT_PAGE_SIZE,
-        },
-      }),
-      scope === "APP" && user ? tagService.list("USER", user) : Promise.resolve([]),
-      bookmarkService.countByView({ scope, user }),
-    ]);
+    if (view === "random") {
+      /**
+       * 随机发现视图不查询列表（无分页/搜索语义），仅加载标签、计数徽标与
+       * 一批初始随机书签（数量与其他入口的「再来一批」保持一致）；
+       * tags/userTagsForSaving/viewCounts 照常加载以保证侧栏标签列表与各视图计数徽标完整
+       */
+      [tags, userTagsForSaving, viewCounts, randomItems] = await Promise.all([
+        tagService.list(scope, user),
+        scope === "APP" && user ? tagService.list("USER", user) : Promise.resolve([]),
+        bookmarkService.countByView({ scope, user }),
+        bookmarkService.getRandomList({
+          tagId: tagId ?? undefined,
+          count: DEFAULT_RANDOM_BATCH_SIZE,
+        }),
+      ]);
+    } else {
+      [tags, listResult, userTagsForSaving, viewCounts] = await Promise.all([
+        tagService.list(scope, user),
+        bookmarkService.list({
+          scope,
+          user,
+          query: {
+            q,
+            tagId,
+            view,
+            page: 1,
+            pageSize: DEFAULT_PAGE_SIZE,
+          },
+        }),
+        scope === "APP" && user ? tagService.list("USER", user) : Promise.resolve([]),
+        bookmarkService.countByView({ scope, user }),
+      ]);
+    }
   } catch (error) {
     dbUnavailableReason = readDbUnavailableReason(error, runtimeTarget);
     if (!dbUnavailableReason) {
@@ -296,6 +357,7 @@ export async function DisplayBookmarksView({ scope, user, searchParams }: Props)
         totalPages: 1,
       },
     };
+    randomItems = [];
   }
 
   if (dbUnavailableReason) {
@@ -303,17 +365,45 @@ export async function DisplayBookmarksView({ scope, user, searchParams }: Props)
   }
 
   const queryBase = q ? `&q=${encodeURIComponent(q)}` : "";
-  const aggregateItems: Array<{
+  /**
+   * 快捷导航的基础构成（标签、计数与图标）：公共库围绕「发现」组织
+   * （推荐/热门/最新/随机发现），刻意不提供「最近访问」入口——访问记录属
+   * 个人行为，在公共库无导航价值（view=recent_visited 查询能力保留供直达链接）；
+   * 个人库围绕「管理」组织，维持原有四项
+   */
+  const aggregateNavItems: Array<{
     key: DisplayView;
     label: string;
-    count: number;
+    count: number | undefined;
     icon: LucideIcon;
-  }> = [
-    { key: "all", label: getDisplayViewLabel(scope, "all"), count: viewCounts.all, icon: LayoutGrid },
-    { key: "favorites", label: getDisplayViewLabel(scope, "favorites"), count: viewCounts.favorites, icon: Star },
-    { key: "recent_added", label: "最近添加", count: viewCounts.recent_added, icon: Clock },
-    { key: "recent_visited", label: "最近访问", count: viewCounts.recent_visited, icon: Eye },
-  ];
+  }> =
+    scope === "APP"
+      ? [
+          { key: "all", label: getDisplayViewLabel(scope, "all"), count: viewCounts.all, icon: LayoutGrid },
+          { key: "favorites", label: getDisplayViewLabel(scope, "favorites"), count: viewCounts.favorites, icon: Star },
+          { key: "hot", label: getDisplayViewLabel(scope, "hot"), count: viewCounts.hot, icon: Flame },
+          { key: "recent_added", label: getDisplayViewLabel(scope, "recent_added"), count: viewCounts.recent_added, icon: Clock },
+          { key: "random", label: getDisplayViewLabel(scope, "random"), count: undefined, icon: Shuffle },
+        ]
+      : [
+          { key: "all", label: getDisplayViewLabel(scope, "all"), count: viewCounts.all, icon: LayoutGrid },
+          { key: "favorites", label: getDisplayViewLabel(scope, "favorites"), count: viewCounts.favorites, icon: Star },
+          { key: "recent_added", label: getDisplayViewLabel(scope, "recent_added"), count: viewCounts.recent_added, icon: Clock },
+          { key: "recent_visited", label: getDisplayViewLabel(scope, "recent_visited"), count: viewCounts.recent_visited, icon: Eye },
+        ];
+  /**
+   * 补齐跳转链接与激活态：随机发现与标签联动共存——切换到随机视图时保留当前
+   * 标签（标签仅缩小随机范围），且可与标签同时处于激活态；其余视图切换即重置
+   * 标签，仅在未选标签时视为激活
+   */
+  const aggregateItems = aggregateNavItems.map((item) => ({
+    ...item,
+    href:
+      item.key === "random"
+        ? `?view=random${tagId ? `&tagId=${tagId}` : ""}${queryBase}`
+        : `?view=${item.key}${queryBase}`,
+    active: item.key === "random" ? view === "random" : !tagId && view === item.key,
+  }));
   const activeTag = tagId ? tags.find((tag) => tag.id === tagId) : undefined;
   /** 内容区顶部标题文案（主标题跟随筛选上下文，副标题恒定解释内容范围，不随搜索状态变化；数量与搜索状态展示在搜索框下方） */
   const heading = getDisplayHeading({
@@ -332,22 +422,21 @@ export async function DisplayBookmarksView({ scope, user, searchParams }: Props)
           <div className="mb-2 px-3 text-xs tracking-wide text-muted-foreground">快捷导航</div>
           <nav className="flex flex-col gap-1.5">
             {aggregateItems.map((item) => {
-              const active = !tagId && view === item.key;
               const Icon = item.icon;
               return (
                 <Link
                   key={item.key}
-                  href={`?view=${item.key}${queryBase}`}
-                  aria-current={active ? "page" : undefined}
+                  href={item.href}
+                  aria-current={item.active ? "page" : undefined}
                   className={`flex items-center gap-2.5 rounded-sm px-3 py-2 text-sm transition-colors ${
-                    active
+                    item.active
                       ? "bg-primary font-medium text-primary-foreground"
                       : "text-foreground hover:bg-muted"
                   }`}
                 >
                   <Icon className="h-[18px] w-[18px] shrink-0" />
                   <span className="flex-1 truncate">{item.label}</span>
-                  <CountBadge count={item.count} active={active} />
+                  <CountBadge count={item.count} active={item.active} />
                 </Link>
               );
             })}
@@ -392,10 +481,10 @@ export async function DisplayBookmarksView({ scope, user, searchParams }: Props)
         key={`${view}|${tagId ?? ""}|${q ?? ""}`}
         aggregateItems={aggregateItems.map((item) => ({
           key: item.key,
-          href: `?view=${item.key}${queryBase}`,
+          href: item.href,
           label: item.label,
           count: item.count,
-          active: !tagId && view === item.key,
+          active: item.active,
           icon: <item.icon className="h-[18px] w-[18px] shrink-0" />,
         }))}
         tagItems={tags.map((tag) => ({
@@ -444,53 +533,66 @@ export async function DisplayBookmarksView({ scope, user, searchParams }: Props)
               <h1 className="truncate text-2xl font-bold tracking-tight text-foreground sm:text-3xl">{heading.title}</h1>
               <p className="mt-2 text-sm text-muted-foreground">{heading.subtitle}</p>
             </div>
-            <div className="flex shrink-0 flex-col gap-2 sm:items-end">
-              <form className="w-full sm:w-80">
-                <div className="relative">
-                  <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                  <input
-                    name="q"
-                    defaultValue={q}
-                    placeholder="搜索标题、URL、描述、标签..."
-                    className="h-10 w-full rounded-sm border border-border bg-card pl-9 pr-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-                  />
-                </div>
-                {tagId ? <input type="hidden" name="tagId" value={tagId} /> : null}
-                {!tagId ? <input type="hidden" name="view" value={view} /> : null}
-              </form>
-              {/* 搜索状态行：恒定渲染且与搜索框同宽，徽标始终在位撑住行高，搜索提示出现/消失不会改变页头高度；徽标带文字说明并右对齐，搜索提示与清除按钮居左 */}
-              <div className="flex w-full items-center gap-2 sm:w-80">
-                {q ? (
-                  <div className="flex min-w-0 flex-1 items-center gap-1.5">
-                    <span className="min-w-0 truncate text-xs text-muted-foreground">「{q}」的搜索结果</span>
-                    <Link
-                      href={clearSearchHref}
-                      aria-label="清除搜索"
-                      className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full transition-colors hover:bg-muted hover:text-foreground"
-                    >
-                      <X className="h-3 w-3" />
-                    </Link>
+            {view !== "random" ? (
+              <div className="flex shrink-0 flex-col gap-2 sm:items-end">
+                <form className="w-full sm:w-80">
+                  <div className="relative">
+                    <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                    <input
+                      name="q"
+                      defaultValue={q}
+                      placeholder="搜索标题、URL、描述、标签..."
+                      className="h-10 w-full rounded-sm border border-border bg-card pl-9 pr-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                    />
                   </div>
-                ) : null}
-                <span className="ml-auto inline-flex shrink-0 items-center rounded-full bg-muted px-2.5 py-0.5 text-xs font-medium tabular-nums text-muted-foreground">
-                  共 {listResult.pagination.total} 条书签
-                </span>
+                  {tagId ? <input type="hidden" name="tagId" value={tagId} /> : null}
+                  {!tagId ? <input type="hidden" name="view" value={view} /> : null}
+                </form>
+                {/* 搜索状态行：恒定渲染且与搜索框同宽，徽标始终在位撑住行高，搜索提示出现/消失不会改变页头高度；徽标带文字说明并右对齐，搜索提示与清除按钮居左 */}
+                <div className="flex w-full items-center gap-2 sm:w-80">
+                  {q ? (
+                    <div className="flex min-w-0 flex-1 items-center gap-1.5">
+                      <span className="min-w-0 truncate text-xs text-muted-foreground">「{q}」的搜索结果</span>
+                      <Link
+                        href={clearSearchHref}
+                        aria-label="清除搜索"
+                        className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full transition-colors hover:bg-muted hover:text-foreground"
+                      >
+                        <X className="h-3 w-3" />
+                      </Link>
+                    </div>
+                  ) : null}
+                  <span className="ml-auto inline-flex shrink-0 items-center rounded-full bg-muted px-2.5 py-0.5 text-xs font-medium tabular-nums text-muted-foreground">
+                    共 {listResult.pagination.total} 条书签
+                  </span>
+                </div>
               </div>
-            </div>
+            ) : null}
           </div>
         </div>
 
         <div className="min-h-0 min-w-0 flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
-          <InfiniteBookmarksGrid
-            key={`${scope}|${view}|${tagId ?? ""}|${q ?? ""}`}
-            scope={scope}
-            query={{ q: q ?? undefined, tagId: tagId ?? undefined, view }}
-            initialItems={listResult.items}
-            initialPagination={listResult.pagination}
-            userTagsForSaving={userTagsForSaving}
-            canSaveToUser={scope === "APP" && !!user}
-            saveToUserAction={scope === "APP" && user ? saveAppBookmarkToUserAction : undefined}
-          />
+          {view === "random" ? (
+            <RandomDiscoveryView
+              key={`${scope}|${tagId ?? ""}`}
+              initialItems={randomItems}
+              tagId={tagId ?? undefined}
+              userTagsForSaving={userTagsForSaving}
+              canSaveToUser={scope === "APP" && !!user}
+              saveToUserAction={scope === "APP" && user ? saveAppBookmarkToUserAction : undefined}
+            />
+          ) : (
+            <InfiniteBookmarksGrid
+              key={`${scope}|${view}|${tagId ?? ""}|${q ?? ""}`}
+              scope={scope}
+              query={{ q: q ?? undefined, tagId: tagId ?? undefined, view }}
+              initialItems={listResult.items}
+              initialPagination={listResult.pagination}
+              userTagsForSaving={userTagsForSaving}
+              canSaveToUser={scope === "APP" && !!user}
+              saveToUserAction={scope === "APP" && user ? saveAppBookmarkToUserAction : undefined}
+            />
+          )}
         </div>
       </div>
     </section>

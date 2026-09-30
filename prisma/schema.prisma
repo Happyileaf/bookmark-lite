@@ -121,6 +121,7 @@ model Bookmark {
   createdAt     DateTime      @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt     DateTime      @updatedAt @map("updated_at") @db.Timestamptz(6)
   bookmarkTags  BookmarkTag[]
+  visits        BookmarkVisit[]
 
   @@index([scope, ownerUserId, createdAt(sort: Desc)], map: "idx_bookmarks_scope_owner_created")
   @@index([scope, ownerUserId, updatedAt(sort: Desc)], map: "idx_bookmarks_scope_owner_updated")
@@ -163,6 +164,25 @@ model BookmarkTag {
   @@index([tagId, bookmarkId], map: "idx_bookmark_tags_tag")
   @@index([bookmarkId, tagId], map: "idx_bookmark_tags_bookmark")
   @@map("bookmark_tags")
+}
+
+/**
+ * 公共书签访问事件
+ * 用户点击公共书签打开目标网站时记录，仅 scope=APP 且可见书签计入，
+ * 作为「热门书签」（近 7 天访问次数排序）的唯一数据来源
+ */
+model BookmarkVisit {
+  id         BigInt   @id @default(autoincrement())
+  bookmarkId String   @map("bookmark_id") @db.Uuid
+  bookmark   Bookmark @relation(fields: [bookmarkId], references: [id], onDelete: Cascade)
+  userId     String?  @map("user_id") @db.Uuid
+  visitorKey String   @map("visitor_key") @db.VarChar(64)
+  occurredAt DateTime @default(now()) @map("occurred_at") @db.Timestamptz(6)
+
+  @@index([bookmarkId, occurredAt(sort: Desc)], map: "idx_bookmark_visits_bookmark_time")
+  @@index([occurredAt], map: "idx_bookmark_visits_occurred_at")
+  @@index([visitorKey, bookmarkId, occurredAt(sort: Desc)], map: "idx_bookmark_visits_visitor_bookmark_time")
+  @@map("bookmark_visits")
 }
 
 model TrashItem {

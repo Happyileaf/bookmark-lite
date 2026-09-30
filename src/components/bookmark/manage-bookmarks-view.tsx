@@ -16,7 +16,7 @@ import {
   ManageSearchShortcuts,
 } from "@/components/bookmark/favorite-bookmark-button";
 import { EditBookmarkModal } from "@/components/bookmark/edit-bookmark-modal";
-import { BookmarkFavicon } from "@/components/bookmark/infinite-bookmarks-grid";
+import { BookmarkFavicon } from "@/components/bookmark/bookmark-card";
 import type { SessionUser } from "@/server/auth/session";
 import { bookmarkService } from "@/server/services/bookmark.service";
 import { tagService } from "@/server/services/tag.service";

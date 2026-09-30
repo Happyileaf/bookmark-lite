@@ -5,7 +5,7 @@ import {
   deleteTrashForeverAction,
   restoreTrashAction,
 } from "@/actions/trash.actions";
-import { BookmarkFavicon } from "@/components/bookmark/infinite-bookmarks-grid";
+import { BookmarkFavicon } from "@/components/bookmark/bookmark-card";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Pagination } from "@/components/ui/pagination";
 import { TagChip } from "@/components/ui/tag-chip";

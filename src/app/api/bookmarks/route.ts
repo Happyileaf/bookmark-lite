@@ -12,7 +12,7 @@ const querySchema = z.object({
   q: z.string().trim().max(200).optional(),
   tagId: z.string().uuid().optional(),
   view: z
-    .enum(["all", "favorites", "untagged", "recent_added", "recent_visited"])
+    .enum(["all", "favorites", "untagged", "recent_added", "recent_visited", "hot", "random"])
     .default("all"),
   page: z.coerce.number().int().min(1).default(1),
   pageSize: z.coerce.number().int().min(1).max(100).default(DEFAULT_PAGE_SIZE),

@@ -108,12 +108,14 @@ function writeStorage(key: string, value: string): void {
 /**
  * 判断是否允许上报
  *
- * @description 尊重 Do Not Track 设置，并过滤自动化工具（webdriver）产生的流量
+ * @description 尊重 Do Not Track 设置，并过滤自动化工具（webdriver）产生的流量；
+ * 导出供埋点体系外的访问上报（recordPublicBookmarkVisit）复用同一隐私过滤口径。
+ * 函数内部直接读取 navigator，调用方需自行保证处于浏览器环境
  * @returns 允许上报返回 true，否则返回 false
  * @example
- * if (!shouldTrack()) return;
+ * if (typeof window === "undefined" || !shouldTrack()) return;
  */
-function shouldTrack(): boolean {
+export function shouldTrack(): boolean {
   if (RESPECT_DO_NOT_TRACK && navigator.doNotTrack === "1") {
     return false;
   }

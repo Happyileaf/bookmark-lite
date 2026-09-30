@@ -1,32 +1,17 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { CopyBookmarkUrlButton } from "@/components/bookmark/copy-bookmark-url-button";
-import { FavoriteBookmarkButton } from "@/components/bookmark/favorite-bookmark-button";
-import { SaveAppBookmarkModal } from "@/components/bookmark/save-app-bookmark-modal";
-import { TagChip } from "@/components/ui/tag-chip";
+import BookmarkCard, {
+  type BookmarkItem,
+  type BookmarkTag,
+} from "@/components/bookmark/bookmark-card";
 import { ANALYTICS_EVENT_NAMES } from "@/lib/analytics/constants";
 import { trackAnalyticsEvent } from "@/lib/analytics/tracker";
-import { DEFAULT_PAGE_SIZE } from "@/lib/constants";
+import { recordPublicBookmarkVisit } from "@/lib/bookmark-visit";
+import { DEFAULT_PAGE_SIZE, HOT_VISIT_WINDOW_DAYS } from "@/lib/constants";
 import type { DataScope } from "@prisma/client";
 
-type DisplayView = "all" | "favorites" | "untagged" | "recent_added" | "recent_visited";
-
-type BookmarkTag = {
-  id: string;
-  name: string;
-  color: string | null;
-};
-
-type BookmarkItem = {
-  id: string;
-  title: string;
-  url: string;
-  favicon: string | null;
-  description: string | null;
-  isFavorite: boolean;
-  tags: BookmarkTag[];
-};
+type DisplayView = "all" | "favorites" | "untagged" | "recent_added" | "recent_visited" | "hot" | "random";
 
 type Pagination = {
   page: number;
@@ -61,114 +46,6 @@ type ListResponse = {
     message?: string;
   };
 };
-
-const FAVICON_PALETTE = [
-  "#1e80ff",
-  "#7c3aed",
-  "#0891b2",
-  "#059669",
-  "#d97706",
-  "#dc2626",
-  "#db2777",
-];
-
-function pickFaviconColor(seed: string): string {
-  let hash = 0;
-  for (let index = 0; index < seed.length; index += 1) {
-    hash = (hash * 31 + seed.charCodeAt(index)) >>> 0;
-  }
-  return FAVICON_PALETTE[hash % FAVICON_PALETTE.length];
-}
-
-function readFallbackLetter(title: string): string {
-  const trimmed = title.trim();
-  return trimmed ? Array.from(trimmed)[0].toUpperCase() : "?";
-}
-
-/** 站点图标容器的形态变体：brand 为小尺寸品牌色块（默认），card 为书签卡片用的大圆角色块 */
-type BookmarkFaviconVariant = "brand" | "card";
-
-export function BookmarkFavicon({
-  src,
-  title,
-  className,
-  variant = "brand",
-}: {
-  src: string | null;
-  title: string;
-  className?: string;
-  variant?: BookmarkFaviconVariant;
-}) {
-  const [imageOk, setImageOk] = useState(false);
-  const [imageFailed, setImageFailed] = useState(false);
-  const showImage = Boolean(src) && !imageFailed;
-  const isCard = variant === "card";
-
-  return (
-    <span
-      className={`relative inline-flex shrink-0 items-center justify-center overflow-hidden ${
-        isCard ? "rounded-[8px]" : "rounded-sm"
-      } ${className ?? ""}`}
-      style={imageOk ? undefined : { backgroundColor: pickFaviconColor(title) }}
-    >
-      {!imageOk ? (
-        <span className={`font-bold text-white ${isCard ? "text-sm" : "text-xs"}`}>
-          {readFallbackLetter(title)}
-        </span>
-      ) : null}
-      {showImage ? (
-        <img
-          src={src ?? undefined}
-          alt=""
-          loading="lazy"
-          onLoad={() => setImageOk(true)}
-          onError={() => setImageFailed(true)}
-          className={`absolute inset-0 h-full w-full object-contain ${
-            imageOk ? "" : "opacity-0"
-          }`}
-        />
-      ) : null}
-    </span>
-  );
-}
-
-/**
- * 提取站点主机名
- *
- * @description 从书签 URL 解析主机名并去除 www. 前缀，解析失败时回退为原始 URL
- * @param url - 书签 URL
- * @returns 用于展示的主机名
- * @example
- * const hostname = readHostname("https://www.github.com/facebook/react");
- * // "github.com"
- */
-function readHostname(url: string): string {
-  try {
-    return new URL(url).hostname.replace(/^www\./, "");
-  } catch {
-    return url;
-  }
-}
-
-/**
- * 生成展示用 URL 文本
- *
- * @description 去掉书签 URL 的协议前缀与末尾斜杠，解析失败时回退为原始 URL
- * @param url - 书签 URL
- * @returns 用于展示的 URL 文本
- * @example
- * const displayUrl = readDisplayUrl("https://github.com/facebook/react/");
- * // "github.com/facebook/react"
- */
-function readDisplayUrl(url: string): string {
-  try {
-    const parsed = new URL(url);
-    const pathname = parsed.pathname === "/" ? "" : parsed.pathname.replace(/\/$/, "");
-    return `${parsed.hostname.replace(/^www\./, "")}${pathname}${parsed.search}`;
-  } catch {
-    return url;
-  }
-}
 
 function mergeUniqueById(prev: BookmarkItem[], next: BookmarkItem[]) {
   const ids = new Set(prev.map((item) => item.id));
@@ -205,24 +82,21 @@ export function InfiniteBookmarksGrid({
     );
   }, []);
 
-  // 打开书签并上报点击埋点（点击与键盘打开共用，保证统计口径一致）
+  /**
+   * 打开书签并上报点击埋点（点击与键盘打开共用，保证统计口径一致）；
+   * 公共库书签额外上报访问事件，作为热门书签统计的数据来源，
+   * 上报为 fire-and-forget，不阻塞 window.open
+   */
   const openBookmark = useCallback((bookmark: BookmarkItem) => {
     trackAnalyticsEvent(ANALYTICS_EVENT_NAMES.BOOKMARK_CLICKED, {
       bookmarkId: bookmark.id,
       url: bookmark.url,
     });
+    if (scope === "APP") {
+      recordPublicBookmarkVisit(bookmark.id);
+    }
     window.open(bookmark.url, "_blank", "noopener,noreferrer");
-  }, []);
-
-  const handleContentClick = useCallback((e: React.MouseEvent, bookmark: BookmarkItem) => {
-    const target = e.target as HTMLElement;
-    if (target.closest("button, a")) return;
-
-    const selection = window.getSelection();
-    if (selection && !selection.isCollapsed) return;
-
-    openBookmark(bookmark);
-  }, [openBookmark]);
+  }, [scope]);
 
   const hasMore = pagination.page < pagination.totalPages;
 
@@ -287,11 +161,14 @@ export function InfiniteBookmarksGrid({
   }, [hasMore, loadNextPage]);
 
   if (items.length === 0) {
+    /** 空态文案优先级：搜索空态 > 热门空态 > 按数据范围的默认空态；热门为 APP 专属视图，无需再分范围 */
     const emptyText = query.q
       ? `没有找到与「${query.q}」相关的书签`
-      : scope === "APP"
-        ? "这座库还在生长，第一批优质网站正在路上。"
-        : "这里还空着。去公共书签库逛逛，把喜欢的收进来。";
+      : query.view === "hot"
+        ? `暂无热门书签，最近 ${HOT_VISIT_WINDOW_DAYS} 天还没有公共书签被访问过。`
+        : scope === "APP"
+          ? "这座库还在生长，第一批优质网站正在路上。"
+          : "这里还空着。去公共书签库逛逛，把喜欢的收进来。";
     return (
       <div className="rounded-sm border border-dashed border-slate-300 bg-card p-10 text-center text-sm text-muted-foreground dark:border-slate-700">
         {emptyText}
@@ -303,95 +180,16 @@ export function InfiniteBookmarksGrid({
     <div>
       <div className="grid gap-6 [grid-template-columns:repeat(auto-fill,minmax(300px,1fr))] max-[480px]:[grid-template-columns:minmax(0,1fr)]">
         {items.map((bookmark) => (
-          <article
+          <BookmarkCard
             key={bookmark.id}
-            tabIndex={0}
-            role="link"
-            aria-label={`打开书签：${bookmark.title}`}
-            onClick={(e) => handleContentClick(e, bookmark)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" || e.key === " ") {
-                e.preventDefault();
-                openBookmark(bookmark);
-              }
-            }}
-            className="group relative min-w-0 flex cursor-pointer flex-col rounded-sm border border-background bg-card p-5 shadow-[0_1px_2px_rgba(20,30,45,0.025),0_6px_18px_rgba(20,30,45,0.03)] outline-none transition-all hover:border-primary hover:bg-white hover:shadow-[0_2px_6px_rgba(20,30,45,0.05),0_12px_28px_rgba(20,30,45,0.07)] focus-visible:border-primary focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary dark:hover:bg-muted dark:focus-visible:outline-primary"
-          >
-            <div
-              className="relative flex min-w-0 cursor-pointer select-text flex-col"
-            >
-              <div className="pointer-events-auto flex items-center gap-3">
-                <BookmarkFavicon
-                  src={bookmark.favicon}
-                  title={bookmark.title}
-                  variant="card"
-                  className="h-8 w-8"
-                />
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-semibold leading-5 text-foreground">
-                    {readHostname(bookmark.url)}
-                  </p>
-                  <p
-                    className="truncate text-xs leading-4 text-muted-foreground"
-                    title={bookmark.url}
-                  >
-                    {readDisplayUrl(bookmark.url)}
-                  </p>
-                </div>
-                <div
-                  className="flex shrink-0 items-center gap-0.5 [&_button]:h-7 [&_button]:w-7 [&_svg]:h-4 [&_svg]:w-4"
-                >
-                  {scope === "USER" ? (
-                    <FavoriteBookmarkButton
-                      bookmarkId={bookmark.id}
-                      isFavorite={bookmark.isFavorite}
-                      scope={scope}
-                      onToggle={handleToggleFavorite}
-                    />
-                  ) : null}
-                  <CopyBookmarkUrlButton url={bookmark.url} />
-                  {canSaveToUser && saveToUserAction ? (
-                    <SaveAppBookmarkModal
-                      action={saveToUserAction}
-                      bookmarkId={bookmark.id}
-                      tags={userTagsForSaving}
-                    />
-                  ) : null}
-                </div>
-              </div>
-
-              <h3
-                className="mt-3 h-10 break-words text-sm font-semibold leading-5 tracking-[-0.01em] text-foreground line-clamp-2"
-                title={bookmark.title}
-              >
-                {bookmark.title}
-              </h3>
-
-              <p
-                className="mt-1 min-h-0 flex-1 break-words text-xs leading-normal text-muted-foreground line-clamp-2"
-                title={bookmark.description ?? ""}
-              >
-                {bookmark.description || "\u00A0"}
-              </p>
-
-              {bookmark.tags.length > 0 ? (
-                <div className="mt-3.5 flex flex-wrap gap-2">
-                  {bookmark.tags.map((tag) => (
-                    <TagChip
-                      key={tag.id}
-                      color={tag.color ?? "#94a3b8"}
-                      className="max-w-full"
-                      title={tag.name}
-                    >
-                      {tag.name}
-                    </TagChip>
-                  ))}
-                </div>
-              ) : (
-                <div className="mt-3.5" />
-              )}
-            </div>
-          </article>
+            bookmark={bookmark}
+            scope={scope}
+            onOpen={openBookmark}
+            onToggleFavorite={handleToggleFavorite}
+            canSaveToUser={canSaveToUser}
+            saveToUserAction={saveToUserAction}
+            userTagsForSaving={userTagsForSaving}
+          />
         ))}
       </div>
 

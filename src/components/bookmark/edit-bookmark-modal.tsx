@@ -3,7 +3,7 @@
 import { Loader2, Pencil, Wand2 } from "lucide-react";
 import { useEffect, useRef, useState, useTransition } from "react";
 import { TagSelectDropdown } from "@/components/tag/tag-select-dropdown";
-import { BookmarkFavicon } from "@/components/bookmark/infinite-bookmarks-grid";
+import { BookmarkFavicon } from "@/components/bookmark/bookmark-card";
 import { Modal } from "@/components/ui";
 
 type BookmarkRow = {

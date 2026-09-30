@@ -17,8 +17,8 @@ export type BookmarksFilterDrawerItem = {
   href: string;
   /** 展示名称。 */
   label: string;
-  /** 书签计数。 */
-  count: number;
+  /** 书签计数；无计数语义的导航项（如随机发现）缺省，紧凑分支不渲染数字。 */
+  count?: number;
   /** 是否为当前激活项。 */
   active: boolean;
   /** 快捷导航图标元素。 */
@@ -66,9 +66,11 @@ export function BookmarksFilterDrawer({ aggregateItems, tagItems }: BookmarksFil
       ) : null}
       <span className="flex-1 truncate">{item.label}</span>
       {compact ? (
-        <span className={`text-xs ${item.active ? "text-primary-foreground/70" : "text-muted-foreground"}`}>
-          {item.count}
-        </span>
+        item.count !== undefined ? (
+          <span className={`text-xs ${item.active ? "text-primary-foreground/70" : "text-muted-foreground"}`}>
+            {item.count}
+          </span>
+        ) : null
       ) : (
         <CountBadge count={item.count} active={item.active} />
       )}
