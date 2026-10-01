@@ -567,7 +567,17 @@ export async function DisplayBookmarksView({ scope, user, searchParams }: Props)
                 </div>
               </div>
             ) : (
-              <ShuffleButton />
+              <div className="flex shrink-0 flex-col gap-2 sm:items-end">
+                <div className="w-full sm:w-80">
+                  <ShuffleButton />
+                </div>
+                {/* 和搜索视图保持相同的第二行占位，保证总高度一致 */}
+                <div className="flex w-full items-center gap-2 sm:w-80">
+                  <span className="ml-auto inline-flex shrink-0 items-center rounded-full bg-muted px-2.5 py-0.5 text-xs font-medium tabular-nums text-muted-foreground">
+                    &nbsp;
+                  </span>
+                </div>
+              </div>
             )}
           </div>
         </div>
