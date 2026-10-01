@@ -34,8 +34,10 @@ export function StatChip({
       >
         <Icon className="h-3.5 w-3.5" />
       </span>
-      <span className="text-[15px] font-bold tracking-[-0.01em]">{value}</span>
-      <span className="text-xs text-muted-foreground">{label}</span>
+      <div className="flex items-center gap-1">
+        <span className="text-[15px] font-bold tracking-[-0.01em]">{value}</span>
+        <span className="text-xs text-muted-foreground">{label}</span>
+      </div>
     </div>
   );
 }
