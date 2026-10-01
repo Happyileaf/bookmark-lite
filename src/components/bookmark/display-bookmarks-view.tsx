@@ -16,6 +16,7 @@ import { saveAppBookmarkToUserAction } from "@/actions/bookmark.actions";
 import { BookmarksFilterDrawer } from "@/components/bookmark/bookmarks-filter-drawer";
 import { InfiniteBookmarksGrid } from "@/components/bookmark/infinite-bookmarks-grid";
 import RandomDiscoveryView from "@/components/bookmark/random-discovery-view";
+import { ShuffleButton } from "@/components/bookmark/display-bookmarks-view/shuffle-button";
 import { CountBadge } from "@/components/ui";
 import { DEFAULT_PAGE_SIZE, DEFAULT_RANDOM_BATCH_SIZE, HOT_VISIT_WINDOW_DAYS } from "@/lib/constants";
 import type { SessionUser } from "@/server/auth/session";
@@ -133,7 +134,7 @@ function getViewSubtitle(options: { scope: DataScope; view: DisplayView }): stri
  * getDisplayHeading({ scope: "USER", view: "all", activeTagName: undefined, activeTagDescription: undefined });
  * // { title: "个人空间", subtitle: "你保存的书签都在这里" }
  * getDisplayHeading({ scope: "APP", view: "random", activeTagName: "AI", activeTagDescription: null });
- * // { title: "随机发现", subtitle: "正在从「AI」标签的书签中随机发现" }
+ * // { title: "随机发现", subtitle: "随手一抽，说不定就遇到下一个常去的网站" }
  */
 function getDisplayHeading(options: {
   scope: DataScope;
@@ -145,9 +146,7 @@ function getDisplayHeading(options: {
   if (view === "random") {
     return {
       title: getDisplayViewLabel(scope, "random"),
-      subtitle: activeTagName
-        ? `正在从「${activeTagName}」标签的书签中随机发现`
-        : getViewSubtitle({ scope, view }),
+      subtitle: getViewSubtitle({ scope, view }),
     };
   }
   const title = activeTagName ?? getDisplayViewLabel(scope, view);
@@ -400,7 +399,7 @@ export async function DisplayBookmarksView({ scope, user, searchParams }: Props)
     ...item,
     href:
       item.key === "random"
-        ? `?view=random${tagId ? `&tagId=${tagId}` : ""}${queryBase}`
+        ? `?view=random${queryBase}`
         : `?view=${item.key}${queryBase}`,
     active: item.key === "random" ? view === "random" : !tagId && view === item.key,
   }));
@@ -567,16 +566,17 @@ export async function DisplayBookmarksView({ scope, user, searchParams }: Props)
                   </span>
                 </div>
               </div>
-            ) : null}
+            ) : (
+              <ShuffleButton />
+            )}
           </div>
         </div>
 
         <div className="min-h-0 min-w-0 flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
           {view === "random" ? (
             <RandomDiscoveryView
-              key={`${scope}|${tagId ?? ""}`}
+              key={`${scope}`}
               initialItems={randomItems}
-              tagId={tagId ?? undefined}
               userTagsForSaving={userTagsForSaving}
               canSaveToUser={scope === "APP" && !!user}
               saveToUserAction={scope === "APP" && user ? saveAppBookmarkToUserAction : undefined}
