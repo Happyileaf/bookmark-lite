@@ -215,7 +215,7 @@ export function ManageImportExportView({ scope }: Props) {
                     e.stopPropagation();
                     handleChooseFile();
                   }}
-                  className="h-8 shrink-0 rounded-sm bg-primary px-[13px] text-[12.5px] font-medium text-primary-foreground transition-[filter] hover:brightness-105 dark:bg-primary"
+                  className="flex h-8 items-center shrink-0 rounded-sm bg-primary px-[13px] text-[12.5px] font-medium text-primary-foreground transition-[filter] hover:brightness-105 dark:bg-primary"
                 >
                   选择文件
                 </button>
