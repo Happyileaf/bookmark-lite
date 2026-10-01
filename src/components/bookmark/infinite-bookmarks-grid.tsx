@@ -167,8 +167,8 @@ export function InfiniteBookmarksGrid({
       : query.view === "hot"
         ? `暂无热门书签，最近 ${HOT_VISIT_WINDOW_DAYS} 天还没有公共书签被访问过。`
         : scope === "APP"
-          ? "这座库还在生长，第一批优质网站正在路上。"
-          : "这里还空着。去公共书签库逛逛，把喜欢的收进来。";
+          ? "公共空间还在生长，第一批优质网站正在路上。"
+          : "这里还空着。去公共空间逛逛，把喜欢的收进来。";
     return (
       <div className="rounded-sm border border-dashed border-slate-300 bg-card p-10 text-center text-sm text-muted-foreground dark:border-slate-700">
         {emptyText}
