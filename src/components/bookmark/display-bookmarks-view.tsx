@@ -379,7 +379,6 @@ export async function DisplayBookmarksView({ scope, user, searchParams }: Props)
     scope === "APP"
       ? [
           { key: "all", label: getDisplayViewLabel(scope, "all"), count: viewCounts.all, icon: LayoutGrid },
-          { key: "favorites", label: getDisplayViewLabel(scope, "favorites"), count: viewCounts.favorites, icon: Star },
           { key: "hot", label: getDisplayViewLabel(scope, "hot"), count: viewCounts.hot, icon: Flame },
           { key: "recent_added", label: getDisplayViewLabel(scope, "recent_added"), count: viewCounts.recent_added, icon: Clock },
           { key: "random", label: getDisplayViewLabel(scope, "random"), count: undefined, icon: Shuffle },
