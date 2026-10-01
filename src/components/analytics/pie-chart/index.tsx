@@ -1,3 +1,7 @@
+"use client";
+
+import { useState } from "react";
+
 /**
  * 占比饼图条目
  */
@@ -104,9 +108,8 @@ function formatPercent(percent: number): string {
 /**
  * 占比饼图
  *
- * @description 以 SVG 手绘的轻量扇形占比图（无第三方图表依赖），按数量占比切分扇区，
- * 下方图例展示名称、数量与占比；纯服务端渲染，悬浮提示通过原生 title 实现，
- * 适用于设备、来源、可见范围等维度有限的分布场景
+ * @description 以 SVG 手绘的轻量扇形占比图，适用于设备、来源、可见范围等维度有限的分布场景；
+ * 客户端组件，支持点击高亮扇区与图例条目联动交互
  * @param props - 饼图入参
  * @returns 占比饼图组件
  * @example
@@ -116,15 +119,11 @@ export default function PieChart({
   items,
   emptyText = "暂无数据",
 }: PieChartProps) {
+  const [highlighted, setHighlighted] = useState<string | null>(null);
+
   /** 数量为 0 的条目不产生扇区，直接过滤 */
   const validItems = items.filter((item) => item.count > 0);
   const total = validItems.reduce((sum, item) => sum + item.count, 0);
-
-  if (validItems.length === 0) {
-    return (
-      <p className="py-6 text-center text-xs text-muted-foreground">{emptyText}</p>
-    );
-  }
 
   /** 各条目数量占比（0-1），用于换算扇区角度 */
   const ratios = validItems.map((item) => item.count / total);
@@ -146,6 +145,16 @@ export default function PieChart({
 
   const chartCenter = CHART_SIZE / 2;
 
+  const toggleHighlight = (name: string) => {
+    setHighlighted(highlighted === name ? null : name);
+  };
+
+  if (validItems.length === 0) {
+    return (
+      <p className="py-6 text-center text-xs text-muted-foreground">{emptyText}</p>
+    );
+  }
+
   return (
     <div className="flex flex-col items-center gap-4">
       <svg
@@ -164,43 +173,61 @@ export default function PieChart({
             <title>{`${slices[0].name}：${slices[0].count.toLocaleString("zh-CN")}（100%）`}</title>
           </circle>
         ) : (
-          slices.map((slice) => (
-            <path
-              key={slice.name}
-              d={describeSlice(
-                chartCenter,
-                CHART_RADIUS,
-                slice.startAngle,
-                slice.endAngle,
-              )}
-              fill={slice.color}
-            >
-              <title>{`${slice.name}：${slice.count.toLocaleString("zh-CN")}（${formatPercent(slice.percent)}）`}</title>
-            </path>
-          ))
+          slices.map((slice) => {
+            const isHighlighted = highlighted === slice.name;
+            const radius = isHighlighted ? CHART_RADIUS + 6 : CHART_RADIUS;
+            return (
+              <path
+                key={slice.name}
+                d={describeSlice(
+                  chartCenter,
+                  radius,
+                  slice.startAngle,
+                  slice.endAngle,
+                )}
+                fill={slice.color}
+                fillOpacity={highlighted === null || isHighlighted ? 1 : 0.3}
+                className="cursor-pointer transition-opacity"
+                onClick={() => toggleHighlight(slice.name)}
+              >
+                <title>{`${slice.name}：${slice.count.toLocaleString("zh-CN")}（${formatPercent(slice.percent)}）`}</title>
+              </path>
+            );
+          })
         )}
       </svg>
       <ul className="w-full space-y-1.5">
-        {slices.map((slice) => (
-          <li key={slice.name} className="flex items-center gap-2 text-xs">
-            <span
-              className="h-2 w-2 shrink-0 rounded-full"
-              style={{ backgroundColor: slice.color }}
-            />
-            <span
-              className="min-w-0 flex-1 truncate text-muted-foreground"
-              title={slice.name}
+        {slices.map((slice) => {
+          const isHighlighted = highlighted === slice.name;
+          return (
+            <li
+              key={slice.name}
+              className={`flex items-center gap-2 text-xs cursor-pointer transition-opacity ${
+                highlighted !== null && !isHighlighted ? "opacity-40" : "opacity-100"
+              }`}
+              onClick={() => toggleHighlight(slice.name)}
             >
-              {slice.name}
-            </span>
-            <span className="shrink-0 font-medium tabular-nums">
-              {slice.count.toLocaleString("zh-CN")}
-            </span>
-            <span className="w-12 shrink-0 text-right text-muted-foreground tabular-nums">
-              {formatPercent(slice.percent)}
-            </span>
-          </li>
-        ))}
+              <span
+                className={`h-2 w-2 shrink-0 rounded-full transition-transform ${
+                  isHighlighted ? "scale-150" : "scale-100"
+                }`}
+                style={{ backgroundColor: slice.color }}
+              />
+              <span
+                className="min-w-0 flex-1 truncate text-muted-foreground"
+                title={slice.name}
+              >
+                {slice.name}
+              </span>
+              <span className="shrink-0 font-medium tabular-nums">
+                {slice.count.toLocaleString("zh-CN")}
+              </span>
+              <span className="w-12 shrink-0 text-right text-muted-foreground tabular-nums">
+                {formatPercent(slice.percent)}
+              </span>
+            </li>
+          );
+        })}
       </ul>
     </div>
   );

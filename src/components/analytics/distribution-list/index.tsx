@@ -62,7 +62,7 @@ export default function DistributionList({
         const widthPercent =
           item.count > 0 ? Math.max((item.count / maxCount) * 100, 2) : 0;
         return (
-          <li key={item.name} className="flex items-center gap-3">
+          <li key={`${index}-${item.name}`} className="flex items-center gap-3">
             <span
               className="w-24 shrink-0 truncate text-xs text-muted-foreground"
               title={item.name}

@@ -1,3 +1,7 @@
+"use client";
+
+import { useState } from "react";
+
 /**
  * 图表数据序列
  */
@@ -52,8 +56,8 @@ function formatAxisValue(value: number): string {
 /**
  * 通用双序列趋势图
  *
- * @description 以 SVG 手绘的轻量趋势图（无第三方图表依赖），支持折线与柱状两种形态；
- * 纯服务端渲染，悬浮提示通过原生 title 实现
+ * @description 以 SVG 手绘的轻量趋势图，支持折线与柱状两种形态；
+ * 客户端组件，支持悬浮高亮与详情提示交互
  * @param props - 图表入参
  * @returns 趋势图组件
  * @example
@@ -65,12 +69,16 @@ export default function SeriesChart({
   variant = "line",
   height = 240,
 }: SeriesChartProps) {
+  const [hoverIndex, setHoverIndex] = useState<number | null>(null);
+  const [hiddenSeries, setHiddenSeries] = useState<Set<string>>(new Set());
+
   const innerWidth = CHART_WIDTH - CHART_PADDING.left - CHART_PADDING.right;
   const innerHeight = height - CHART_PADDING.top - CHART_PADDING.bottom;
   const baseline = CHART_PADDING.top + innerHeight;
   const count = labels.length;
-  const maxValue = Math.max(1, ...series.flatMap((item) => item.values));
-  const hasData = series.some((item) => item.values.some((value) => value > 0));
+  const visibleSeries = series.filter(s => !hiddenSeries.has(s.name));
+  const maxValue = Math.max(1, ...visibleSeries.flatMap((item) => item.values));
+  const hasData = visibleSeries.some((item) => item.values.some((value) => value > 0));
 
   /** 计算第 index 个数据点的 X 坐标 */
   const resolveX = (index: number): number => {
@@ -95,10 +103,51 @@ export default function SeriesChart({
     return Array.from({ length: tickCount }, (_, i) => Math.round(i * step));
   };
 
+  const toggleSeries = (name: string) => {
+    const newHidden = new Set(hiddenSeries);
+    if (newHidden.has(name)) {
+      newHidden.delete(name);
+    } else {
+      newHidden.add(name);
+    }
+    setHiddenSeries(newHidden);
+  };
+
+  const handleMouseMove = (e: React.MouseEvent<SVGSVGElement>) => {
+    const svgRect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - svgRect.left;
+    const ratioX = x / svgRect.width;
+    const index = Math.round(ratioX * (count - 1));
+    setHoverIndex(Math.max(0, Math.min(index, count - 1)));
+  };
+
+  const handleMouseLeave = () => {
+    setHoverIndex(null);
+  };
+
   if (!hasData) {
     return (
-      <div className="flex h-[240px] items-center justify-center text-sm text-muted-foreground">
-        统计窗口内暂无数据
+      <div>
+        <div className="mb-2 flex flex-wrap items-center gap-4">
+          {series.map((item) => (
+            <button
+              key={item.name}
+              onClick={() => toggleSeries(item.name)}
+              className={`flex items-center gap-1.5 text-xs ${
+                hiddenSeries.has(item.name) ? "opacity-40" : "opacity-100"
+              } hover:opacity-80 transition-opacity`}
+            >
+              <span
+                className="inline-block h-2 w-2 rounded-full"
+                style={{ backgroundColor: item.color }}
+              />
+              {item.name}
+            </button>
+          ))}
+        </div>
+        <div className="flex h-[240px] items-center justify-center text-sm text-muted-foreground">
+          统计窗口内暂无数据
+        </div>
       </div>
     );
   }
@@ -112,13 +161,19 @@ export default function SeriesChart({
     <div>
       <div className="mb-2 flex flex-wrap items-center gap-4">
         {series.map((item) => (
-          <span key={item.name} className="flex items-center gap-1.5 text-xs text-muted-foreground">
+          <button
+            key={item.name}
+            onClick={() => toggleSeries(item.name)}
+            className={`flex items-center gap-1.5 text-xs cursor-pointer ${
+              hiddenSeries.has(item.name) ? "opacity-40 line-through" : "opacity-100"
+            } hover:opacity-80 transition-opacity`}
+          >
             <span
               className="inline-block h-2 w-2 rounded-full"
               style={{ backgroundColor: item.color }}
             />
             {item.name}
-          </span>
+          </button>
         ))}
       </div>
       <svg
@@ -126,6 +181,8 @@ export default function SeriesChart({
         className="h-auto w-full"
         role="img"
         aria-label="趋势图"
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
       >
         {gridValues.map((value) => {
           const y = resolveY(value);
@@ -154,7 +211,7 @@ export default function SeriesChart({
         })}
 
         {variant === "line"
-          ? series.map((item) => {
+          ? visibleSeries.map((item) => {
               const points = item.values
                 .map((value, index) => `${resolveX(index).toFixed(2)},${resolveY(value).toFixed(2)}`)
                 .join(" ");
@@ -175,29 +232,18 @@ export default function SeriesChart({
                     strokeLinejoin="round"
                     strokeLinecap="round"
                   />
-                  {item.values.map((value, index) => (
-                    <circle
-                      key={labels[index]}
-                      cx={resolveX(index)}
-                      cy={resolveY(value)}
-                      r={8}
-                      fill="transparent"
-                    >
-                      <title>{`${labels[index]} ${item.name}：${value}`}</title>
-                    </circle>
-                  ))}
                 </g>
               );
             })
-          : series.map((item, seriesIndex) => {
+          : visibleSeries.map((item, seriesIndex) => {
               const bandWidth = innerWidth / count;
-              const barWidth = Math.min((bandWidth * 0.62) / series.length, 28);
+              const barWidth = Math.min((bandWidth * 0.62) / visibleSeries.length, 28);
               return (
                 <g key={item.name}>
                   {item.values.map((value, index) => {
                     const bandCenter = CHART_PADDING.left + bandWidth * index + bandWidth / 2;
                     const x =
-                      bandCenter - (series.length * barWidth) / 2 + seriesIndex * barWidth;
+                      bandCenter - (visibleSeries.length * barWidth) / 2 + seriesIndex * barWidth;
                     const y = resolveY(value);
                     return (
                       <rect
@@ -209,14 +255,57 @@ export default function SeriesChart({
                         rx={1.5}
                         fill={item.color}
                         fillOpacity={0.85}
-                      >
-                        <title>{`${labels[index]} ${item.name}：${value}`}</title>
-                      </rect>
+                      />
                     );
                   })}
                 </g>
               );
             })}
+
+        {variant === "line" && visibleSeries.length > 0 && hoverIndex !== null && (
+          <line
+            x1={resolveX(hoverIndex)}
+            y1={CHART_PADDING.top}
+            x2={resolveX(hoverIndex)}
+            y2={baseline}
+            className="stroke-slate-400 dark:stroke-slate-500"
+            strokeWidth={1}
+            strokeDasharray="3 3"
+          />
+        )}
+
+        {variant === "bar" && visibleSeries.length > 0 && hoverIndex !== null && (
+          <line
+            x1={resolveX(hoverIndex)}
+            y1={CHART_PADDING.top}
+            x2={resolveX(hoverIndex)}
+            y2={baseline}
+            className="stroke-slate-400 dark:stroke-slate-500"
+            strokeWidth={1}
+            strokeDasharray="3 3"
+          />
+        )}
+
+        {visibleSeries.flatMap((item) =>
+          item.values.map((value, index) => {
+            const isHovered = hoverIndex === index;
+            if (variant === "line") {
+              return (
+                <circle
+                  key={`${item.name}-${labels[index]}`}
+                  cx={resolveX(index)}
+                  cy={resolveY(value)}
+                  r={isHovered ? 6 : 4}
+                  fill={item.color}
+                  stroke={isHovered ? "white" : "transparent"}
+                  strokeWidth={isHovered ? 2 : 0}
+                  className={`transition-all ${isHovered ? "cursor-pointer" : ""}`}
+                />
+              );
+            }
+            return null;
+          })
+        )}
 
         {resolveTickIndexes().map((index) => (
           <text
@@ -230,6 +319,45 @@ export default function SeriesChart({
             {labels[index].slice(5)}
           </text>
         ))}
+
+        {hoverIndex !== null && (
+          <g
+            transform={`translate(${resolveX(hoverIndex)}, 10)`}
+            className="pointer-events-none"
+          >
+            <rect
+              x="0"
+              y="0"
+              width="140"
+              height={30 + 24 * visibleSeries.length}
+              rx="4"
+              fill="rgba(15, 23, 42, 0.9)"
+            />
+            <text
+              x="6"
+              y="16"
+              fill="white"
+              fontSize={10}
+              className="font-medium"
+            >
+              {labels[hoverIndex]}
+            </text>
+            {visibleSeries.map((item, i) => {
+              const value = item.values[hoverIndex];
+              return (
+                <text
+                  key={item.name}
+                  x="6"
+                  y={30 + i * 18 + 12}
+                  fill={item.color}
+                  fontSize={10}
+                >
+                  {item.name}: {value.toLocaleString("zh-CN")}
+                </text>
+              );
+            })}
+          </g>
+        )}
       </svg>
     </div>
   );
