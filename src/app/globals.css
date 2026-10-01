@@ -572,7 +572,7 @@
     white-space: nowrap;
     font-size: 11px;
     line-height: 16px;
-    border-radius: 6px;
+    border-radius: 9999px;
     background: #f1f5f9;
     color: #475569;
     transition:
