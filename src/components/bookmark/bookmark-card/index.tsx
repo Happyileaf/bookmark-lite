@@ -217,7 +217,7 @@ function BookmarkCard({
    */
   const handleContentClick = (e: React.MouseEvent) => {
     const target = e.target as HTMLElement;
-    if (target.closest("button, a")) return;
+    if (target.closest("button, a, [role='dialog']")) return;
 
     const selection = window.getSelection();
     if (selection && !selection.isCollapsed) return;

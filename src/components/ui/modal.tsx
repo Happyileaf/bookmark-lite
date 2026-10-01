@@ -82,7 +82,11 @@ export function Modal({
         <button
           type="button"
           aria-label="关闭弹窗"
-          onClick={onClose}
+          onClick={(e) => {
+            e.stopPropagation();
+            onClose();
+          }}
+          onPointerDown={(e) => e.stopPropagation()}
           className={`fixed inset-0 bg-slate-950/45 ${
             prefersReducedMotion ? "" : "ui-modal-mask-enter"
           }`}
@@ -92,6 +96,8 @@ export function Modal({
           aria-modal="true"
           aria-label={title}
           style={{ maxWidth: width }}
+          onClick={(e) => e.stopPropagation()}
+          onPointerDown={(e) => e.stopPropagation()}
           className={`relative my-auto flex max-h-[calc(100dvh-2rem)] w-full flex-col rounded-sm border border-slate-200 bg-white p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] text-card-foreground shadow-2xl dark:border-slate-800 dark:bg-slate-900 dark:text-foreground ${
             prefersReducedMotion ? "" : "ui-modal-panel-enter"
           }`}
@@ -107,7 +113,7 @@ export function Modal({
               <X className="h-4 w-4" />
             </button>
           </div>
-          <div className="mt-4 min-h-0 flex-1 overflow-y-auto overscroll-contain">
+          <div className="mt-4 min-h-0 flex-1 overflow-visible">
             {children}
           </div>
           {footer ? (
