@@ -290,7 +290,7 @@ export function SettingsFormClient({
                       type="button"
                       aria-pressed={isActive}
                       onClick={() => handleThemeSelect(segment.value)}
-                      className={`h-7 rounded-sm px-3 text-[12.5px] transition-colors ${
+                      className={`flex h-7 items-center leading-none rounded-sm px-3 text-[12.5px] transition-colors ${
                         isActive
                           ? "bg-primary font-medium text-primary-foreground"
                           : "text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100"

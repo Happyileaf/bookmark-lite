@@ -215,7 +215,7 @@ export function ManageImportExportView({ scope }: Props) {
                     e.stopPropagation();
                     handleChooseFile();
                   }}
-                  className="flex h-8 items-center shrink-0 rounded-sm bg-primary px-[13px] text-[12.5px] font-medium text-primary-foreground transition-[filter] hover:brightness-105 dark:bg-primary"
+                  className="flex h-8 items-center leading-none shrink-0 rounded-sm bg-primary px-[13px] text-[12.5px] font-medium text-primary-foreground transition-[filter] hover:brightness-105 dark:bg-primary"
                 >
                   选择文件
                 </button>
@@ -296,7 +296,7 @@ export function ManageImportExportView({ scope }: Props) {
                     <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-sm bg-slate-100 text-slate-600 dark:bg-slate-900 dark:text-slate-400">
                       <Icon className="h-4 w-4" />
                     </span>
-                    <span className="flex-1 text-[12.5px] font-medium text-slate-900 dark:text-slate-100">
+                    <span className="flex-1 text-[12.5px] leading-none font-medium text-slate-900 dark:text-slate-100">
                       {item.label}
                     </span>
                     {isBusy ? (
