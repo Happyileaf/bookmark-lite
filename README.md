@@ -358,24 +358,31 @@ curl -H "Authorization: Bearer bml-xxxxxxxx" \
 ## 常见问题
 
 **Q：注册时收不到验证码邮件？**
+
 A：检查是否配置了 `RESEND_API_KEY`。本地开发未配置邮件服务时，验证码会直接打印在运行 `pnpm dev` 的终端日志里。生产环境请确认发件域名已在 Resend 验证。
 
 **Q：启动时报错 “NEXTAUTH_SECRET 未配置”？**
+
 A：这是生产环境的强制校验。执行 `openssl rand -base64 32` 生成强随机值，配置到环境变量后再启动；且不能使用示例占位值、长度需 ≥ 32。
 
 **Q：插件点收藏没反应 / 提示检查 Token？**
+
 A：① 确认插件选项页中已粘贴有效 Token；② 确认插件连接的平台地址正确（自建实例需在选项页修改 API Base URL）；③ Token 可能已被撤销，到 `/api-tokens` 页面重新生成。401 鉴权错误不会自动重试。
 
 **Q：插件收藏后在网页上找不到？**
+
 A：插件收藏写入的是你的**个人库（USER 域）**，在「我的书签」页面查看，而不是公共书签库。
 
 **Q：Vercel 部署后迁移失败？**
+
 A：连接池（pgbouncer）不支持部分迁移操作。请配置 `DIRECT_URL`（unpooled 直连地址），`db:migrate:deploy` 会自动优先使用它。
 
 **Q：如何升级到新版本？**
+
 A：拉取最新代码后重新部署即可；使用 `pnpm run build:with-db`（Vercel）或先跑 `pnpm run db:migrate:deploy`（自托管）会自动应用增量迁移。建议升级前用 `pnpm run db:export` 备份。
 
 **Q：忘记密码怎么办？**
+
 A：在登录页点「忘记密码」，通过邮件中的重置链接设置新密码（需要已配置邮件服务）。管理员也可以在后台用户管理中直接重置密码。
 
 ## 路线图
