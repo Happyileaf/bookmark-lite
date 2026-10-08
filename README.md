@@ -105,32 +105,32 @@ pnpm run db:roundtrip-test -- backups/roundtrip-check.sql
 
 ## Seed default APP bookmarks and tags
 
-Seed curated APP scope data for Chinese developers/designers/engineers/AI researchers:
+Seed curated APP scope data (20 tags + 500 bookmarks):
 
 ```bash
-pnpm run seed:app-content
+pnpm run db:data:seed:app
 ```
 
 Data and logic are separated:
-- Data file: `scripts/seed-data/app-initial-content.mjs` (10 tags + 150 real URLs)
-- Seeder logic: `scripts/seed-data/seed-app-content.mjs`
+- Data file: `scripts/app-data-init/app-bookmarks-init/initial-bookmarks-and-tags.mjs`
+- Seeder logic: `scripts/app-data-init/app-bookmarks-init/init-bookmarks-via-prisma.mjs`
 
 Generate equivalent SQL from the same seed data:
 
 ```bash
-pnpm run seed:app-content:sql
+pnpm run db:data:seed:app:sql
 ```
 
 Optional output path:
 
 ```bash
-pnpm run seed:app-content:sql -- scripts/seed-data/my-seed.sql
+pnpm run db:data:seed:app:sql -- path/to/output.sql
 ```
 
 Apply generated SQL:
 
 ```bash
-pnpm exec prisma db execute --file scripts/seed-data/seed-app-content.generated.sql --schema prisma/schema.prisma
+pnpm exec prisma db execute --file scripts/app-data-init/app-bookmarks-init/init-bookmarks.generated.sql --schema prisma/schema.prisma
 ```
 
 Notes:

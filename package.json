@@ -25,8 +25,8 @@
     "db:import": "node scripts/db-import.mjs",
     "db:roundtrip:test": "node scripts/db-roundtrip-test.mjs",
     "db:data:seed:admin": "prisma db execute --file scripts/seed-admin-user-data.sql --schema prisma/schema.prisma",
-    "db:data:seed:app": "node scripts/seed-data/seed-app-content.mjs",
-    "db:data:seed:app:sql": "node scripts/seed-data/generate-seed-app-content-sql.mjs",
+    "db:data:seed:app": "node scripts/app-data-init/app-bookmarks-init/init-bookmarks-via-prisma.mjs",
+    "db:data:seed:app:sql": "node scripts/app-data-init/app-bookmarks-init/generate-init-sql.mjs",
     "publish:mcp": "cd mcp-server && ./publish.sh $1",
     "publish:extension": "cd extension && ./publish.sh $1"
   },
